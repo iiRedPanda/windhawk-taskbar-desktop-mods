@@ -21,7 +21,7 @@ A standalone Windhawk desktop overlay for media controls, clock/date, optional c
 ## Features
 
 - Obsidian, Graphite, Porcelain, and Custom palettes.
-- Click-to-expand by default, with optional automatic expansion restricted to an app allowlist and blocklist. Media source filtering ignores Riot Client by default so its launcher session does not displace active playback; the excluded-app list is editable. App matching does not classify browser content as music or video.
+- Click-to-expand by default, with optional automatic expansion restricted to an app allowlist and blocklist. Media source filtering skips self-named placeholder sessions, such as a launcher advertising its own name instead of a distinct track. The optional excluded-app list is empty by default. App matching does not classify browser content as music or video.
 - Optional date in the compact pill, including during media playback.
 - Clock and date controls appear first in the Modules settings group. The right-click menu no longer overrides the Expand on hover setting.
 - Reorder the scrollable views with the View order setting. The clock or active media view stays first; disabled views are skipped.
@@ -39,7 +39,7 @@ Click the compact pill to expand the overlay. Hover expansion is optional and di
 - **Compact date:** choose no date, a short date, or a date with the weekday. The date can also appear during media playback.
 - **Visibility:** Expand on hover is controlled in Windhawk settings. Auto-hide can hide the Island after an idle timeout. Its hover-reveal switch applies only to idle auto-hide; instant-hide mode keeps its hover area steady to avoid repeated folding. Full-screen action defaults to Hide and takes effect immediately even when idle auto-hide is set to Never. A separate full-screen hover-reveal switch defaults off. The other full-screen action moves the Island to the largest other monitor when an app or game fills its home monitor; with only one monitor, Move behaves like Hide. The hide/show shortcut can temporarily reveal a hidden Island.
 - **Views:** enter `notifications,calendar,weather,hardware` in any order. The first clock/media view stays in place. Shift+wheel on Island alert history pages through older entries; use the right-click menu to show a test alert, dismiss the current alert, or clear the history.
-- **Media:** automatic expansion is disabled by default. When enabled, use the app allowlist and blocklist to control which applications trigger it. The separate **Ignore media sessions from these apps** setting excludes nonmedia applications from the media card altogether and defaults to `riot`; edit it if an application is incorrectly included or excluded. A browser playing a show and the same browser playing music share an app identity.
+- **Media:** automatic expansion is disabled by default. When enabled, use the app allowlist and blocklist to control which applications trigger it. The separate **Ignore media sessions from these apps** setting excludes named applications from the media card altogether; its default is empty. A browser playing a show and the same browser playing music share an app identity.
 - **Hardware:** select the CPU, RAM, GPU, network, and disk-space cards individually. Disk space is disabled by default and currently reports the C: drive.
 - **Calendar:** enable the Calendar tab to make it available in the overlay. Windows Calendar Plus can supply its passive event preview; other Island modules work without that mod.
 
@@ -438,9 +438,9 @@ SOFTWARE.
       - zh: 简体中文 (Simplified Chinese)
       - ja: 日本語 (Japanese)
       - ko: 한국어 (Korean)
-  - MediaSourceBlocklist: 'riot'
+  - MediaSourceBlocklist: ""
     $name: Ignore media sessions from these apps
-    $description: Comma-separated app names or IDs to exclude from media controls. Riot Client is ignored by default because its launcher session can displace real playback. Add another nonmedia app here if it advertises a Windows media session.
+    $description: Optional comma-separated app names or IDs to exclude from media controls. Empty by default. The Island also ignores self-named placeholder sessions that have no distinct media title.
   - MediaExpandAllowlist: ""
     $name: Music apps allowed to auto-expand
     $description: Comma-separated app names or IDs. Leave empty for no automatic expansion.
@@ -3903,6 +3903,28 @@ winrt::Windows::Media::Control::GlobalSystemMediaTransportControlsSession Select
                 if (!blocked.empty() &&
                     (source.find(blocked) != std::wstring::npos ||
                      name.find(blocked) != std::wstring::npos)) return false;
+            }
+            // A launcher may mark its own UI session Playing and report its
+            // app name as the track. It has no distinct media to display.
+            auto normalize = [](const std::wstring& value) {
+                std::wstring result;
+                for (wchar_t ch : value) {
+                    if (iswalnum(ch)) result.push_back(static_cast<wchar_t>(towlower(ch)));
+                }
+                return result;
+            };
+            try {
+                const auto properties = candidate.TryGetMediaPropertiesAsync().get();
+                const std::wstring title = normalize(std::wstring(properties.Title().c_str()));
+                const std::wstring artist = normalize(std::wstring(properties.Artist().c_str()));
+                const std::wstring app = normalize(name);
+                const std::wstring sourceId = normalize(source);
+                if (title.size() >= 4 && (artist.empty() || artist == title) &&
+                    (title == app || (title.size() >= 6 && sourceId.find(title) != std::wstring::npos))) {
+                    return false;
+                }
+            } catch (...) {
+                // Players without readable metadata may still be valid.
             }
             return true;
         } catch (...) {
