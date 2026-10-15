@@ -15,7 +15,7 @@ Five independent mods for [Windhawk](https://windhawk.net/), a Windows customiza
 These mods run through [Windhawk](https://windhawk.net/). They are available here on GitHub, but are not in Windhawk's built-in mod catalog.
 
 1. Install and open Windhawk from its official website.
-2. Choose a mod's **Source** link above. On GitHub, click **Raw** and copy the entire `.wh.cpp` file.
+2. Open a mod's **Source** link above, or open its `.wh.cpp` file from the mod's folder. Click GitHub's **Copy raw file** button to copy the complete source code.
 3. In Windhawk, click **Create a New Mod**. Replace the sample code in the editor with the copied source.
 4. Click **Compile Mod**, then **Exit Editing Mode**. Make sure the new mod is enabled, and adjust its settings as needed.
 
