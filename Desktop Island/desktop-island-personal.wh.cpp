@@ -39,7 +39,7 @@ Click the compact pill to expand the overlay. Hover expansion is optional and di
 - **Compact date:** choose no date, a short date, or a date with the weekday. The date can also appear during media playback.
 - **Visibility:** Expand on hover is controlled in Windhawk settings. Auto-hide can hide the Island after an idle timeout. Its hover-reveal switch applies only to idle auto-hide; instant-hide mode keeps its hover area steady to avoid repeated folding. Full-screen action defaults to Hide and takes effect immediately even when idle auto-hide is set to Never. A separate full-screen hover-reveal switch defaults off. The other full-screen action moves the Island to the largest other monitor when an app or game fills its home monitor; with only one monitor, Move behaves like Hide. The hide/show shortcut can temporarily reveal a hidden Island.
 - **Views:** enter `notifications,calendar,weather,hardware` in any order. The first clock/media view stays in place. Shift+wheel on Island alert history pages through older entries; use the right-click menu to show a test alert, dismiss the current alert, or clear the history.
-- **Media:** automatic expansion is disabled by default. When enabled, use the app allowlist and blocklist to control which applications trigger it. The separate **Ignore media sessions from these apps** setting excludes named applications from the media card altogether; its default is empty. Enter `riot` there if Riot Client replaces a playing Spotify track. A browser playing a show and the same browser playing music share an app identity.
+- **Media:** the media controls are together near the top of Modules. **Exclude apps from media detection** removes matching apps from the compact pill and expanded media controls; it is empty by default. Enter `riot` there if Riot Client replaces a playing Spotify track. **Prevent automatic expansion for these apps** only stops the Island opening automatically; the app can still appear as media. Automatic expansion is disabled by default. A browser playing a show and the same browser playing music share an app identity.
 - **Hardware:** select the CPU, RAM, GPU, network, and disk-space cards individually. Disk space is disabled by default and currently reports the C: drive.
 - **Calendar:** enable the Calendar tab to make it available in the overlay. Windows Calendar Plus can supply its passive event preview; other Island modules work without that mod.
 
@@ -338,10 +338,19 @@ SOFTWARE.
     $description: Swap the idle dashboard so the date is the headline and the time sits beneath it.
   - Media: true
     $name: Media module
-    $description: Shows album art, song info, and playback controls when music is playing.
+    $description: Shows album art, track info, and playback controls for Windows media sessions. Some launchers report a session even without actual playback; use Exclude apps from media detection below for those apps.
   - MediaAutoExpand: false
     $name: Auto-expand only for listed music apps
     $description: Automatically expand the island when a new song or video starts playing. If disabled, album art updates smoothly in the collapsed pill without unprompted expansion.
+  - MediaSourceBlocklist: ""
+    $name: Exclude apps from media detection
+    $description: Comma-separated app names or IDs, for example riot. Excluded apps never appear as media in the pill or expanded controls. Empty by default. This is separate from the auto-expand lists below.
+  - MediaExpandAllowlist: ""
+    $name: Music apps allowed to auto-expand
+    $description: Comma-separated app names or IDs. Leave empty for no automatic expansion.
+  - MediaExpandBlocklist: ""
+    $name: Prevent automatic expansion for these apps
+    $description: 'Comma-separated list of app or site names that should never make the island expand on a track change, while still updating quietly in the collapsed pill. Matched loosely against the media source and title, for example: chrome, tiktok, youtube.'
   - Volume: true
     $name: Volume slider flyout
     $description: Shows a volume slider banner on the island when adjusting system volume. Disable if you prefer the default Windows volume flyout.
@@ -438,15 +447,6 @@ SOFTWARE.
       - zh: 简体中文 (Simplified Chinese)
       - ja: 日本語 (Japanese)
       - ko: 한국어 (Korean)
-  - MediaSourceBlocklist: ""
-    $name: Ignore media sessions from these apps
-    $description: Optional comma-separated app names or IDs to exclude from media controls. Empty by default. The Island also ignores self-named placeholder sessions that have no distinct media title.
-  - MediaExpandAllowlist: ""
-    $name: Music apps allowed to auto-expand
-    $description: Comma-separated app names or IDs. Leave empty for no automatic expansion.
-  - MediaExpandBlocklist: ""
-    $name: Never auto-expand for these apps
-    $description: 'Comma-separated list of app or site names that should never make the island expand on a track change, while still updating quietly in the collapsed pill. Matched loosely against the media source and title, for example: chrome, tiktok, youtube.'
   - GameOverlayShowFps: true
     $name: Game overlay - show FPS
     $description: Include the frame rate in the game overlay strip.
