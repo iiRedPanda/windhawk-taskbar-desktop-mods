@@ -3,7 +3,7 @@
 // @name            Taskbar Tray
 // @description     Independent tray icon, bell and Show Desktop controls
 // @version         0.1.0
-// @author          Jip (based on m417z's Windhawk mod)
+// @author          Jip
 // @github          https://github.com/iiRedPanda
 // @license         GPL-3.0
 // @include         explorer.exe

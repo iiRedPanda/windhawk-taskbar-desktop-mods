@@ -3,7 +3,7 @@
 // @name            Taskbar Auto-Hide
 // @description     Auto-hide policy and animation speed in one independent mod
 // @version         0.1.0
-// @author          Jip (based on two m417z taskbar mods)
+// @author          Jip
 // @github          https://github.com/iiRedPanda
 // @license         GPL-3.0
 // @include         explorer.exe

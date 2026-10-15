@@ -3,7 +3,7 @@
 // @name            Windows Calendar Plus
 // @description     Native Windows calendar agenda with Google accounts, ICS feeds, daylight saving handling and reminders.
 // @version         0.2.1
-// @author          Jip (fork of lonfro and Rubens Nascimento)
+// @author          Jip
 // @github          https://github.com/iiRedPanda
 // @include         explorer.exe
 // @include         ShellExperienceHost.exe

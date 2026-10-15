@@ -3,7 +3,7 @@
 // @name            Desktop Island
 // @description     Independent desktop pill with focused media, calendar and hardware controls
 // @version         0.1.0
-// @author          Jip (based on Dynamic Island for Windows by Himanshu and contributors)
+// @author          Jip
 // @github          https://github.com/iiRedPanda
 // @include         windhawk.exe
 // @compilerOptions -lole32 -loleaut32 -lshcore -ld2d1 -ldwrite -ldwmapi -lgdi32 -luser32 -lshell32 -lruntimeobject -lwindowscodecs -lavrt -lsetupapi -lwinhttp -lpdh -lwinmm

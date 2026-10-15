@@ -3,7 +3,7 @@
 // @name            Taskbar Appearance
 // @description     Themes, Start button and optional Matter-style clock in one mod
 // @version         0.1.0
-// @author          Jip (based on m417z Taskbar Styler and community themes)
+// @author          Jip
 // @github          https://github.com/iiRedPanda
 // @license         GPL-3.0
 // @include         explorer.exe
