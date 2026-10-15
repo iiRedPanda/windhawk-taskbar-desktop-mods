@@ -4,12 +4,12 @@ Six independent Windhawk mods for the Windows 11 taskbar, desktop, and calendar.
 
 | Mod | What it does |
 | --- | --- |
-| [Taskbar Appearance](Taskbar%20Appearance/) | Frosty Matter, WinXP, Windows 7, Translucent, and Command Center themes; Start button styling; optional time and date formatting. |
-| [Taskbar Auto-Hide](Taskbar%20Auto-Hide/) | Independent auto-hide policy and animation speed controls. |
-| [Taskbar Tray](Taskbar%20Tray/) | System icon, notification bell, battery color, and Show Desktop controls. |
-| [Taskbar Thumbnail Reorder](Taskbar%20Thumbnail%20Reorder/) | Drag grouped taskbar previews into a preferred order. |
-| [Desktop Island](Desktop%20Island/) | A separate desktop pill with media controls, clock and date, optional calendar, selected hardware metrics, and captured-alert history. |
-| [Windows Calendar Plus](Windows%20Calendar%20Plus/) | Native calendar agenda with Google and ICS support, reminders, and an optional passive preview for Desktop Island. |
+| [Taskbar Appearance](Taskbar%20Appearance/README.md) | Frosty Matter, WinXP, Windows 7, Translucent, and Command Center themes; Start button styling; optional time and date formatting. |
+| [Taskbar Auto-Hide](Taskbar%20Auto-Hide/README.md) | Independent auto-hide policy and animation speed controls. |
+| [Taskbar Tray](Taskbar%20Tray/README.md) | System icon, notification bell, battery color, and Show Desktop controls. |
+| [Taskbar Thumbnail Reorder](Taskbar%20Thumbnail%20Reorder/README.md) | Drag grouped taskbar previews into a preferred order. |
+| [Desktop Island](Desktop%20Island/README.md) | A separate desktop pill with media controls, clock and date, optional calendar, selected hardware metrics, and captured-alert history. |
+| [Windows Calendar Plus](Windows%20Calendar%20Plus/README.md) | Native calendar agenda with Google and ICS support, reminders, and an optional passive preview for Desktop Island. |
 
 The mods can run independently. Windows Calendar Plus supplies an optional event preview to Desktop Island; neither requires the other for its main functions. Taskbar Appearance formats time and date, while Desktop Island handles optional live information.
 
