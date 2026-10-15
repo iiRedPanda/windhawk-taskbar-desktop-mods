@@ -16,7 +16,19 @@ The mods can run independently. Windows Calendar Plus supplies an optional event
 
 All five sources compile with Windhawk 1.7.3. Core taskbar and Island behaviors were checked on one Windows 11 Pro 24H2 system (build 26100.6899) with multiple displays. Calendar parsing, recurrence, cache, account-request, and Island bridge checks pass. Each mod README lists the live checks and remaining limits. Compatibility with other Windows builds, ExplorerPatcher, and StartAllBack has not been established as a general guarantee.
 
-This repository is an experimental source release. It has not been submitted to or accepted by the official Windhawk mod catalog. Report a reproducible issue with the mod version, Windows build, Windhawk version, enabled taskbar customizers, and relevant settings.
+This repository is an experimental source release. The five mods have been submitted as separate pull requests to the official Windhawk mod catalog and are awaiting maintainer review. Submission does not mean catalog acceptance. Report a reproducible issue with the mod version, Windows build, Windhawk version, enabled taskbar customizers, and relevant settings.
+
+## Windhawk catalog submissions
+
+| Mod | Pull request |
+| --- | --- |
+| Taskbar Appearance | [#6261](https://github.com/ramensoftware/windhawk-mods/pull/6261) |
+| Taskbar Auto-Hide | [#6260](https://github.com/ramensoftware/windhawk-mods/pull/6260) |
+| Taskbar Tray | [#6259](https://github.com/ramensoftware/windhawk-mods/pull/6259) |
+| Desktop Island | [#6262](https://github.com/ramensoftware/windhawk-mods/pull/6262) |
+| Windows Calendar Plus | [#6263](https://github.com/ramensoftware/windhawk-mods/pull/6263) |
+
+Each submission is a modified fork. The source files and individual READMEs credit the original authors and retain the applicable license notices.
 
 In separate 20-second samples, the revised Desktop Island process averaged 19% of one CPU core during Spotify playback and 11% while playback was paused, with roughly 56 MB working set. Other hardware and settings have not been measured, so the collection makes no general performance claim.
 
