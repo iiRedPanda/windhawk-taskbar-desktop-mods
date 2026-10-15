@@ -17,7 +17,7 @@ These mods run through [Windhawk](https://windhawk.net/). They are available her
 1. Install and open Windhawk from its official website.
 2. Open a mod's **Source** link above, or open its `.wh.cpp` file from the mod's folder. Click GitHub's **Copy raw file** button to copy the complete source code.
 3. In Windhawk, click **Create a New Mod**. Replace the sample code in the editor with the copied source.
-4. Click **Compile Mod**, then **Exit Editing Mode**. Make sure the new mod is enabled, and adjust its settings as needed.
+4. Click **Compile Mod** and wait for it to finish, then **Exit Editing Mode**. Make sure the new mod is enabled, and adjust its settings as needed.
 
 Repeat for each mod you want. If you already use an original mod that changes the same taskbar or calendar controls, disable it before enabling its fork to avoid overlapping changes. Each mod's README explains its settings and credits the original work.
 
