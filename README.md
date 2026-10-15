@@ -4,11 +4,11 @@ Five independent Windhawk mods for the Windows 11 taskbar, desktop, and calendar
 
 | Mod | What it does |
 | --- | --- |
-| [Taskbar Appearance](Taskbar%20Appearance/README.md) | Frosty Matter, WinXP, Windows 7, Translucent, and Command Center themes; Start button styling; optional time and date formatting. |
-| [Taskbar Auto-Hide](Taskbar%20Auto-Hide/README.md) | Independent auto-hide policy and animation speed controls. |
-| [Taskbar Tray](Taskbar%20Tray/README.md) | System icon, notification bell, battery color, and Show Desktop controls. |
-| [Desktop Island](Desktop%20Island/README.md) | A separate desktop pill with media controls, clock and date, optional calendar, selected hardware metrics, and captured-alert history. |
-| [Windows Calendar Plus](Windows%20Calendar%20Plus/README.md) | Native calendar agenda with Google and ICS support, reminders, and an optional passive preview for Desktop Island. |
+| [Taskbar Appearance](Taskbar%20Appearance/README.md) | Give the Windows 11 taskbar a new look with five presets or return to the Windows default. Frosty Matter creates a split, frosted taskbar with the time above the date. You can also adjust the Start icon, clock and date formatting, seconds, spacing, and click-through gaps. |
+| [Taskbar Auto-Hide](Taskbar%20Auto-Hide/README.md) | Choose when the taskbar gets out of the way: when a window is maximized, when a window overlaps it, or according to Windows' own setting. Limit the behavior to certain displays or exclude apps, and optionally adjust show and hide animation speeds separately. |
+| [Taskbar Tray](Taskbar%20Tray/README.md) | Clear unwanted indicators from the system tray without hiding the ones you use. Control supported system icons individually, decide when the notification bell appears, change the battery icon to grayscale, and resize or hide the Show Desktop button. |
+| [Desktop Island](Desktop%20Island/README.md) | Add an expandable desktop pill for your clock, date, active media controls, selected hardware readings, and optional calendar view. Choose its look and view order, keep Island alerts in a history until you clear them, and hide or move the pill when an app goes full screen. |
+| [Windows Calendar Plus](Windows%20Calendar%20Plus/README.md) | See Google Calendar and ICS feed events inside the native Windows calendar pane. Manage accounts and feeds, refresh events, view supported recurring events in the correct local time, and enable reminders. It can also supply an optional event preview to Desktop Island. |
 
 The mods can run independently. Windows Calendar Plus supplies an optional event preview to Desktop Island; neither requires the other for its main functions. Taskbar Appearance formats time and date, while Desktop Island handles optional live information.
 
