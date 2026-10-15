@@ -1,13 +1,12 @@
 # Windhawk Taskbar and Desktop Mods
 
-Six independent Windhawk mods for the Windows 11 taskbar, desktop, and calendar. They are modified forks of existing Windhawk projects. Each mod has its own source, settings, README, and license; install or enable only the ones you want.
+Five independent Windhawk mods for the Windows 11 taskbar, desktop, and calendar. They are modified forks of existing Windhawk projects. Each mod has its own source, settings, README, and license; install or enable only the ones you want.
 
 | Mod | What it does |
 | --- | --- |
 | [Taskbar Appearance](Taskbar%20Appearance/README.md) | Frosty Matter, WinXP, Windows 7, Translucent, and Command Center themes; Start button styling; optional time and date formatting. |
 | [Taskbar Auto-Hide](Taskbar%20Auto-Hide/README.md) | Independent auto-hide policy and animation speed controls. |
 | [Taskbar Tray](Taskbar%20Tray/README.md) | System icon, notification bell, battery color, and Show Desktop controls. |
-| [Taskbar Thumbnail Reorder](Taskbar%20Thumbnail%20Reorder/README.md) | Drag grouped taskbar previews into a preferred order. |
 | [Desktop Island](Desktop%20Island/README.md) | A separate desktop pill with media controls, clock and date, optional calendar, selected hardware metrics, and captured-alert history. |
 | [Windows Calendar Plus](Windows%20Calendar%20Plus/README.md) | Native calendar agenda with Google and ICS support, reminders, and an optional passive preview for Desktop Island. |
 
@@ -15,7 +14,7 @@ The mods can run independently. Windows Calendar Plus supplies an optional event
 
 ## Status and compatibility
 
-All six sources compile with Windhawk 1.7.3. Core taskbar and Island behaviors were checked on one Windows 11 Pro 24H2 system (build 26100.6899) with multiple displays. Calendar parsing, recurrence, cache, account-request, and Island bridge checks pass. Each mod README lists the live checks and remaining limits. Compatibility with other Windows builds, ExplorerPatcher, and StartAllBack has not been established as a general guarantee.
+All five sources compile with Windhawk 1.7.3. Core taskbar and Island behaviors were checked on one Windows 11 Pro 24H2 system (build 26100.6899) with multiple displays. Calendar parsing, recurrence, cache, account-request, and Island bridge checks pass. Each mod README lists the live checks and remaining limits. Compatibility with other Windows builds, ExplorerPatcher, and StartAllBack has not been established as a general guarantee.
 
 This repository is an experimental source release. It has not been submitted to or accepted by the official Windhawk mod catalog. Report a reproducible issue with the mod version, Windows build, Windhawk version, enabled taskbar customizers, and relevant settings.
 
