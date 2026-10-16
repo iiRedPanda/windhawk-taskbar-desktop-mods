@@ -2,7 +2,7 @@
 // @id              desktop-island-personal
 // @name            Desktop Island
 // @description     Independent desktop pill with focused media, calendar and hardware controls
-// @version         0.1.8
+// @version         0.1.9
 // @author          Jip
 // @github          https://github.com/iiRedPanda
 // @include         windhawk.exe
@@ -25,7 +25,7 @@ A standalone Windhawk desktop overlay for media controls, clock/date, optional c
 - Optional date in the compact pill, including during media playback.
 - Clock and date controls appear first in the Modules settings group. The right-click menu no longer overrides the Expand on hover setting.
 - Reorder the scrollable views with the View order setting. The clock or active media view stays first; disabled views are skipped.
-- Alerts captured by the Island appear from the pill for 4, 8, or 12 seconds, or stay until dismissed. When history is enabled, captured alerts are kept across restarts until cleared. The Notifications view shows one entry at a time; click an entry for its full saved text, source, and capture time, or use the right-click menu to copy them. A test alert checks the pop-up and history without waiting for an external alert.
+- Island notifications have a master switch. When enabled, alerts captured by the Island appear from the pill for 4, 8, or 12 seconds, or stay until dismissed. With history enabled, captured alerts are kept across restarts until cleared. The Notifications view shows one entry at a time; click an entry for its full saved text, source, and capture time, or use the right-click menu to copy them. A test alert checks the pop-up and history without waiting for an external alert.
 - Optional Calendar tab, disabled by default, with a passive Calendar Plus event preview when available.
 - Individually selectable CPU, RAM, GPU, network, and disk-space cards. Disk space defaults off; the disk target remains C:.
 - Inherited timer, volume, battery, Bluetooth, clipboard, privacy indicators, weather, and game-overlay options. Weather uses separate day and night icons for clear and partly cloudy conditions, distinct precipitation icons, a one-decimal current temperature when available, and selectable wind, feels-like, humidity, forecast-high, and forecast-low cards.
@@ -40,6 +40,7 @@ Click the compact pill to expand the overlay. Hover expansion is optional and di
 - **Visibility:** Expand on hover is controlled in Windhawk settings. Auto-hide can hide the Island after an idle timeout. Its hover-reveal switch applies only to idle auto-hide; instant-hide mode keeps its hover area steady to avoid repeated folding. Full-screen action defaults to Hide and takes effect immediately even when idle auto-hide is set to Never. A separate full-screen hover-reveal switch defaults off. The other full-screen action moves the Island to the largest other monitor when an app or game fills its home monitor; with only one monitor, Move behaves like Hide. The hide/show shortcut can temporarily reveal a hidden Island.
 - **Views:** enter `notifications,calendar,weather,hardware` in any order. The first clock/media view stays in place. In Notifications, Shift+wheel selects an older alert; click it to inspect the saved details, or right-click to copy them, show a test alert, dismiss the current pop-up, open Windows Reliability Monitor, or clear history. Reliability Monitor can help investigate a crash near the saved capture time, but an unverified shell popup alone does not prove one occurred. Clicking a compact alert pop-up also opens its details.
 - **Media:** the media controls are together near the top of Modules. **Exclude apps from media detection** removes matching sessions from the compact pill and expanded media controls; it is empty by default. Entries are comma-separated and match app IDs, executable names, product names, or executable company names when Windows exposes the owning program. `firefox` or `firefox.exe` excludes Firefox; `riot games` excludes recognized Riot Client, VALORANT, League, Teamfight Tactics, Runeterra, and 2XKO sessions. Matching ignores case, spaces, punctuation, and `.exe`. For an app with an unrelated ID, play its media, right-click the Island, choose **Copy current media source ID**, and paste that ID into the exclusion setting. **Prevent automatic expansion for these apps** only stops the Island opening automatically; the app can still appear as media. Automatic expansion is disabled by default. A browser playing a show and the same browser playing music may share a source identity.
+- **Notifications:** turn off **Enable Island notifications** to stop the Island capturing and showing alerts and remove its Notifications view. Saved Island history remains available when you turn it back on. Turning off **Keep Island alert history** clears that history. These controls do not change Windows notifications or the Island's separate volume, battery, and other status indicators.
 - **Hardware:** select the CPU, RAM, GPU, network, and disk-space cards individually. Disk space is disabled by default and currently reports the C: drive.
 - **Calendar:** enable the Calendar tab to make it available in the overlay. Windows Calendar Plus can supply its passive event preview; other Island modules work without that mod.
 - **Weather:** choose an optional city and Celsius or Fahrenheit. The compact pill always shows the current temperature when Weather is enabled; **Show weather icon in small pill** can hide its condition icon for a narrower, text-only reading. Each of the five expanded cards can be switched on or off; wind, feels like, and humidity retain their previous defaults, while today's forecast low and high default off. Selected cards appear in one or two rows below the current condition, with Low to the left of High when both are shown. Open-Meteo supplies the decimal current reading, forecast high/low, current condition, and day/night state; if it is unavailable, the Island uses wttr.in's whole-degree reading. Readings normally refresh every 15 minutes.
@@ -50,7 +51,7 @@ The overlay is a separate desktop pill. It does not add a button to the Windows 
 
 Weather is enabled by default. wttr.in resolves the selected city or, when no city is configured, estimates location from the network request. Open-Meteo then receives the location coordinates for its current and daily forecast readings. Both requests use HTTPS, reject downgrade redirects, and limit response size and read duration. Weather data from [Open-Meteo](https://open-meteo.com/) is provided under [CC BY 4.0](https://open-meteo.com/en/terms); the Island changes units, rounds the displayed values to one decimal, and maps condition codes to its own icons. The provider link is also available from the Island's **Weather data credits** right-click action. A one-decimal forecast value is more detailed than wttr.in's whole-degree value, but it may still differ from another weather app or a local thermometer. Clipboard and notification previews can display sensitive content on screen and have their own settings.
 
-Island alert history stores the captured app name, alert text, source, time, and available shell-window metadata in Windhawk local mod storage until you clear it or turn off the history setting. It can include sensitive text. Some shell windows expose only a host name such as “Windows Shell Experience Host.” The Island marks these as unverified shell popups with their cause unknown; the process name alone does not establish a crash or restart. Older entries cannot gain details that were never captured. The Island does not independently monitor process or driver crashes, reliably receive every Windows toast, replace Windows Notification Center, or suppress Windows banners. Keep Windows notifications enabled if you want Windows to retain its own notification history; see [Microsoft's notification settings guide](https://support.microsoft.com/en-us/windows/experience/notifications-and-do-not-disturb-in-windows). Do Not Disturb suppression can prevent alerts from entering Island history.
+Island alert history stores the captured app name, alert text, source, time, and available shell-window metadata in Windhawk local mod storage until you clear it or turn off the history setting. The master notification switch pauses new capture and hides the Island history view without deleting saved entries. History can include sensitive text. Some shell windows expose only a host name such as “Windows Shell Experience Host.” The Island marks these as unverified shell popups with their cause unknown; the process name alone does not establish a crash or restart. Older entries cannot gain details that were never captured. The Island does not independently monitor process or driver crashes, reliably receive every Windows toast, replace Windows Notification Center, or suppress Windows banners. Keep Windows notifications enabled if you want Windows to retain its own notification history; see [Microsoft's notification settings guide](https://support.microsoft.com/en-us/windows/experience/notifications-and-do-not-disturb-in-windows). Do Not Disturb suppression can prevent alerts from entering Island history.
 
 The optional Calendar tab reads a local, unencrypted snapshot from Windows Calendar Plus containing event titles, start/end times, and all-day status. It checks at most once a minute and rejects snapshots older than two hours. Calendar Plus is not required for the overlay; the bridge adds no event editing or reminder notifications.
 
@@ -59,6 +60,8 @@ The optional Calendar tab reads a local, unencrypted snapshot from Windows Calen
 Experimental source release. Compilation and the compact-to-expanded clock display have been checked on one Windows 11 installation. The date, timed-hide, timed-hover-reveal, instant-hide hover, independent full-screen Hide and hover controls, full-screen Move and return, and view order were checked live. With Spotify playing, `brave.exe, riot games` in Exclude apps from media detection kept Brave video and Riot Client out of the Island in a live check. Firefox matching passed source-level checks but has not been tested live. The test alert appeared in the pill and history; Until dismissed, dismissal, persistence after disabling and re-enabling the mod, and clearing history passed live checks. Version 0.1.3 adds source and time details and click-to-inspect for history entries, plus location-aware day/night weather icons and more specific precipitation icons; the saved-entry and new-test-alert details windows passed live interaction checks. The weather icon also appeared correctly in a live check. Version 0.1.4 adds per-card weather switches, forecast high/low, and one-decimal Open-Meteo readings with whole-degree fallback; its one-decimal reading and metric switches passed a live check. Version 0.1.5 moves the selected metrics into one or two rows, groups the city and condition beside the temperature, and removes the provider name from the Weather view. Version 0.1.6 adds an optional compact weather icon and measures the narrower text-only pill. Both the expanded Weather layout and compact icon toggle passed a live visual check. Version 0.1.7 enlarges and raises the clock and current weather reading to better use the top space; both views passed a live visual check with the privacy chip and five weather cards readable. The whole-degree fallback has not been checked live. A Windows PowerShell toast appeared in Windows but was not captured by the Island on the tested PC, so Windows-wide notification replacement is not claimed. The broader Windows compatibility matrix remains unverified. The overlay runs in a separate Windhawk tool process and is not inserted beside the Start button. File Tray and its drop handlers have been removed.
 
 Version 0.1.8 places Low before High in the settings and Weather card row. It also orders the controls by placement, animation, theme, privacy, clock, media, alerts, calendar, weather, hardware, game overlay, and system status. All 97 setting paths and defaults remain the same, preserving saved choices. The source compiled, and a live check confirmed the grouped controls, retained selections, and Low/High card order.
+
+Version 0.1.9 adds **Enable Island notifications**, on by default. Switching it off pauses Windows toast polling and shell alert capture, closes any visible Island alert, removes Notifications from the view order, and disables the test-alert action. Saved history is retained until cleared or the separate history setting is turned off. The new source passed a Windhawk toolchain build; live switch behavior has not yet been checked.
 
 ## Credits and license
 
@@ -375,6 +378,9 @@ SOFTWARE.
   - MediaExpandBlocklist: ""
     $name: Prevent automatic expansion for these apps
     $description: 'Comma-separated list of app or site names that should never make the island expand on a track change, while still updating quietly in the collapsed pill. Matched loosely against the media source and title, for example: chrome, tiktok, youtube.'
+  - NotificationsEnabled: true
+    $name: Enable Island notifications
+    $description: Show captured Windows and shell alerts, keep new alerts in Island history, and include the Notifications view. Turn off to pause Island notification capture without deleting saved history. Windows notifications and other Island status modules are unaffected.
   - NotificationHistory: true
     $name: Keep Island alert history
     $description: Keep every notification the Island captures, including crash toasts, until you clear it. The Notifications view shows one at a time; Shift+wheel selects older entries and right-click copies the full message. Notifications the Island misses cannot be recovered.
@@ -1031,6 +1037,7 @@ struct Settings {
     bool hardwareDiskSpace = false;
     bool hardwareMonitorModule = true;
     bool doNotDisturbIndicator = true;
+    bool notificationsEnabled = true;
     bool notificationRespectDnD = true;
     bool notificationHistory = true;
     int notificationPopupSeconds = 8;
@@ -1497,7 +1504,7 @@ std::vector<int> ActiveDashboardTabs(const Settings& settings) {
                  name == L"hardware" ? 3 : name == L"notifications" ? 4 : -1;
         bool enabled = id == 1 ? settings.calendar : id == 2 ? settings.weather :
                        id == 3 ? settings.hardwareMonitorModule :
-                       id == 4 ? settings.notificationHistory : false;
+                       id == 4 ? (settings.notificationsEnabled && settings.notificationHistory) : false;
         if (enabled && std::find(tabs.begin(), tabs.end(), id) == tabs.end()) tabs.push_back(id);
     };
     size_t start = 0;
@@ -2298,6 +2305,7 @@ void LoadSettings() {
     next.bluetoothIndicator = Wh_GetIntSetting(L"Modules.BluetoothIndicator") != 0;
     next.bluetoothShowBattery = Wh_GetIntSetting(L"Modules.BluetoothShowBattery") != 0;
     next.doNotDisturbIndicator = Wh_GetIntSetting(L"Modules.DoNotDisturbIndicator") != 0;
+    next.notificationsEnabled = Wh_GetIntSetting(L"Modules.NotificationsEnabled") != 0;
     next.notificationRespectDnD = Wh_GetIntSetting(L"Modules.NotificationRespectDnD") != 0;
     next.notificationHistory = Wh_GetIntSetting(L"Modules.NotificationHistory") != 0;
     const int alertDuration = _wtoi(GetStringSettingCopy(L"Modules.NotificationPopupSeconds").c_str());
@@ -2654,6 +2662,17 @@ void LoadSettings() {
         auto published = std::make_shared<const Settings>(next);
         g_settings = std::move(next);
         std::atomic_store_explicit(&g_settingsSnapshot, std::move(published), std::memory_order_release);
+    }
+    if (!(*GetSettingsSnapshot()).notificationsEnabled) {
+        // Publish the disabled setting before clearing the visible alert, so
+        // a capture thread cannot add another one between those operations.
+        bool hadAlert = false;
+        {
+            std::lock_guard lock(g_stateMutex);
+            hadAlert = g_state.notification.active;
+            g_state.notification.active = false;
+        }
+        if (hadAlert) g_hotkeyUnhideUntil = 0.0;
     }
     g_layoutDirty = true;
     if (weatherRequestChanged && g_settingsChangedEvent) {
@@ -4571,6 +4590,14 @@ DWORD WINAPI NotificationThreadProc(void*) {
     }
 
     while (WaitForSingleObject(g_stopEvent, 0) == WAIT_TIMEOUT) {
+        if (!(*GetSettingsSnapshot()).notificationsEnabled) {
+            // Keep the thread available for a later settings change, but do
+            // not request access or poll Windows while capture is disabled.
+            firstPoll = true;
+            seenIds.clear();
+            WaitForSingleObject(g_stopEvent, 1000);
+            continue;
+        }
         try {
             auto listener = UserNotificationListener::Current();
             auto access = listener.RequestAccessAsync().get();
@@ -4599,6 +4626,7 @@ DWORD WINAPI NotificationThreadProc(void*) {
             }
 
             while (WaitForSingleObject(g_stopEvent, 0) == WAIT_TIMEOUT) {
+                if (!(*GetSettingsSnapshot()).notificationsEnabled) break;
                 try {
                     auto notifications = listener.GetNotificationsAsync(NotificationKinds::Toast).get();
                     std::set<uint32_t> currentIds;
@@ -4626,6 +4654,7 @@ DWORD WINAPI NotificationThreadProc(void*) {
                             // Immediately mark as seen so we don't process it again
                             seenIds.insert(id);
 
+                            if (!(*GetSettingsSnapshot()).notificationsEnabled) continue;
                             if ((*GetSettingsSnapshot()).notificationRespectDnD && g_isDnDActive.load()) {
                                 continue;
                             }
@@ -4670,6 +4699,7 @@ DWORD WINAPI NotificationThreadProc(void*) {
                             }
                             {
                                 std::lock_guard lock(g_stateMutex);
+                                if (!(*GetSettingsSnapshot()).notificationsEnabled) continue;
                                 SaveNotificationLocked(snapshot);
                                 if (snapshot.title.size() > 120) {
                                     snapshot.title.resize(120);
@@ -6468,6 +6498,7 @@ std::wstring AlertCapturedAt() {
 }
 
 void SaveNotificationLocked(const NotificationSnapshot& notification) {
+    if (!(*GetSettingsSnapshot()).notificationsEnabled) return;
     if (notification.active && !g_manuallyHidden.load(std::memory_order_relaxed)) {
         g_hotkeyUnhideUntil.store(std::max(g_hotkeyUnhideUntil.load(), notification.expiresAt));
         g_autoHiddenParked = false;
@@ -6546,6 +6577,7 @@ double NotificationExpiry() {
 }
 
 void CaptureShellNotification(HWND hwnd) {
+    if (!(*GetSettingsSnapshot()).notificationsEnabled) return;
     // Grace period: ignore notifications that fire in the first 3 seconds after
     // the mod starts. sihost.exe gets injected while system windows are still
     // settling, which causes false positives (e.g. Snipping Tool windows).
@@ -6580,6 +6612,7 @@ void CaptureShellNotification(HWND hwnd) {
     const unsigned long long captureSequence = notification.captureSequence;
     {
         std::lock_guard lock(g_stateMutex);
+        if (!(*GetSettingsSnapshot()).notificationsEnabled) return;
         SaveNotificationLocked(notification);
         if (notification.title.size() > 96) {
             notification.body = notification.title.substr(64);
@@ -7218,7 +7251,8 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
     AppendMenuW(menu, MF_STRING, 9, L"Open Windhawk settings");
     AppendMenuW(menu, MF_STRING, 19, L"Weather data credits");
     AppendMenuW(menu, MF_STRING | (hasMediaSource ? 0 : MF_GRAYED), 17, L"Copy current media source ID");
-    AppendMenuW(menu, MF_STRING, 14, L"Show test alert");
+    AppendMenuW(menu, MF_STRING | ((*GetSettingsSnapshot()).notificationsEnabled ? 0 : MF_GRAYED),
+                14, L"Show test alert");
     AppendMenuW(menu, MF_STRING, 15, L"Dismiss current alert");
     AppendMenuW(menu, MF_STRING, 16, L"Copy shown Island alert");
     AppendMenuW(menu, MF_STRING, 18, L"Open Windows Reliability Monitor");
@@ -7344,6 +7378,7 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
             g_layoutDirty = true;
             break;
         case 14: {
+            if (!(*GetSettingsSnapshot()).notificationsEnabled) break;
             NotificationSnapshot alert;
             alert.active = true;
             alert.app = L"Desktop Island";
@@ -7351,6 +7386,7 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
             alert.expiresAt = NotificationExpiry();
             {
                 std::lock_guard lock(g_stateMutex);
+                if (!(*GetSettingsSnapshot()).notificationsEnabled) break;
                 SaveNotificationLocked(alert);
                 g_state.notification = std::move(alert);
             }
@@ -11927,7 +11963,7 @@ std::vector<IslandKind> ChooseActivities(const SharedState& state, const Setting
     if (settings.volume && state.volume.active && now < state.volume.expiresAt) {
         activities.push_back(IslandKind::Volume);
     }
-    if (state.notification.active && now < state.notification.expiresAt) {
+    if (settings.notificationsEnabled && state.notification.active && now < state.notification.expiresAt) {
         activities.push_back(IslandKind::Notification);
     }
     if (settings.battery && state.battery.active && now < state.battery.expiresAt) {
