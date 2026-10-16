@@ -2,7 +2,7 @@
 // @id              desktop-island-personal
 // @name            Desktop Island
 // @description     Independent desktop pill with focused media, calendar and hardware controls
-// @version         0.1.1
+// @version         0.1.3
 // @author          Jip
 // @github          https://github.com/iiRedPanda
 // @include         windhawk.exe
@@ -25,10 +25,10 @@ A standalone Windhawk desktop overlay for media controls, clock/date, optional c
 - Optional date in the compact pill, including during media playback.
 - Clock and date controls appear first in the Modules settings group. The right-click menu no longer overrides the Expand on hover setting.
 - Reorder the scrollable views with the View order setting. The clock or active media view stays first; disabled views are skipped.
-- Notifications captured by the Island expand from the pill for 4, 8, or 12 seconds, or stay until dismissed. When history is enabled, captured notifications are kept across restarts until cleared, including crash and fatal-error toasts. The Notifications view shows one entry at a time; its right-click menu can copy the full message for investigation. A test alert checks the pop-up and history without waiting for an external alert.
+- Alerts captured by the Island appear from the pill for 4, 8, or 12 seconds, or stay until dismissed. When history is enabled, captured alerts are kept across restarts until cleared. The Notifications view shows one entry at a time; click an entry for its full saved text, source, and capture time, or use the right-click menu to copy them. A test alert checks the pop-up and history without waiting for an external alert.
 - Optional Calendar tab, disabled by default, with a passive Calendar Plus event preview when available.
 - Individually selectable CPU, RAM, GPU, network, and disk-space cards. Disk space defaults off; the disk target remains C:.
-- Inherited timer, volume, battery, Bluetooth, clipboard, privacy indicators, weather, and game-overlay options.
+- Inherited timer, volume, battery, Bluetooth, clipboard, privacy indicators, weather, and game-overlay options. Weather uses separate day and night icons for clear and partly cloudy conditions, and distinct condition icons for drizzle, rain, snow, sleet, and hail.
 
 GPU, network, and disk measurements are requested when their visible card or game-overlay metric needs them. Animation defaults to 60 FPS; static idle frames are checked at 10 Hz. In separate 20-second samples on Windows 11 build 26100.6899, the Island process averaged 19% of one CPU core during Spotify playback and 11% while playback was paused. It used about 56 MB working set (32 MB private). These are observations, not a performance guarantee across systems or settings.
 
@@ -38,10 +38,11 @@ Click the compact pill to expand the overlay. Hover expansion is optional and di
 
 - **Compact date:** choose no date, a short date, or a date with the weekday. The date can also appear during media playback.
 - **Visibility:** Expand on hover is controlled in Windhawk settings. Auto-hide can hide the Island after an idle timeout. Its hover-reveal switch applies only to idle auto-hide; instant-hide mode keeps its hover area steady to avoid repeated folding. Full-screen action defaults to Hide and takes effect immediately even when idle auto-hide is set to Never. A separate full-screen hover-reveal switch defaults off. The other full-screen action moves the Island to the largest other monitor when an app or game fills its home monitor; with only one monitor, Move behaves like Hide. The hide/show shortcut can temporarily reveal a hidden Island.
-- **Views:** enter `notifications,calendar,weather,hardware` in any order. The first clock/media view stays in place. In Notifications, Shift+wheel selects an older alert; right-click to copy the selected alert's full message, show a test alert, dismiss the current pop-up, or clear history.
+- **Views:** enter `notifications,calendar,weather,hardware` in any order. The first clock/media view stays in place. In Notifications, Shift+wheel selects an older alert; click it to inspect the saved details, or right-click to copy them, show a test alert, dismiss the current pop-up, open Windows Reliability Monitor, or clear history. Reliability Monitor can help investigate a crash near the saved capture time, but an unverified shell popup alone does not prove one occurred. Clicking a compact alert pop-up also opens its details.
 - **Media:** the media controls are together near the top of Modules. **Exclude apps from media detection** removes matching sessions from the compact pill and expanded media controls; it is empty by default. Entries are comma-separated and match app IDs, executable names, product names, or executable company names when Windows exposes the owning program. `firefox` or `firefox.exe` excludes Firefox; `riot games` excludes recognized Riot Client, VALORANT, League, Teamfight Tactics, Runeterra, and 2XKO sessions. Matching ignores case, spaces, punctuation, and `.exe`. For an app with an unrelated ID, play its media, right-click the Island, choose **Copy current media source ID**, and paste that ID into the exclusion setting. **Prevent automatic expansion for these apps** only stops the Island opening automatically; the app can still appear as media. Automatic expansion is disabled by default. A browser playing a show and the same browser playing music may share a source identity.
 - **Hardware:** select the CPU, RAM, GPU, network, and disk-space cards individually. Disk space is disabled by default and currently reports the C: drive.
 - **Calendar:** enable the Calendar tab to make it available in the overlay. Windows Calendar Plus can supply its passive event preview; other Island modules work without that mod.
+- **Weather:** choose an optional city and Celsius or Fahrenheit. The compact pill and expanded weather view use the same current-condition code. The weather provider's location-aware day/night icon selects sun or moon for clear and partly cloudy conditions; readings normally refresh every 15 minutes, so a sunrise or sunset change may appear after the next update.
 
 The overlay is a separate desktop pill. It does not add a button to the Windows taskbar.
 
@@ -49,13 +50,13 @@ The overlay is a separate desktop pill. It does not add a button to the Windows 
 
 Weather is enabled by default and uses wttr.in. With no city configured, the service determines location from the network request. Weather requests use HTTPS only, reject downgrade redirects, and limit response size and read duration. Clipboard and notification previews can display sensitive content on screen and have their own settings.
 
-Island alert history stores the captured app name and full alert text in Windhawk local mod storage until you clear it or turn off the history setting. It can include sensitive text. The Island retains alerts only after it has captured them; it cannot recover an earlier crash message that it never received. It does not independently monitor process or driver crashes, reliably receive every Windows toast, replace Windows Notification Center, or suppress Windows banners. Keep Windows notifications enabled if you want Windows to retain its own notification history; see [Microsoft's notification settings guide](https://support.microsoft.com/en-us/windows/experience/notifications-and-do-not-disturb-in-windows). Do Not Disturb suppression can prevent alerts from entering Island history.
+Island alert history stores the captured app name, alert text, source, time, and available shell-window metadata in Windhawk local mod storage until you clear it or turn off the history setting. It can include sensitive text. Some shell windows expose only a host name such as “Windows Shell Experience Host.” The Island marks these as unverified shell popups with their cause unknown; the process name alone does not establish a crash or restart. Older entries cannot gain details that were never captured. The Island does not independently monitor process or driver crashes, reliably receive every Windows toast, replace Windows Notification Center, or suppress Windows banners. Keep Windows notifications enabled if you want Windows to retain its own notification history; see [Microsoft's notification settings guide](https://support.microsoft.com/en-us/windows/experience/notifications-and-do-not-disturb-in-windows). Do Not Disturb suppression can prevent alerts from entering Island history.
 
 The optional Calendar tab reads a local, unencrypted snapshot from Windows Calendar Plus containing event titles, start/end times, and all-day status. It checks at most once a minute and rejects snapshots older than two hours. Calendar Plus is not required for the overlay; the bridge adds no event editing or reminder notifications.
 
 ## Compatibility and status
 
-Experimental source release. Compilation and the compact-to-expanded clock display have been checked on one Windows 11 installation. The date, timed-hide, timed-hover-reveal, instant-hide hover, independent full-screen Hide and hover controls, full-screen Move and return, and view order were checked live. With Spotify playing, `brave.exe, riot games` in Exclude apps from media detection kept Brave video and Riot Client out of the Island in a live check. Firefox matching passed source-level checks but has not been tested live. The test alert appeared in the pill and history; Until dismissed, dismissal, persistence after disabling and re-enabling the mod, and clearing history passed live checks. A Windows PowerShell toast appeared in Windows but was not captured by the Island on the tested PC, so Windows-wide notification replacement is not claimed. The broader Windows compatibility matrix remains unverified. The overlay runs in a separate Windhawk tool process and is not inserted beside the Start button. File Tray and its drop handlers have been removed.
+Experimental source release. Compilation and the compact-to-expanded clock display have been checked on one Windows 11 installation. The date, timed-hide, timed-hover-reveal, instant-hide hover, independent full-screen Hide and hover controls, full-screen Move and return, and view order were checked live. With Spotify playing, `brave.exe, riot games` in Exclude apps from media detection kept Brave video and Riot Client out of the Island in a live check. Firefox matching passed source-level checks but has not been tested live. The test alert appeared in the pill and history; Until dismissed, dismissal, persistence after disabling and re-enabling the mod, and clearing history passed live checks. Version 0.1.3 adds source and time details and click-to-inspect for history entries, plus location-aware day/night weather icons and more specific precipitation icons; the saved-entry and new-test-alert details windows passed live interaction checks. The weather icon also appeared correctly in a live check. A Windows PowerShell toast appeared in Windows but was not captured by the Island on the tested PC, so Windows-wide notification replacement is not claimed. The broader Windows compatibility matrix remains unverified. The overlay runs in a separate Windhawk tool process and is not inserted beside the Start button. File Tray and its drop handlers have been removed.
 
 ## Credits and license
 
@@ -1097,6 +1098,7 @@ struct NotificationRecord {
     double receivedAt = 0.0;
     int storageIndex = -1;
     unsigned long long captureSequence = 0;
+    std::wstring context;
 };
 
 struct NotificationSnapshot {
@@ -1105,6 +1107,7 @@ struct NotificationSnapshot {
     std::wstring app;
     std::wstring title;
     std::wstring body;
+    std::wstring context;
     BitmapPixels icon;
     double expiresAt = 0.0;
 };
@@ -1188,6 +1191,7 @@ struct WeatherSnapshot {
     bool hasData = false;
     float temperature = 0.0f;
     int weatherCode = 0;
+    bool isNight = false;
     std::wstring city;
     std::wstring weatherDesc;
     std::wstring windSpeed;
@@ -4580,6 +4584,7 @@ DWORD WINAPI NotificationThreadProc(void*) {
 
                             NotificationSnapshot snapshot;
                             snapshot.active = true;
+                            snapshot.context = L"Source: Windows notification";
                             snapshot.expiresAt = NotificationExpiry();
                             auto appInfo = userNotification.AppInfo();
                             auto displayInfo = appInfo.DisplayInfo();
@@ -5339,6 +5344,7 @@ DWORD WINAPI WeatherThreadProc(void*) {
             Wh_Log(L"Weather: Received response from wttr.in (size: %zu bytes)", wRes.size());
             float temp = 0.0f;
             int code = 0;
+            bool isNight = false;
             std::wstring desc = L"";
             std::wstring windSpeed = L"";
             std::wstring windDir = L"";
@@ -5397,6 +5403,23 @@ DWORD WINAPI WeatherThreadProc(void*) {
                     while (*codeStr == ' ' || *codeStr == '\"') codeStr++;
                     sscanf(codeStr, "%d", &code);
                 }
+                // wttr.in's current-condition icon URL encodes the day/night
+                // variant for the reported location. The clock on this PC can
+                // be in a different time zone from a configured Weather City.
+                // Bound the search to current_condition so a forecast icon
+                // cannot silently decide the current icon.
+                const char* currentEnd = strstr(currentStr, "\"nearest_area\":");
+                if (!currentEnd) currentEnd = strstr(currentStr, "\"weather\":");
+                if (!currentEnd) currentEnd = wRes.c_str() + wRes.size();
+                const char* iconField = strstr(currentStr, "\"weatherIconUrl\":");
+                if (iconField && iconField < currentEnd) {
+                    const char* iconEnd = strstr(iconField, "\"weatherDesc\":");
+                    if (!iconEnd || iconEnd > currentEnd) iconEnd = currentEnd;
+                    const char* nightMarker = strstr(iconField, "_night.");
+                    const char* dayMarker = strstr(iconField, "_day.");
+                    if (nightMarker && nightMarker < iconEnd) isNight = true;
+                    else if (dayMarker && dayMarker < iconEnd) isNight = false;
+                }
 
                 const char* descStr = strstr(currentStr, "\"weatherDesc\":");
                 if (descStr) {
@@ -5448,6 +5471,7 @@ DWORD WINAPI WeatherThreadProc(void*) {
                 g_state.weather.hasData = true;
                 g_state.weather.temperature = temp;
                 g_state.weather.weatherCode = code;
+                g_state.weather.isNight = isNight;
                 if (!cityOverride.empty()) g_state.weather.city = cityOverride;
                 else g_state.weather.city = cityLabel;
                 g_state.weather.weatherDesc = desc;
@@ -6209,6 +6233,16 @@ bool IsLikelyToastWindow(HWND hwnd, const wchar_t* className, const wchar_t* tit
     return false;
 }
 
+std::wstring AlertCapturedAt() {
+    SYSTEMTIME localTime{};
+    GetLocalTime(&localTime);
+    wchar_t text[48];
+    swprintf_s(text, L"%04u-%02u-%02u %02u:%02u:%02u local",
+               localTime.wYear, localTime.wMonth, localTime.wDay,
+               localTime.wHour, localTime.wMinute, localTime.wSecond);
+    return text;
+}
+
 void SaveNotificationLocked(const NotificationSnapshot& notification) {
     if (notification.active && !g_manuallyHidden.load(std::memory_order_relaxed)) {
         g_hotkeyUnhideUntil.store(std::max(g_hotkeyUnhideUntil.load(), notification.expiresAt));
@@ -6220,14 +6254,20 @@ void SaveNotificationLocked(const NotificationSnapshot& notification) {
     if (notification.captureSequence == 0 && !history.empty() && history.back().app == notification.app &&
         history.back().title == notification.title && now - history.back().receivedAt < 3.0) return;
     const std::wstring savedTitle = notification.title.empty() ? L"Notification details unavailable" : notification.title;
-    history.push_back({notification.app, savedTitle, now, -1, notification.captureSequence});
+    const std::wstring context =
+        (notification.context.empty() ? L"Source: Island alert" : notification.context) +
+        L"\r\nCaptured: " + AlertCapturedAt();
+    history.push_back({notification.app, savedTitle, now, -1,
+                       notification.captureSequence, context});
     const int index = Wh_GetIntValue(L"IslandAlertHistoryCount", 0);
     if (index >= 0 && index < 100000) {
-        wchar_t appKey[48], titleKey[48];
+        wchar_t appKey[48], titleKey[48], contextKey[48];
         swprintf_s(appKey, L"IslandAlertApp%08d", index);
         swprintf_s(titleKey, L"IslandAlertTitle%08d", index);
+        swprintf_s(contextKey, L"IslandAlertContext%08d", index);
         if (Wh_SetStringValue(appKey, notification.app.c_str()) &&
-            Wh_SetStringValue(titleKey, savedTitle.c_str())) {
+            Wh_SetStringValue(titleKey, savedTitle.c_str()) &&
+            Wh_SetStringValue(contextKey, context.c_str())) {
             if (Wh_SetIntValue(L"IslandAlertHistoryCount", index + 1))
                 history.back().storageIndex = index;
         }
@@ -6237,11 +6277,13 @@ void SaveNotificationLocked(const NotificationSnapshot& notification) {
 void ClearStoredNotificationHistory() {
     const int count = ClampInt(Wh_GetIntValue(L"IslandAlertHistoryCount", 0), 0, 100000);
     for (int index = 0; index < count; ++index) {
-        wchar_t appKey[48], titleKey[48];
+        wchar_t appKey[48], titleKey[48], contextKey[48];
         swprintf_s(appKey, L"IslandAlertApp%08d", index);
         swprintf_s(titleKey, L"IslandAlertTitle%08d", index);
+        swprintf_s(contextKey, L"IslandAlertContext%08d", index);
         Wh_DeleteValue(appKey);
         Wh_DeleteValue(titleKey);
+        Wh_DeleteValue(contextKey);
     }
     Wh_DeleteValue(L"IslandAlertHistoryCount");
 }
@@ -6251,22 +6293,27 @@ void LoadStoredNotificationHistory() {
     const int count = ClampInt(Wh_GetIntValue(L"IslandAlertHistoryCount", 0), 0, 100000);
     std::lock_guard lock(g_stateMutex);
     for (int index = 0; index < count; ++index) {
-        wchar_t appKey[48], titleKey[48], app[512]{}, title[8192]{};
+        wchar_t appKey[48], titleKey[48], contextKey[48];
+        wchar_t app[512]{}, title[8192]{}, context[2048]{};
         swprintf_s(appKey, L"IslandAlertApp%08d", index);
         swprintf_s(titleKey, L"IslandAlertTitle%08d", index);
+        swprintf_s(contextKey, L"IslandAlertContext%08d", index);
         Wh_GetStringValue(appKey, app, ARRAYSIZE(app));
+        Wh_GetStringValue(contextKey, context, ARRAYSIZE(context));
         if (Wh_GetStringValue(titleKey, title, ARRAYSIZE(title)))
-            g_notificationHistory.push_back({app, title, -1000.0, index});
+            g_notificationHistory.push_back({app, title, -1000.0, index, 0, context});
     }
 }
 
 void UpdateLastStoredNotificationLocked(const NotificationRecord& item) {
     if (item.storageIndex < 0 || item.storageIndex >= 100000) return;
-    wchar_t appKey[48], titleKey[48];
+    wchar_t appKey[48], titleKey[48], contextKey[48];
     swprintf_s(appKey, L"IslandAlertApp%08d", item.storageIndex);
     swprintf_s(titleKey, L"IslandAlertTitle%08d", item.storageIndex);
+    swprintf_s(contextKey, L"IslandAlertContext%08d", item.storageIndex);
     Wh_SetStringValue(appKey, item.app.c_str());
     Wh_SetStringValue(titleKey, item.title.c_str());
+    Wh_SetStringValue(contextKey, item.context.c_str());
 }
 
 double NotificationExpiry() {
@@ -6293,9 +6340,15 @@ void CaptureShellNotification(HWND hwnd) {
 
     NotificationSnapshot notification;
     notification.active = true;
-    notification.app = L"Notification";
+    notification.app = L"Shell popup";
     notification.captureSequence = ++g_notificationCaptureSequence;
     notification.title = title;
+    std::wstring image;
+    ProcessImageNameForWindow(hwnd, &image);
+    notification.context = L"Source: Unverified shell popup\r\nHost process: " +
+                           (image.empty() ? std::wstring(L"Unknown") : BaseNameFromPath(image)) +
+                           L"\r\nWindow class: " + className +
+                           L"\r\nMessage details were not exposed. This does not establish a crash or restart.";
     notification.expiresAt = NotificationExpiry();
     // Fetch a 64px icon to ensure crisp rendering inside the pill
     notification.icon = GetWindowIconPixels(hwnd, 64);
@@ -6315,7 +6368,8 @@ void CaptureShellNotification(HWND hwnd) {
 
     // Spawn a background thread to extract the full rich text body of the toast using UI Automation.
     // Modern Windows Toasts often only provide the App Name via GetWindowTextW, leaving the body hidden in the XAML tree.
-    QueueBackgroundWork(1, true, [hwnd, captureSequence]() {
+    const std::wstring windowTitle = title;
+    QueueBackgroundWork(1, true, [hwnd, captureSequence, windowTitle]() {
         Sleep(400); // Give the heavy UWP XAML tree enough time to fully construct the text nodes
         HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
         if (SUCCEEDED(hr)) {
@@ -6349,7 +6403,8 @@ void CaptureShellNotification(HWND hwnd) {
                                     if (chunk != L"Notification" && chunk != L"New notification") {
                                         if (appName.empty()) {
                                             appName = chunk;
-                                        } else {
+                                        } else if (!EqualsNoCase(chunk, appName) &&
+                                                   !EqualsNoCase(chunk, windowTitle)) {
                                             if (!fullText.empty()) fullText += L"  -  ";
                                             fullText += chunk;
                                         }
@@ -6366,12 +6421,27 @@ void CaptureShellNotification(HWND hwnd) {
                             appName = L"Notification";
                         }
 
-                        if (!fullText.empty()) {
+                        // A host/window name alone is not the notification's message.
+                        // In particular, shell XAML popups often expose only
+                        // "Windows Shell Experience Host" to UI Automation.
+                        const std::wstring normalizedText = ToLowerCopy(fullText);
+                        const bool meaningfulText = !fullText.empty() &&
+                            normalizedText != ToLowerCopy(windowTitle) &&
+                            normalizedText != ToLowerCopy(appName) &&
+                            normalizedText != L"windows shell experience host";
+                        if (meaningfulText) {
                             std::lock_guard lock(g_stateMutex);
                             for (auto& item : g_notificationHistory) {
                                 if (item.captureSequence == captureSequence) {
                                     if (!appName.empty()) item.app = appName;
                                     item.title = fullText;
+                                    const std::wstring unavailable =
+                                        L"Message details were not exposed. This does not establish a crash or restart.";
+                                    const size_t pos = item.context.find(unavailable);
+                                    if (pos != std::wstring::npos) {
+                                        item.context.replace(pos, unavailable.size(),
+                                            L"Message text captured from the popup's accessibility tree.");
+                                    }
                                     UpdateLastStoredNotificationLocked(item);
                                     break;
                                 }
@@ -6835,6 +6905,32 @@ bool CopyIslandText(HWND hwnd, const std::wstring& value) {
     return copied;
 }
 
+void ShowIslandAlertDetails(HWND hwnd) {
+    NotificationRecord item;
+    {
+        std::lock_guard lock(g_stateMutex);
+        const int page = g_notificationHistoryPage.load();
+        if (page < 0 || static_cast<size_t>(page) >= g_notificationHistory.size()) {
+            return;
+        }
+        item = g_notificationHistory[g_notificationHistory.size() - 1 - page];
+    }
+
+    std::wstring details = L"App: " +
+        (item.app.empty() ? std::wstring(L"Unknown") : item.app) +
+        L"\r\nMessage: " + item.title + L"\r\n\r\n";
+    details += item.context.empty()
+        ? L"No source or capture details were saved for this older entry. "
+          L"The process name alone cannot identify a crash, restart, or its cause."
+        : item.context;
+    if (details.size() > 3500) {
+        details.resize(3500);
+        details += L"\r\n\r\n[Display shortened. Right-click the Island to copy the saved alert text.]";
+    }
+    MessageBoxW(hwnd, details.c_str(), L"Island alert details",
+                MB_OK | MB_ICONINFORMATION | MB_TOPMOST);
+}
+
 void ShowContextMenu(HWND hwnd, POINT screenPoint) {
     bool timerActive = false;
     bool timerRunning = false;
@@ -6900,6 +6996,7 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
     AppendMenuW(menu, MF_STRING, 14, L"Show test alert");
     AppendMenuW(menu, MF_STRING, 15, L"Dismiss current alert");
     AppendMenuW(menu, MF_STRING, 16, L"Copy shown Island alert");
+    AppendMenuW(menu, MF_STRING, 18, L"Open Windows Reliability Monitor");
     AppendMenuW(menu, MF_STRING, 13, L"Clear Island alert history");
 
     SetForegroundWindow(hwnd);
@@ -7049,6 +7146,7 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
                 if (page >= 0 && static_cast<size_t>(page) < history.size()) {
                     const auto& item = history[history.size() - 1 - page];
                     details = item.app.empty() ? item.title : item.app + L"\r\n" + item.title;
+                    if (!item.context.empty()) details += L"\r\n\r\n" + item.context;
                 }
             }
             CopyIslandText(hwnd, details);
@@ -7063,6 +7161,10 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
             CopyIslandText(hwnd, source);
             break;
         }
+        case 18:
+            ShellExecuteW(hwnd, L"open", L"perfmon.exe", L"/rel", nullptr,
+                          SW_SHOWNORMAL);
+            break;
         case 30:
             StartFocusTimer(25, false);
             break;
@@ -7103,37 +7205,49 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
 // can never fall back to a missing-glyph box the way a font-dependent icon can.
 enum class WeatherVisual {
     Clear,
+    ClearNight,
     PartlyCloudy,
+    PartlyCloudyNight,
     Cloudy,
     Fog,
     Storm,
+    Drizzle,
     Rain,
+    FreezingRain,
     Snow,
+    Sleet,
+    Hail,
     Unknown,
 };
 
 // Groupings mirror GetWeatherIconAndText so both stay keyed off the same WWO
 // weather codes.
-WeatherVisual WeatherVisualFromCode(int code) {
+WeatherVisual WeatherVisualFromCode(int code, bool isNight) {
     switch (code) {
         case 113:
-            return WeatherVisual::Clear;
+            return isNight ? WeatherVisual::ClearNight : WeatherVisual::Clear;
         case 116:
-            return WeatherVisual::PartlyCloudy;
+            return isNight ? WeatherVisual::PartlyCloudyNight : WeatherVisual::PartlyCloudy;
         case 119: case 122:
             return WeatherVisual::Cloudy;
         case 143: case 248: case 260:
             return WeatherVisual::Fog;
         case 200: case 386: case 389: case 392: case 395:
             return WeatherVisual::Storm;
-        case 176: case 263: case 266: case 281: case 284: case 293: case 296:
-        case 299: case 302: case 305: case 308: case 311: case 314: case 353:
-        case 356: case 359:
+        case 263: case 266:
+            return WeatherVisual::Drizzle;
+        case 176: case 293: case 296: case 299: case 302: case 305:
+        case 308: case 353: case 356: case 359:
             return WeatherVisual::Rain;
-        case 179: case 182: case 185: case 227: case 230: case 317: case 320:
-        case 323: case 326: case 329: case 332: case 335: case 338: case 350:
-        case 362: case 365: case 368: case 371:
+        case 185: case 281: case 284: case 311: case 314:
+            return WeatherVisual::FreezingRain;
+        case 179: case 227: case 230: case 323: case 326: case 329:
+        case 332: case 335: case 338: case 368: case 371:
             return WeatherVisual::Snow;
+        case 182: case 317: case 320: case 362: case 365:
+            return WeatherVisual::Sleet;
+        case 350: case 374: case 377:
+            return WeatherVisual::Hail;
         default:
             return WeatherVisual::Unknown;
     }
@@ -7474,7 +7588,7 @@ class Renderer {
             if (hasData) {
                 std::wstring icon = L"\U0001F321\uFE0F";
                 std::wstring desc = state.weather.weatherDesc;
-                GetWeatherIconAndText(state.weather.weatherCode, icon, desc);
+                GetWeatherIconAndText(state.weather.weatherCode, state.weather.isNight, icon, desc);
                 swprintf_s(label, L"%s %.0f\x00B0", icon.c_str(), state.weather.temperature);
             } else {
                 wcscpy_s(label, ARRAYSIZE(label), L"\U0001F321\uFE0F --\x00B0");
@@ -8377,15 +8491,20 @@ class Renderer {
         accentBrush_->SetOpacity(1.0f);
     }
 
-    static void GetWeatherIconAndText(int code, std::wstring& icon, std::wstring& text) {
+    static void GetWeatherIconAndText(int code, bool isNight, std::wstring& icon, std::wstring& text) {
+        (void)text;
         switch (code) {
-            case 113: icon = L"☀️"; break;
-            case 116: icon = L"⛅"; break;
+            case 113: icon = isNight ? L"🌙" : L"☀️"; break;
+            case 116: icon = isNight ? L"🌙☁️" : L"⛅"; break;
             case 119: case 122: icon = L"☁️"; break;
             case 143: case 248: case 260: icon = L"🌫️"; break;
             case 200: case 386: case 389: case 392: case 395: icon = L"⛈️"; break;
-            case 176: case 263: case 266: case 281: case 284: case 293: case 296: case 299: case 302: case 305: case 308: case 311: case 314: case 353: case 356: case 359: icon = L"🌧️"; break;
-            case 179: case 182: case 185: case 227: case 230: case 317: case 320: case 323: case 326: case 329: case 332: case 335: case 338: case 350: case 362: case 365: case 368: case 371: icon = L"❄️"; break;
+            case 263: case 266: icon = L"☁️💧"; break;
+            case 176: case 293: case 296: case 299: case 302: case 305: case 308: case 353: case 356: case 359: icon = L"🌧️"; break;
+            case 185: case 281: case 284: case 311: case 314: icon = L"🌧️🧊"; break;
+            case 179: case 227: case 230: case 323: case 326: case 329: case 332: case 335: case 338: case 368: case 371: icon = L"🌨️"; break;
+            case 182: case 317: case 320: case 362: case 365: icon = L"🌧️❄️"; break;
+            case 350: case 374: case 377: icon = L"🧊"; break;
             default: icon = L"🌡️"; break;
         }
     }
@@ -8638,6 +8757,24 @@ class Renderer {
         }
     }
 
+    void DrawMoonShape(D2D1_POINT_2F c, float s, ID2D1Brush* brush) {
+        ComPtr<ID2D1PathGeometry> moon;
+        if (FAILED(d2dFactory_->CreatePathGeometry(&moon)) || !moon) return;
+        ComPtr<ID2D1GeometrySink> sink;
+        if (FAILED(moon->Open(&sink)) || !sink) return;
+        sink->BeginFigure(D2D1::Point2F(c.x + 0.13f * s, c.y - 0.39f * s), D2D1_FIGURE_BEGIN_FILLED);
+        sink->AddBezier(D2D1::BezierSegment(
+            D2D1::Point2F(c.x - 0.49f * s, c.y - 0.22f * s),
+            D2D1::Point2F(c.x - 0.42f * s, c.y + 0.40f * s),
+            D2D1::Point2F(c.x + 0.14f * s, c.y + 0.39f * s)));
+        sink->AddBezier(D2D1::BezierSegment(
+            D2D1::Point2F(c.x - 0.09f * s, c.y + 0.22f * s),
+            D2D1::Point2F(c.x - 0.12f * s, c.y - 0.18f * s),
+            D2D1::Point2F(c.x + 0.13f * s, c.y - 0.39f * s)));
+        sink->EndFigure(D2D1_FIGURE_END_CLOSED);
+        if (SUCCEEDED(sink->Close())) target_->FillGeometry(moon.Get(), brush);
+    }
+
     void DrawLightningShape(D2D1_POINT_2F c, float s, ID2D1Brush* brush) {
         ComPtr<ID2D1PathGeometry> bolt;
         if (FAILED(d2dFactory_->CreatePathGeometry(&bolt)) || !bolt) {
@@ -8669,12 +8806,20 @@ class Renderer {
                 DrawSunShape(center, s, strong, 0.28f);
                 break;
 
+            case WeatherVisual::ClearNight:
+                DrawMoonShape(center, s, strong);
+                break;
+
             case WeatherVisual::PartlyCloudy: {
                 // Sun peeking out behind the cloud's upper-left.
                 DrawSunShape(D2D1::Point2F(center.x - 0.20f * s, center.y - 0.20f * s), s * 0.62f, soft, 0.30f);
                 DrawCloudShape(D2D1::Point2F(center.x + 0.05f * s, center.y + 0.06f * s), s * 0.92f, strong);
                 break;
             }
+            case WeatherVisual::PartlyCloudyNight:
+                DrawMoonShape(D2D1::Point2F(center.x - 0.20f * s, center.y - 0.20f * s), s * 0.66f, soft);
+                DrawCloudShape(D2D1::Point2F(center.x + 0.05f * s, center.y + 0.06f * s), s * 0.92f, strong);
+                break;
 
             case WeatherVisual::Cloudy:
                 DrawCloudShape(D2D1::Point2F(center.x, center.y - 0.06f * s), s, soft);
@@ -8704,6 +8849,26 @@ class Renderer {
                     const float y = center.y + 0.24f * s;
                     target_->DrawLine(D2D1::Point2F(x + 0.05f * s, y),
                                       D2D1::Point2F(x - 0.03f * s, y + 0.26f * s), soft, stroke);
+                }
+                break;
+            }
+
+            case WeatherVisual::Drizzle:
+            case WeatherVisual::FreezingRain:
+            case WeatherVisual::Sleet:
+            case WeatherVisual::Hail: {
+                DrawCloudShape(D2D1::Point2F(center.x, center.y - 0.18f * s), s * 0.92f, strong);
+                for (int i = 0; i < 3; ++i) {
+                    const float x = center.x + (-0.22f + 0.22f * static_cast<float>(i)) * s;
+                    const float y = center.y + (0.33f + (i == 1 ? 0.05f : 0.0f)) * s;
+                    if ((visual == WeatherVisual::Sleet && i == 1) ||
+                        (visual == WeatherVisual::FreezingRain && i != 1)) {
+                        target_->DrawLine(D2D1::Point2F(x + 0.05f * s, y - 0.05f * s),
+                                          D2D1::Point2F(x - 0.03f * s, y + 0.18f * s), soft, stroke);
+                    } else {
+                        const float radius = (visual == WeatherVisual::Drizzle ? 0.035f : 0.075f) * s;
+                        target_->FillEllipse(D2D1::Ellipse(D2D1::Point2F(x, y), radius, radius), soft);
+                    }
                 }
                 break;
             }
@@ -8926,7 +9091,7 @@ class Renderer {
         const float readingCenterY = rect.top + 82.0f * scale;
         if (hasWeather && iconStrong && iconSoft) {
             DrawWeatherIcon(D2D1::Point2F(heroLeft + 22.0f * scale, readingCenterY), 44.0f * scale,
-                            WeatherVisualFromCode(state.weather.weatherCode),
+                            WeatherVisualFromCode(state.weather.weatherCode, state.weather.isNight),
                             iconStrong.Get(), iconSoft.Get());
         } else if (iconStrong && iconSoft) {
             DrawWeatherIcon(D2D1::Point2F(heroLeft + 22.0f * scale, readingCenterY), 44.0f * scale,
@@ -9123,9 +9288,17 @@ class Renderer {
                 textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
             smallTextFormat_->SetWordWrapping(DWRITE_WORD_WRAPPING_WRAP);
             target_->DrawTextW(item.title.c_str(), static_cast<UINT32>(item.title.size()), smallTextFormat_.Get(),
-                D2D1::RectF(left, rect.top + 64.0f * scale, right, rect.bottom - 25.0f * scale),
+                D2D1::RectF(left, rect.top + 64.0f * scale, right, rect.bottom - 48.0f * scale),
                 textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
             smallTextFormat_->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+            const wchar_t* detailHint = item.context.empty()
+                ? L"Older alert; details unavailable. Click to inspect."
+                : item.context.find(L"Unverified shell popup") != std::wstring::npos
+                    ? L"Shell popup; cause unknown. Click for details."
+                    : L"Click for full details";
+            target_->DrawTextW(detailHint, static_cast<UINT32>(wcslen(detailHint)), smallTextFormat_.Get(),
+                D2D1::RectF(left, rect.bottom - 44.0f * scale, right, rect.bottom - 26.0f * scale),
+                textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
             wchar_t footer[100];
             swprintf_s(footer, L"%d/%d  |  Shift+wheel  |  Right-click: copy", selected + 1, total);
             target_->DrawTextW(footer, static_cast<UINT32>(wcslen(footer)), smallTextFormat_.Get(),
@@ -9474,7 +9647,7 @@ class Renderer {
         std::wstring wText = Loc(L"Loading...");
         if (hasWeather) {
             wText = state.weather.weatherDesc;
-            GetWeatherIconAndText(state.weather.weatherCode, wIcon, wText);
+            GetWeatherIconAndText(state.weather.weatherCode, state.weather.isNight, wIcon, wText);
         }
 
         // Fade the compact strip into the dashboard as both width and height
@@ -10045,7 +10218,7 @@ class Renderer {
                 std::wstring wIcon = L"🌡️"; std::wstring wText = Loc(L"Loading...");
                 if (hasWeather) {
                     wText = state.weather.weatherDesc;
-                    GetWeatherIconAndText(state.weather.weatherCode, wIcon, wText);
+                    GetWeatherIconAndText(state.weather.weatherCode, state.weather.isNight, wIcon, wText);
                 }
                 DrawWeatherDashboard(state, rect, settings, now, 1.0f, hasWeather, wIcon, wText);
             } else if (activeTabId == 3) {
@@ -11917,6 +12090,16 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                     !kinds.empty() && kinds[0] == IslandKind::Idle &&
                     ((*GetSettingsSnapshot()).gameOverlay || Wh_GetIntValue(L"GameOverlayPinned", 0) != 0);
 
+                RECT clientRect;
+                GetClientRect(hwnd, &clientRect);
+                const float height = static_cast<float>(clientRect.bottom - clientRect.top);
+                if (height <= 90.0f && !kinds.empty() &&
+                    kinds[0] == IslandKind::Notification) {
+                    g_notificationHistoryPage = 0;
+                    ShowIslandAlertDetails(hwnd);
+                    return 0;
+                }
+
                 bool expanded = Wh_GetIntValue(L"PinnedExpanded", 0) != 0 || g_clickExpanded.load();
                 if (!gameMetricsPresent && !(*GetSettingsSnapshot()).expandOnHover && !expanded) {
                     g_clickExpanded = true;
@@ -11924,11 +12107,12 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                     return 0; // consumed click to expand
                 }
 
-                RECT clientRect;
-                GetClientRect(hwnd, &clientRect);
-                const float height = static_cast<float>(clientRect.bottom - clientRect.top);
-
                 const int currentTab = NormalizedTabIndex((*GetSettingsSnapshot()));
+                const auto tabs = ActiveDashboardTabs((*GetSettingsSnapshot()));
+                if (height > 50.0f && tabs[currentTab] == 4) {
+                    ShowIslandAlertDetails(hwnd);
+                    return 0;
+                }
 
                 const MediaContentPoint cp = MediaContentFromClient(xPos, yPos);
 
