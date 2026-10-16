@@ -2,7 +2,7 @@
 // @id              desktop-island-personal
 // @name            Desktop Island
 // @description     Independent desktop pill with focused media, calendar and hardware controls
-// @version         0.1.3
+// @version         0.1.4
 // @author          Jip
 // @github          https://github.com/iiRedPanda
 // @include         windhawk.exe
@@ -28,7 +28,7 @@ A standalone Windhawk desktop overlay for media controls, clock/date, optional c
 - Alerts captured by the Island appear from the pill for 4, 8, or 12 seconds, or stay until dismissed. When history is enabled, captured alerts are kept across restarts until cleared. The Notifications view shows one entry at a time; click an entry for its full saved text, source, and capture time, or use the right-click menu to copy them. A test alert checks the pop-up and history without waiting for an external alert.
 - Optional Calendar tab, disabled by default, with a passive Calendar Plus event preview when available.
 - Individually selectable CPU, RAM, GPU, network, and disk-space cards. Disk space defaults off; the disk target remains C:.
-- Inherited timer, volume, battery, Bluetooth, clipboard, privacy indicators, weather, and game-overlay options. Weather uses separate day and night icons for clear and partly cloudy conditions, and distinct condition icons for drizzle, rain, snow, sleet, and hail.
+- Inherited timer, volume, battery, Bluetooth, clipboard, privacy indicators, weather, and game-overlay options. Weather uses separate day and night icons for clear and partly cloudy conditions, distinct precipitation icons, a one-decimal current temperature when available, and selectable wind, feels-like, humidity, forecast-high, and forecast-low cards.
 
 GPU, network, and disk measurements are requested when their visible card or game-overlay metric needs them. Animation defaults to 60 FPS; static idle frames are checked at 10 Hz. In separate 20-second samples on Windows 11 build 26100.6899, the Island process averaged 19% of one CPU core during Spotify playback and 11% while playback was paused. It used about 56 MB working set (32 MB private). These are observations, not a performance guarantee across systems or settings.
 
@@ -42,13 +42,13 @@ Click the compact pill to expand the overlay. Hover expansion is optional and di
 - **Media:** the media controls are together near the top of Modules. **Exclude apps from media detection** removes matching sessions from the compact pill and expanded media controls; it is empty by default. Entries are comma-separated and match app IDs, executable names, product names, or executable company names when Windows exposes the owning program. `firefox` or `firefox.exe` excludes Firefox; `riot games` excludes recognized Riot Client, VALORANT, League, Teamfight Tactics, Runeterra, and 2XKO sessions. Matching ignores case, spaces, punctuation, and `.exe`. For an app with an unrelated ID, play its media, right-click the Island, choose **Copy current media source ID**, and paste that ID into the exclusion setting. **Prevent automatic expansion for these apps** only stops the Island opening automatically; the app can still appear as media. Automatic expansion is disabled by default. A browser playing a show and the same browser playing music may share a source identity.
 - **Hardware:** select the CPU, RAM, GPU, network, and disk-space cards individually. Disk space is disabled by default and currently reports the C: drive.
 - **Calendar:** enable the Calendar tab to make it available in the overlay. Windows Calendar Plus can supply its passive event preview; other Island modules work without that mod.
-- **Weather:** choose an optional city and Celsius or Fahrenheit. The compact pill and expanded weather view use the same current-condition code. The weather provider's location-aware day/night icon selects sun or moon for clear and partly cloudy conditions; readings normally refresh every 15 minutes, so a sunrise or sunset change may appear after the next update.
+- **Weather:** choose an optional city and Celsius or Fahrenheit. Each of the five expanded cards can be switched on or off; wind, feels like, and humidity retain their previous defaults, while today's forecast high and low default off. The compact pill always shows the current temperature when Weather is enabled. Open-Meteo supplies the decimal current reading, forecast high/low, current condition, and day/night state; if it is unavailable, the Island uses wttr.in's whole-degree reading. Readings normally refresh every 15 minutes.
 
 The overlay is a separate desktop pill. It does not add a button to the Windows taskbar.
 
 ## Data and privacy
 
-Weather is enabled by default and uses wttr.in. With no city configured, the service determines location from the network request. Weather requests use HTTPS only, reject downgrade redirects, and limit response size and read duration. Clipboard and notification previews can display sensitive content on screen and have their own settings.
+Weather is enabled by default. wttr.in resolves the selected city or, when no city is configured, estimates location from the network request. Open-Meteo then receives the location coordinates for its current and daily forecast readings. Both requests use HTTPS, reject downgrade redirects, and limit response size and read duration. The Weather view labels the active source. Weather data from [Open-Meteo](https://open-meteo.com/) is provided under [CC BY 4.0](https://open-meteo.com/en/terms); the Island changes units, rounds the displayed values to one decimal, and maps condition codes to its own icons. A one-decimal forecast value is more detailed than wttr.in's whole-degree value, but it may still differ from another weather app or a local thermometer. Clipboard and notification previews can display sensitive content on screen and have their own settings.
 
 Island alert history stores the captured app name, alert text, source, time, and available shell-window metadata in Windhawk local mod storage until you clear it or turn off the history setting. It can include sensitive text. Some shell windows expose only a host name such as “Windows Shell Experience Host.” The Island marks these as unverified shell popups with their cause unknown; the process name alone does not establish a crash or restart. Older entries cannot gain details that were never captured. The Island does not independently monitor process or driver crashes, reliably receive every Windows toast, replace Windows Notification Center, or suppress Windows banners. Keep Windows notifications enabled if you want Windows to retain its own notification history; see [Microsoft's notification settings guide](https://support.microsoft.com/en-us/windows/experience/notifications-and-do-not-disturb-in-windows). Do Not Disturb suppression can prevent alerts from entering Island history.
 
@@ -56,7 +56,7 @@ The optional Calendar tab reads a local, unencrypted snapshot from Windows Calen
 
 ## Compatibility and status
 
-Experimental source release. Compilation and the compact-to-expanded clock display have been checked on one Windows 11 installation. The date, timed-hide, timed-hover-reveal, instant-hide hover, independent full-screen Hide and hover controls, full-screen Move and return, and view order were checked live. With Spotify playing, `brave.exe, riot games` in Exclude apps from media detection kept Brave video and Riot Client out of the Island in a live check. Firefox matching passed source-level checks but has not been tested live. The test alert appeared in the pill and history; Until dismissed, dismissal, persistence after disabling and re-enabling the mod, and clearing history passed live checks. Version 0.1.3 adds source and time details and click-to-inspect for history entries, plus location-aware day/night weather icons and more specific precipitation icons; the saved-entry and new-test-alert details windows passed live interaction checks. The weather icon also appeared correctly in a live check. A Windows PowerShell toast appeared in Windows but was not captured by the Island on the tested PC, so Windows-wide notification replacement is not claimed. The broader Windows compatibility matrix remains unverified. The overlay runs in a separate Windhawk tool process and is not inserted beside the Start button. File Tray and its drop handlers have been removed.
+Experimental source release. Compilation and the compact-to-expanded clock display have been checked on one Windows 11 installation. The date, timed-hide, timed-hover-reveal, instant-hide hover, independent full-screen Hide and hover controls, full-screen Move and return, and view order were checked live. With Spotify playing, `brave.exe, riot games` in Exclude apps from media detection kept Brave video and Riot Client out of the Island in a live check. Firefox matching passed source-level checks but has not been tested live. The test alert appeared in the pill and history; Until dismissed, dismissal, persistence after disabling and re-enabling the mod, and clearing history passed live checks. Version 0.1.3 adds source and time details and click-to-inspect for history entries, plus location-aware day/night weather icons and more specific precipitation icons; the saved-entry and new-test-alert details windows passed live interaction checks. The weather icon also appeared correctly in a live check. Version 0.1.4 adds per-card weather switches, forecast high/low, and one-decimal Open-Meteo readings with whole-degree fallback; its one-decimal reading and metric switches passed a live check. The revised card-label layout and source label await a repeat visual check. A Windows PowerShell toast appeared in Windows but was not captured by the Island on the tested PC, so Windows-wide notification replacement is not claimed. The broader Windows compatibility matrix remains unverified. The overlay runs in a separate Windhawk tool process and is not inserted beside the Start button. File Tray and its drop handlers have been removed.
 
 ## Credits and license
 
@@ -431,6 +431,16 @@ SOFTWARE.
   - WeatherFahrenheit: false
     $name: Use Fahrenheit
     $description: Display weather temperature and wind speed in imperial units.
+  - WeatherShowWind: true
+    $name: Weather card - wind
+  - WeatherShowFeelsLike: true
+    $name: Weather card - feels like
+  - WeatherShowHumidity: true
+    $name: Weather card - humidity
+  - WeatherShowHigh: false
+    $name: Weather card - forecast high today
+  - WeatherShowLow: false
+    $name: Weather card - forecast low today
   - Language: auto
     $name: Language
     $description: Language for the island's own text labels. Auto follows your Windows display language.
@@ -967,6 +977,11 @@ struct Settings {
     bool weather = true;
     std::wstring weatherCity;
     bool weatherFahrenheit = false;
+    bool weatherShowWind = true;
+    bool weatherShowFeelsLike = true;
+    bool weatherShowHumidity = true;
+    bool weatherShowHigh = false;
+    bool weatherShowLow = false;
     int autoHideIdleSeconds = 0;
     bool autoHideFullscreen = true;
     bool fullscreenMove = false;
@@ -1190,6 +1205,7 @@ struct Activity {
 struct WeatherSnapshot {
     bool hasData = false;
     float temperature = 0.0f;
+    bool preciseCurrent = false;
     int weatherCode = 0;
     bool isNight = false;
     std::wstring city;
@@ -1198,6 +1214,11 @@ struct WeatherSnapshot {
     std::wstring windDir;
     std::wstring humidity;
     std::wstring feelsLike;
+    float high = 0.0f;
+    float low = 0.0f;
+    bool hasHigh = false;
+    bool hasLow = false;
+    bool preciseDaily = false;
     double lastUpdated = 0.0;
 };
 
@@ -1644,6 +1665,8 @@ const wchar_t* Loc(const wchar_t* english) {
         {L"Wind", {nullptr, L"Vent", L"Viento", L"Wind", L"Vento", L"Vento", L"Ветер", L"Rüzgar", L"हवा", L"风速", L"風", L"바람"}},
         {L"Feels Like", {nullptr, L"Ressenti", L"Sensación", L"Gefühlt", L"Sensação", L"Percepita", L"Ощущается", L"Hissedilen", L"महसूस", L"体感", L"体感", L"체감"}},
         {L"Humidity", {nullptr, L"Humidité", L"Humedad", L"Luftfeuchte", L"Umidade", L"Umidità", L"Влажность", L"Nem", L"नमी", L"湿度", L"湿度", L"습도"}},
+        {L"High", {nullptr, L"Max", L"Máxima", L"Höchst", L"Máxima", L"Massima", L"Макс.", L"En yüksek", L"अधिकतम", L"最高", L"最高", L"최고"}},
+        {L"Low", {nullptr, L"Min", L"Mínima", L"Tiefst", L"Mínima", L"Minima", L"Мин.", L"En düşük", L"न्यूनतम", L"最低", L"最低", L"최저"}},
         {L"Drag files here", {nullptr, L"Déposez des fichiers ici", L"Arrastra archivos aquí", L"Dateien hierher ziehen", L"Arraste arquivos aqui", L"Trascina i file qui", L"Перетащите файлы сюда", L"Dosyaları buraya sürükleyin", L"फ़ाइलें यहाँ खींचें", L"将文件拖到此处", L"ここにファイルをドラッグ", L"여기에 파일을 끌어다 놓으세요"}},
         {L"No devices", {nullptr, L"Aucun appareil", L"Sin dispositivos", L"Keine Geräte", L"Nenhum dispositivo", L"Nessun dispositivo", L"Нет устройств", L"Cihaz yok", L"कोई डिवाइस नहीं", L"无设备", L"デバイスなし", L"장치 없음"}},
         {L"item", {nullptr, L"élément", L"elemento", L"Element", L"item", L"elemento", L"элемент", L"öğe", L"आइटम", L"项", L"項目", L"항목"}},
@@ -2357,6 +2380,11 @@ void LoadSettings() {
     next.weather = Wh_GetIntSetting(L"Modules.Weather") != 0;
     next.weatherCity = GetStringSettingWithFallback(L"Modules.WeatherCity", L"Weather.WeatherCity", L"CalendarWeather.WeatherCity");
     next.weatherFahrenheit = Wh_GetIntSetting(L"Modules.WeatherFahrenheit") != 0;
+    next.weatherShowWind = Wh_GetIntSetting(L"Modules.WeatherShowWind") != 0;
+    next.weatherShowFeelsLike = Wh_GetIntSetting(L"Modules.WeatherShowFeelsLike") != 0;
+    next.weatherShowHumidity = Wh_GetIntSetting(L"Modules.WeatherShowHumidity") != 0;
+    next.weatherShowHigh = Wh_GetIntSetting(L"Modules.WeatherShowHigh") != 0;
+    next.weatherShowLow = Wh_GetIntSetting(L"Modules.WeatherShowLow") != 0;
     const std::wstring hideSec = GetStringSettingWithFallback(L"Behavior.AutoHideIdleSeconds", L"Appearance.AutoHideIdleSeconds");
     next.autoHideIdleSeconds = hideSec.empty() ? 0 : _wtoi(hideSec.c_str());
     next.unhideOnHover = Wh_GetIntSetting(L"Behavior.UnhideOnHover") != 0;
@@ -2588,13 +2616,15 @@ void LoadSettings() {
     // concurrently (settings thread vs. tray menu on the render thread); without
     // this, both could read the same "old" values and each decide a hotkey
     // re-registration was needed, or neither would.
-    bool cityChanged = false;
+    bool weatherRequestChanged = false;
     bool hotkeySettingChanged = false;
     bool backdropChanged = false;
     bool capsLockChanged = false;
     {
         std::lock_guard lock(g_settingsMutex);
-        cityChanged = next.weatherCity != g_settings.weatherCity;
+        weatherRequestChanged = next.weatherCity != g_settings.weatherCity ||
+            next.weatherFahrenheit != g_settings.weatherFahrenheit ||
+            next.weather != g_settings.weather;
         capsLockChanged = next.capsLock != g_settings.capsLock;
         hotkeySettingChanged =
             next.hideShowHotkeyEnabled != g_settings.hideShowHotkeyEnabled ||
@@ -2608,7 +2638,7 @@ void LoadSettings() {
         std::atomic_store_explicit(&g_settingsSnapshot, std::move(published), std::memory_order_release);
     }
     g_layoutDirty = true;
-    if (cityChanged && g_settingsChangedEvent) {
+    if (weatherRequestChanged && g_settingsChangedEvent) {
         SetEvent(g_settingsChangedEvent);
     }
     // Installs or removes WH_KEYBOARD_LL to match. The keyboard thread would pick
@@ -5303,6 +5333,84 @@ std::wstring PercentEncodeUtf8(const std::wstring& text) {
     return out;
 }
 
+bool WeatherJsonNumber(const char* begin, const char* end, const char* key, double& value) {
+    if (!begin || !end || begin >= end) return false;
+    const char* field = strstr(begin, key);
+    if (!field || field >= end) return false;
+    const char* colon = strchr(field, ':');
+    if (!colon || colon >= end) return false;
+    const char* number = colon + 1;
+    while (number < end && (*number == ' ' || *number == '\t' || *number == '"' ||
+                            *number == '[' || *number == '\r' || *number == '\n')) ++number;
+    if (number >= end) return false;
+    char* after = nullptr;
+    const double parsed = strtod(number, &after);
+    if (after == number || after > end || !std::isfinite(parsed)) return false;
+    value = parsed;
+    return true;
+}
+
+int WmoToWeatherCode(int code) {
+    switch (code) {
+        case 0: return 113;  // Clear
+        case 1: case 2: return 116;
+        case 3: return 122;
+        case 45: case 48: return 248;
+        case 51: case 53: case 55: return 266;
+        case 56: case 57: return 281;
+        case 61: return 296;
+        case 63: return 302;
+        case 65: return 308;
+        case 66: return 311;
+        case 67: return 314;
+        case 71: return 326;
+        case 73: return 332;
+        case 75: return 338;
+        case 77: return 326;
+        case 80: return 353;
+        case 81: return 356;
+        case 82: return 359;
+        case 85: return 368;
+        case 86: return 371;
+        case 95: case 96: case 99: return 389;
+        default: return 0;
+    }
+}
+
+const wchar_t* WmoWeatherDescription(int code) {
+    switch (code) {
+        case 0: return L"Clear sky";
+        case 1: return L"Mainly clear";
+        case 2: return L"Partly cloudy";
+        case 3: return L"Overcast";
+        case 45: case 48: return L"Fog";
+        case 51: case 53: case 55: return L"Drizzle";
+        case 56: case 57: return L"Freezing drizzle";
+        case 61: return L"Light rain";
+        case 63: return L"Rain";
+        case 65: return L"Heavy rain";
+        case 66: case 67: return L"Freezing rain";
+        case 71: return L"Light snow";
+        case 73: return L"Snow";
+        case 75: return L"Heavy snow";
+        case 77: return L"Snow grains";
+        case 80: case 81: case 82: return L"Rain showers";
+        case 85: case 86: return L"Snow showers";
+        case 95: return L"Thunderstorm";
+        case 96: case 99: return L"Thunderstorm with hail";
+        default: return L"Weather unavailable";
+    }
+}
+
+std::wstring WeatherCompassPoint(double degrees) {
+    static constexpr const wchar_t* points[] = {
+        L"N", L"NNE", L"NE", L"ENE", L"E", L"ESE", L"SE", L"SSE",
+        L"S", L"SSW", L"SW", L"WSW", L"W", L"WNW", L"NW", L"NNW"};
+    if (!std::isfinite(degrees)) return L"";
+    const int index = static_cast<int>(std::floor((degrees + 11.25) / 22.5)) & 15;
+    return points[index];
+}
+
 DWORD WINAPI WeatherThreadProc(void*) {
     // Initial delay to avoid slowing down startup
     WaitForSingleObject(g_stopEvent, 3000);
@@ -5343,6 +5451,12 @@ DWORD WINAPI WeatherThreadProc(void*) {
         if (!wRes.empty()) {
             Wh_Log(L"Weather: Received response from wttr.in (size: %zu bytes)", wRes.size());
             float temp = 0.0f;
+            float high = 0.0f;
+            float low = 0.0f;
+            bool hasHigh = false;
+            bool hasLow = false;
+            bool preciseCurrent = false;
+            bool preciseDaily = false;
             int code = 0;
             bool isNight = false;
             std::wstring desc = L"";
@@ -5466,10 +5580,97 @@ DWORD WINAPI WeatherThreadProc(void*) {
                 Wh_Log(L"Weather: Failed to find \"current_condition\" in response.");
             }
 
+            // wttr.in supplies the location (including for automatic IP
+            // location), while Open-Meteo supplies one-decimal current and
+            // daily readings. Keeping the wttr.in reading above as a fallback
+            // avoids inventing a decimal if the second service is unavailable.
+            const char* forecast = strstr(wRes.c_str(), "\"weather\":");
+            if (forecast) {
+                double reading = 0.0;
+                if (WeatherJsonNumber(forecast, wRes.c_str() + wRes.size(),
+                                      isFahrenheit ? "\"maxtempF\"" : "\"maxtempC\"", reading)) {
+                    high = static_cast<float>(reading);
+                    hasHigh = true;
+                }
+                if (WeatherJsonNumber(forecast, wRes.c_str() + wRes.size(),
+                                      isFahrenheit ? "\"mintempF\"" : "\"mintempC\"", reading)) {
+                    low = static_cast<float>(reading);
+                    hasLow = true;
+                }
+            }
+
+            const char* area = strstr(wRes.c_str(), "\"nearest_area\":");
+            if (area) {
+                const char* areaEnd = strstr(area, "\"request\":");
+                if (!areaEnd) areaEnd = wRes.c_str() + wRes.size();
+                double latitude = 0.0, longitude = 0.0;
+                if (WeatherJsonNumber(area, areaEnd, "\"latitude\"", latitude) &&
+                    WeatherJsonNumber(area, areaEnd, "\"longitude\"", longitude) &&
+                    latitude >= -90.0 && latitude <= 90.0 &&
+                    longitude >= -180.0 && longitude <= 180.0) {
+                    const std::wstring path = L"/v1/forecast?latitude=" + std::to_wstring(latitude) +
+                        L"&longitude=" + std::to_wstring(longitude) +
+                        L"&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m,wind_direction_10m"
+                        L"&daily=temperature_2m_max,temperature_2m_min&forecast_days=1&timezone=auto&temperature_unit=" +
+                        (isFahrenheit ? L"fahrenheit" : L"celsius") + L"&wind_speed_unit=" +
+                        (isFahrenheit ? L"mph" : L"kmh");
+                    const std::string precise = HttpGet(L"api.open-meteo.com", path.c_str());
+                    const char* current = strstr(precise.c_str(), "\"current\":");
+                    if (current) {
+                        const char* currentEnd = strchr(current, '}');
+                        double preciseTemp = 0.0, wmo = 0.0, day = 0.0;
+                        if (currentEnd &&
+                            WeatherJsonNumber(current, currentEnd, "\"temperature_2m\"", preciseTemp) &&
+                            WeatherJsonNumber(current, currentEnd, "\"weather_code\"", wmo) &&
+                            WeatherJsonNumber(current, currentEnd, "\"is_day\"", day) &&
+                            WmoToWeatherCode(static_cast<int>(wmo)) != 0 &&
+                            preciseTemp > (isFahrenheit ? -150.0 : -100.0) &&
+                            preciseTemp < (isFahrenheit ? 160.0 : 70.0)) {
+                            temp = static_cast<float>(preciseTemp);
+                            preciseCurrent = true;
+                            code = WmoToWeatherCode(static_cast<int>(wmo));
+                            isNight = day < 0.5;
+                            desc = WmoWeatherDescription(static_cast<int>(wmo));
+                            double value = 0.0;
+                            wchar_t number[32] = {};
+                            if (WeatherJsonNumber(current, currentEnd, "\"wind_speed_10m\"", value) && value >= 0.0) {
+                                swprintf_s(number, L"%.1f", value);
+                                windSpeed = number;
+                            }
+                            if (WeatherJsonNumber(current, currentEnd, "\"wind_direction_10m\"", value))
+                                windDir = WeatherCompassPoint(value);
+                            if (WeatherJsonNumber(current, currentEnd, "\"relative_humidity_2m\"", value) &&
+                                value >= 0.0 && value <= 100.0) {
+                                swprintf_s(number, L"%.0f", value);
+                                humidity = number;
+                            }
+                            if (WeatherJsonNumber(current, currentEnd, "\"apparent_temperature\"", value)) {
+                                swprintf_s(number, L"%.1f", value);
+                                feelsLike = number;
+                            }
+                            const char* daily = strstr(precise.c_str(), "\"daily\":");
+                            const char* dailyEnd = daily ? strchr(daily, '}') : nullptr;
+                            if (dailyEnd && WeatherJsonNumber(daily, dailyEnd, "\"temperature_2m_max\"", value)) {
+                                high = static_cast<float>(value);
+                                hasHigh = true;
+                            }
+                            if (dailyEnd && WeatherJsonNumber(daily, dailyEnd, "\"temperature_2m_min\"", value)) {
+                                low = static_cast<float>(value);
+                                hasLow = true;
+                            }
+                            preciseDaily = hasHigh && hasLow;
+                            weatherCommitted = true;
+                            Wh_Log(L"Weather: precise current reading from Open-Meteo: %.1f", temp);
+                        }
+                    }
+                }
+            }
+
             if (weatherCommitted) {
                 std::lock_guard lock(g_stateMutex);
                 g_state.weather.hasData = true;
                 g_state.weather.temperature = temp;
+                g_state.weather.preciseCurrent = preciseCurrent;
                 g_state.weather.weatherCode = code;
                 g_state.weather.isNight = isNight;
                 if (!cityOverride.empty()) g_state.weather.city = cityOverride;
@@ -5479,6 +5680,11 @@ DWORD WINAPI WeatherThreadProc(void*) {
                 g_state.weather.windDir = windDir;
                 g_state.weather.humidity = humidity;
                 g_state.weather.feelsLike = feelsLike;
+                g_state.weather.high = high;
+                g_state.weather.low = low;
+                g_state.weather.hasHigh = hasHigh;
+                g_state.weather.hasLow = hasLow;
+                g_state.weather.preciseDaily = preciseDaily;
                 g_state.weather.lastUpdated = NowSeconds();
             }
         } else {
@@ -7589,7 +7795,8 @@ class Renderer {
                 std::wstring icon = L"\U0001F321\uFE0F";
                 std::wstring desc = state.weather.weatherDesc;
                 GetWeatherIconAndText(state.weather.weatherCode, state.weather.isNight, icon, desc);
-                swprintf_s(label, L"%s %.0f\x00B0", icon.c_str(), state.weather.temperature);
+                swprintf_s(label, state.weather.preciseCurrent ? L"%s %.1f\x00B0" : L"%s %.0f\x00B0",
+                           icon.c_str(), state.weather.temperature);
             } else {
                 wcscpy_s(label, ARRAYSIZE(label), L"\U0001F321\uFE0F --\x00B0");
             }
@@ -9051,7 +9258,8 @@ class Renderer {
 
     void DrawWeatherDashboard(const SharedState& state, D2D1_RECT_F rect, const Settings& settings, double now, float scale, bool hasWeather, const std::wstring& wIcon, const std::wstring& wText) {
         wchar_t wTemp[32] = {};
-        if (hasWeather) swprintf_s(wTemp, L"%.0f\x00B0", state.weather.temperature);
+        if (hasWeather) swprintf_s(wTemp, state.weather.preciseCurrent ? L"%.1f\x00B0" : L"%.0f\x00B0",
+                                  state.weather.temperature);
         else wcscpy_s(wTemp, L"--\x00B0");
 
         std::wstring city = hasWeather ? state.weather.city : std::wstring(Loc(L"Locating..."));
@@ -9109,7 +9317,7 @@ class Renderer {
         }
 
         const float descTop = rect.top + 120.0f * scale;
-        const float descBottom = rect.top + 162.0f * scale;
+        const float descBottom = std::min(rect.top + 162.0f * scale, rect.bottom - 25.0f * scale);
 
         // Description
         const size_t descLength = desc.length();
@@ -9167,6 +9375,18 @@ class Renderer {
                            textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
         textBrush_->SetOpacity(0.96f);
 
+        // The weather data licence requires attribution. Showing the active
+        // source also makes a whole-degree fallback clear to the user.
+        if (hasWeather && smallTextFormat_) {
+            const wchar_t* source = state.weather.preciseCurrent ? L"Open-Meteo" : L"wttr.in";
+            mutedBrush_->SetOpacity(0.55f);
+            smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+            target_->DrawTextW(source, static_cast<UINT32>(wcslen(source)), smallTextFormat_.Get(),
+                               D2D1::RectF(heroLeft, rect.bottom - 23.0f * scale,
+                                           heroRight, rect.bottom - 5.0f * scale),
+                               mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        }
+
         // Hairline divider, inset from both ends so it reads as a separator
         // rather than a full-height rule.
         ComPtr<ID2D1SolidColorBrush> divider;
@@ -9187,19 +9407,44 @@ class Renderer {
         };
 
         const std::wstring windUnit = settings.weatherFahrenheit ? L" mph" : L" km/h";
-        const Metric metrics[3] = {
-            {0, Loc(L"Wind"),
-             hasWeather ? state.weather.windSpeed + windUnit + L" " + WindDirToArrow(state.weather.windDir)
-                        : std::wstring(L"--")},
-            {1, Loc(L"Feels Like"),
-             hasWeather ? state.weather.feelsLike + L"\x00B0" : std::wstring(L"--")},
-            {2, Loc(L"Humidity"),
-             hasWeather ? state.weather.humidity + L"%" : std::wstring(L"--")},
+        auto TemperatureLabel = [&](float value) {
+            wchar_t label[32] = {};
+            swprintf_s(label, state.weather.preciseDaily ? L"%.1f\x00B0" : L"%.0f\x00B0", value);
+            return std::wstring(label);
         };
+        std::vector<Metric> metrics;
+        metrics.reserve(5);
+        if (settings.weatherShowWind)
+            metrics.push_back({0, Loc(L"Wind"),
+                hasWeather && !state.weather.windSpeed.empty()
+                    ? state.weather.windSpeed + windUnit + L" " + WindDirToArrow(state.weather.windDir)
+                    : std::wstring(L"--")});
+        if (settings.weatherShowFeelsLike)
+            metrics.push_back({1, Loc(L"Feels Like"),
+                hasWeather && !state.weather.feelsLike.empty()
+                    ? state.weather.feelsLike + L"\x00B0" : std::wstring(L"--")});
+        if (settings.weatherShowHumidity)
+            metrics.push_back({2, Loc(L"Humidity"),
+                hasWeather && !state.weather.humidity.empty()
+                    ? state.weather.humidity + L"%" : std::wstring(L"--")});
+        if (settings.weatherShowHigh)
+            metrics.push_back({1, Loc(L"High"),
+                hasWeather && state.weather.hasHigh ? TemperatureLabel(state.weather.high) : std::wstring(L"--")});
+        if (settings.weatherShowLow)
+            metrics.push_back({1, Loc(L"Low"),
+                hasWeather && state.weather.hasLow ? TemperatureLabel(state.weather.low) : std::wstring(L"--")});
 
-        const float cardH = 40.0f * scale;
-        const float cardGap = 7.0f * scale;
-        const float stackH = cardH * 3.0f + cardGap * 2.0f;
+        const bool compactCards = metrics.size() > 3;
+        if (compactCards && settings.weatherShowWind && hasWeather &&
+            !state.weather.windSpeed.empty()) {
+            // Keep the wind value inside a compact card; the full-height card
+            // still includes direction when at most three metrics are selected.
+            metrics.front().value = state.weather.windSpeed + windUnit;
+        }
+        const float cardH = (compactCards ? 32.0f : 40.0f) * scale;
+        const float cardGap = (compactCards ? 3.0f : 7.0f) * scale;
+        const float stackH = cardH * static_cast<float>(metrics.size()) +
+            cardGap * static_cast<float>(metrics.empty() ? 0 : metrics.size() - 1);
         float cardTop = (rect.top + rect.bottom) * 0.5f - stackH * 0.5f;
 
         for (const Metric& m : metrics) {
@@ -9217,8 +9462,11 @@ class Renderer {
                 smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
                 mutedBrush_->SetOpacity(0.62f);
                 target_->DrawTextW(m.label, static_cast<UINT32>(wcslen(m.label)), smallTextFormat_.Get(),
-                                   D2D1::RectF(textLeft, card.top + 4.0f * scale,
-                                               card.right - 8.0f * scale, card.top + 20.0f * scale),
+                                   compactCards
+                                       ? D2D1::RectF(textLeft, card.top + 1.0f * scale,
+                                                    card.right - 5.0f * scale, card.top + 16.0f * scale)
+                                       : D2D1::RectF(textLeft, card.top + 4.0f * scale,
+                                                    card.right - 8.0f * scale, card.top + 20.0f * scale),
                                    mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
                 smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
             }
@@ -9228,10 +9476,14 @@ class Renderer {
                 textFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
                 textBrush_->SetOpacity(0.95f);
                 target_->DrawTextW(m.value.c_str(), static_cast<UINT32>(m.value.size()), textFormat_.Get(),
-                                   D2D1::RectF(textLeft, card.top + 19.0f * scale,
-                                               card.right - 8.0f * scale, card.bottom - 3.0f * scale),
+                                   compactCards
+                                       ? D2D1::RectF(textLeft, card.top + 15.0f * scale,
+                                                    card.right - 5.0f * scale, card.bottom - 1.0f * scale)
+                                       : D2D1::RectF(textLeft, card.top + 19.0f * scale,
+                                                    card.right - 8.0f * scale, card.bottom - 3.0f * scale),
                                    textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
                 textFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+                textFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
             }
 
             cardTop += cardH + cardGap;
@@ -9740,7 +9992,9 @@ class Renderer {
                 slotX += (IdleStripLayout::kDividerWidth + IdleStripLayout::kSlotGap) * scale;
 
                 wchar_t weatherLabel[32] = {};
-                if (hasWeather) swprintf_s(weatherLabel, L"%s %.0f\x00B0", wIcon.c_str(), state.weather.temperature);
+                if (hasWeather)
+                    swprintf_s(weatherLabel, state.weather.preciseCurrent ? L"%s %.1f\x00B0" : L"%s %.0f\x00B0",
+                               wIcon.c_str(), state.weather.temperature);
                 else wcscpy_s(weatherLabel, ARRAYSIZE(weatherLabel), L"\U0001F321\uFE0F --\x00B0");
 
                 const D2D1_RECT_F wRect =
