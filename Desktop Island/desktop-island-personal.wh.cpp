@@ -2,7 +2,7 @@
 // @id              desktop-island-personal
 // @name            Desktop Island
 // @description     Independent desktop pill with focused media, calendar and hardware controls
-// @version         0.1.6
+// @version         0.1.7
 // @author          Jip
 // @github          https://github.com/iiRedPanda
 // @include         windhawk.exe
@@ -56,7 +56,7 @@ The optional Calendar tab reads a local, unencrypted snapshot from Windows Calen
 
 ## Compatibility and status
 
-Experimental source release. Compilation and the compact-to-expanded clock display have been checked on one Windows 11 installation. The date, timed-hide, timed-hover-reveal, instant-hide hover, independent full-screen Hide and hover controls, full-screen Move and return, and view order were checked live. With Spotify playing, `brave.exe, riot games` in Exclude apps from media detection kept Brave video and Riot Client out of the Island in a live check. Firefox matching passed source-level checks but has not been tested live. The test alert appeared in the pill and history; Until dismissed, dismissal, persistence after disabling and re-enabling the mod, and clearing history passed live checks. Version 0.1.3 adds source and time details and click-to-inspect for history entries, plus location-aware day/night weather icons and more specific precipitation icons; the saved-entry and new-test-alert details windows passed live interaction checks. The weather icon also appeared correctly in a live check. Version 0.1.4 adds per-card weather switches, forecast high/low, and one-decimal Open-Meteo readings with whole-degree fallback; its one-decimal reading and metric switches passed a live check. Version 0.1.5 moves the selected metrics into one or two rows, groups the city and condition beside the temperature, and removes the provider name from the Weather view. The first grid passed a live check; the revised top section awaits one. Version 0.1.6 adds an optional compact weather icon and measures the narrower text-only pill; this setting has compiled but has not yet been checked live. The whole-degree fallback has not been checked live. A Windows PowerShell toast appeared in Windows but was not captured by the Island on the tested PC, so Windows-wide notification replacement is not claimed. The broader Windows compatibility matrix remains unverified. The overlay runs in a separate Windhawk tool process and is not inserted beside the Start button. File Tray and its drop handlers have been removed.
+Experimental source release. Compilation and the compact-to-expanded clock display have been checked on one Windows 11 installation. The date, timed-hide, timed-hover-reveal, instant-hide hover, independent full-screen Hide and hover controls, full-screen Move and return, and view order were checked live. With Spotify playing, `brave.exe, riot games` in Exclude apps from media detection kept Brave video and Riot Client out of the Island in a live check. Firefox matching passed source-level checks but has not been tested live. The test alert appeared in the pill and history; Until dismissed, dismissal, persistence after disabling and re-enabling the mod, and clearing history passed live checks. Version 0.1.3 adds source and time details and click-to-inspect for history entries, plus location-aware day/night weather icons and more specific precipitation icons; the saved-entry and new-test-alert details windows passed live interaction checks. The weather icon also appeared correctly in a live check. Version 0.1.4 adds per-card weather switches, forecast high/low, and one-decimal Open-Meteo readings with whole-degree fallback; its one-decimal reading and metric switches passed a live check. Version 0.1.5 moves the selected metrics into one or two rows, groups the city and condition beside the temperature, and removes the provider name from the Weather view. Version 0.1.6 adds an optional compact weather icon and measures the narrower text-only pill. Both the expanded Weather layout and compact icon toggle passed a live visual check. Version 0.1.7 enlarges and raises the clock and current weather reading to better use the top space; this revision has compiled but awaits a live visual check. The whole-degree fallback has not been checked live. A Windows PowerShell toast appeared in Windows but was not captured by the Island on the tested PC, so Windows-wide notification replacement is not claimed. The broader Windows compatibility matrix remains unverified. The overlay runs in a separate Windhawk tool process and is not inserted beside the Start button. File Tray and its drop handlers have been removed.
 
 ## Credits and license
 
@@ -7935,7 +7935,10 @@ class Renderer {
         calDayLargeFormat_ = nullptr;
         calGridFormat_ = nullptr;
         timeDashboardFormat_ = nullptr;
+        timeDashboardLargeFormat_ = nullptr;
         dateDashboardFormat_ = nullptr;
+        weatherTempFormat_ = nullptr;
+        weatherCityFormat_ = nullptr;
 
         const wchar_t* defaultDisplay = L"Segoe UI Variable Display";
         const wchar_t* defaultSmall = L"Segoe UI Variable Small";
@@ -7988,8 +7991,17 @@ class Renderer {
                      DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL,
                      DWRITE_FONT_STRETCH_NORMAL, 56.0f * ts, timeDashboardFormat_);
         createFormat(mainFamily, defaultDisplay,
+                     DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL,
+                     DWRITE_FONT_STRETCH_NORMAL, 68.0f * ts, timeDashboardLargeFormat_);
+        createFormat(mainFamily, defaultDisplay,
                      DWRITE_FONT_WEIGHT_SEMI_BOLD, DWRITE_FONT_STYLE_NORMAL,
-                     DWRITE_FONT_STRETCH_NORMAL, 16.0f * ts, dateDashboardFormat_);
+                     DWRITE_FONT_STRETCH_NORMAL, 18.0f * ts, dateDashboardFormat_);
+        createFormat(mainFamily, defaultDisplay,
+                     DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL,
+                     DWRITE_FONT_STRETCH_NORMAL, 48.0f * ts, weatherTempFormat_);
+        createFormat(mainFamily, defaultDisplay,
+                     DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL,
+                     DWRITE_FONT_STRETCH_NORMAL, 20.0f * ts, weatherCityFormat_);
 
         usingFluentIcons_ = false;
         ComPtr<IDWriteFontCollection> sysFonts;
@@ -8080,10 +8092,25 @@ class Renderer {
             timeDashboardFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
             timeDashboardFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
         }
+        if (timeDashboardLargeFormat_) {
+            timeDashboardLargeFormat_->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+            timeDashboardLargeFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+            timeDashboardLargeFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+        }
         if (dateDashboardFormat_) {
             dateDashboardFormat_->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
             dateDashboardFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
             dateDashboardFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+        }
+        if (weatherTempFormat_) {
+            weatherTempFormat_->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+            weatherTempFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+            weatherTempFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+        }
+        if (weatherCityFormat_) {
+            weatherCityFormat_->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+            weatherCityFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+            weatherCityFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
         }
         if (iconFormat_) {
             iconFormat_->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
@@ -9303,41 +9330,42 @@ class Renderer {
 
         // Icon and temperature share one band and sit adjacent, so they read as
         // a single unit instead of two centred items.
-        const float readingCenterY = rect.top + 66.0f * scale;
+        const float readingCenterY = rect.top + 52.0f * scale;
         if (hasWeather && iconStrong && iconSoft) {
-            DrawWeatherIcon(D2D1::Point2F(heroLeft + 22.0f * scale, readingCenterY), 44.0f * scale,
+            DrawWeatherIcon(D2D1::Point2F(heroLeft + 22.0f * scale, readingCenterY), 50.0f * scale,
                             WeatherVisualFromCode(state.weather.weatherCode, state.weather.isNight),
                             iconStrong.Get(), iconSoft.Get());
         } else if (iconStrong && iconSoft) {
-            DrawWeatherIcon(D2D1::Point2F(heroLeft + 22.0f * scale, readingCenterY), 44.0f * scale,
+            DrawWeatherIcon(D2D1::Point2F(heroLeft + 22.0f * scale, readingCenterY), 50.0f * scale,
                             WeatherVisual::Unknown, iconStrong.Get(), iconSoft.Get());
         }
 
         textBrush_->SetOpacity(0.98f);
-        if (hugeTextFormat_) {
-            hugeTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-            target_->DrawTextW(wTemp, static_cast<UINT32>(wcslen(wTemp)), hugeTextFormat_.Get(),
+        IDWriteTextFormat* temperatureFormat =
+            wcslen(wTemp) <= 5 && weatherTempFormat_ ? weatherTempFormat_.Get() : hugeTextFormat_.Get();
+        if (temperatureFormat) {
+            temperatureFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+            target_->DrawTextW(wTemp, static_cast<UINT32>(wcslen(wTemp)), temperatureFormat,
                                D2D1::RectF(heroLeft + 52.0f * scale, readingCenterY - 32.0f * scale,
                                            heroRight, readingCenterY + 32.0f * scale),
                                textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
-            hugeTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+            if (temperatureFormat == hugeTextFormat_.Get())
+                hugeTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
         }
 
         // Group the place and condition as a two-line label beside the current
         // reading. A larger city name gives the right half a clear purpose.
         const float detailsLeft = rect.left + 220.0f * scale;
-        if (clockFormat_ || textFormat_) {
+        if (weatherCityFormat_ || textFormat_) {
             IDWriteTextFormat* cityFormat =
-                city.length() <= 11 && clockFormat_ ? clockFormat_.Get() : textFormat_.Get();
+                city.length() <= 11 && weatherCityFormat_ ? weatherCityFormat_.Get() : textFormat_.Get();
             if (cityFormat) {
                 cityFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
                 textBrush_->SetOpacity(0.96f);
                 target_->DrawTextW(city.c_str(), static_cast<UINT32>(city.length()), cityFormat,
-                                   D2D1::RectF(detailsLeft, rect.top + 36.0f * scale,
-                                               rect.right - 23.0f * scale, rect.top + 63.0f * scale),
+                                   D2D1::RectF(detailsLeft, rect.top + 22.0f * scale,
+                                               rect.right - 23.0f * scale, rect.top + 51.0f * scale),
                                    textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
-                if (cityFormat == clockFormat_.Get())
-                    clockFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
             }
         }
 
@@ -9345,17 +9373,17 @@ class Renderer {
         target_->CreateSolidColorBrush(WithAlpha(material_.hairline,
             material_.hairline.a * settingsOpacity_), &divider);
         if (divider) {
-            target_->DrawLine(D2D1::Point2F(rect.left + 205.0f * scale, rect.top + 43.0f * scale),
-                              D2D1::Point2F(rect.left + 205.0f * scale, rect.top + 89.0f * scale),
+            target_->DrawLine(D2D1::Point2F(rect.left + 205.0f * scale, rect.top + 27.0f * scale),
+                              D2D1::Point2F(rect.left + 205.0f * scale, rect.top + 77.0f * scale),
                               divider.Get(), 1.0f * scale);
         }
 
-        const float descTop = rect.top + 61.0f * scale;
-        const float descBottom = rect.top + 87.0f * scale;
+        const float descTop = rect.top + 51.0f * scale;
+        const float descBottom = rect.top + 79.0f * scale;
 
         // Description
         const size_t descLength = desc.length();
-        float descFontSize = 13.5f;
+        float descFontSize = 15.0f;
         if (descLength > 58) descFontSize = 9.8f;
         else if (descLength > 44) descFontSize = 10.5f;
         else if (descLength > 32) descFontSize = 11.5f;
@@ -9452,7 +9480,7 @@ class Renderer {
         const size_t firstRowCount = twoRows ? (metrics.size() == 4 ? 2 : 3) : metrics.size();
         const float gap = 6.0f * scale;
         const float cardH = (twoRows ? 34.0f : 40.0f) * scale;
-        const float gridTop = rect.top + (twoRows ? 103.0f : 131.0f) * scale;
+        const float gridTop = rect.top + (twoRows ? 96.0f : 124.0f) * scale;
 
         for (size_t i = 0; i < metrics.size(); ++i) {
             const bool secondRow = i >= firstRowCount;
@@ -9746,7 +9774,12 @@ class Renderer {
                                                        settings.use24HourClock, settings.showSeconds);
         const std::wstring dateText = FormatIslandDate(local, settings.dateFormat, L"dddd, MMMM d");
 
-        IDWriteTextFormat* bigFmt = timeDashboardFormat_ ? timeDashboardFormat_.Get() : hugeTextFormat_.Get();
+        // Short time strings can use the larger face; longer 12-hour strings
+        // with seconds keep the original size to stay inside the dashboard.
+        IDWriteTextFormat* bigFmt =
+            timeText.size() <= 8 && timeDashboardLargeFormat_
+                ? timeDashboardLargeFormat_.Get()
+                : (timeDashboardFormat_ ? timeDashboardFormat_.Get() : hugeTextFormat_.Get());
         IDWriteTextFormat* smallFmt = dateDashboardFormat_ ? dateDashboardFormat_.Get() : boldTextFormat_.Get();
 
         const std::wstring& headline = settings.dateFirst ? dateText : timeText;
@@ -9756,22 +9789,22 @@ class Renderer {
 
         if (settings.dateFirst) {
             // Date on top reads as a label, so give the big clock the lower slot.
-            const D2D1_RECT_F headRect = D2D1::RectF(rect.left, cy - 46.0f * scale, rect.right, cy - 22.0f * scale);
+            const D2D1_RECT_F headRect = D2D1::RectF(rect.left, cy - 55.0f * scale, rect.right, cy - 25.0f * scale);
             textBrush_->SetOpacity(0.92f);
             target_->DrawTextW(headline.c_str(), static_cast<UINT32>(headline.size()), headlineFmt,
                                headRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
-            const D2D1_RECT_F subRect = D2D1::RectF(rect.left, cy - 20.0f * scale, rect.right, cy + 44.0f * scale);
+            const D2D1_RECT_F subRect = D2D1::RectF(rect.left, cy - 23.0f * scale, rect.right, cy + 49.0f * scale);
             textBrush_->SetOpacity(0.98f);
             target_->DrawTextW(subline.c_str(), static_cast<UINT32>(subline.size()), sublineFmt,
                                subRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
         } else {
-            const D2D1_RECT_F headRect = D2D1::RectF(rect.left, cy - 44.0f * scale, rect.right, cy + 20.0f * scale);
+            const D2D1_RECT_F headRect = D2D1::RectF(rect.left, cy - 66.0f * scale, rect.right, cy + 16.0f * scale);
             textBrush_->SetOpacity(0.98f);
             target_->DrawTextW(headline.c_str(), static_cast<UINT32>(headline.size()), headlineFmt,
                                headRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
-            const D2D1_RECT_F subRect = D2D1::RectF(rect.left, cy + 22.0f * scale, rect.right, cy + 46.0f * scale);
+            const D2D1_RECT_F subRect = D2D1::RectF(rect.left, cy + 17.0f * scale, rect.right, cy + 47.0f * scale);
             mutedBrush_->SetOpacity(0.85f);
             target_->DrawTextW(subline.c_str(), static_cast<UINT32>(subline.size()), sublineFmt,
                                subRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
@@ -11736,7 +11769,10 @@ class Renderer {
     ComPtr<IDWriteTextFormat> calDayLargeFormat_;
     ComPtr<IDWriteTextFormat> calGridFormat_;
     ComPtr<IDWriteTextFormat> timeDashboardFormat_;
+    ComPtr<IDWriteTextFormat> timeDashboardLargeFormat_;
     ComPtr<IDWriteTextFormat> dateDashboardFormat_;
+    ComPtr<IDWriteTextFormat> weatherTempFormat_;
+    ComPtr<IDWriteTextFormat> weatherCityFormat_;
     ComPtr<ID2D1SolidColorBrush> accentBrush_;
     ComPtr<ID2D1SolidColorBrush> redBrush_;
     ComPtr<ID2D1SolidColorBrush> textBrush_;
