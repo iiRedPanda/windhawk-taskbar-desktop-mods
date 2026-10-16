@@ -2,11 +2,11 @@
 // @id              desktop-island-personal
 // @name            Desktop Island
 // @description     Independent desktop pill with focused media, calendar and hardware controls
-// @version         0.1.0
+// @version         0.1.1
 // @author          Jip
 // @github          https://github.com/iiRedPanda
 // @include         windhawk.exe
-// @compilerOptions -lole32 -loleaut32 -lshcore -ld2d1 -ldwrite -ldwmapi -lgdi32 -luser32 -lshell32 -lruntimeobject -lwindowscodecs -lavrt -lsetupapi -lwinhttp -lpdh -lwinmm
+// @compilerOptions -lole32 -loleaut32 -lshcore -ld2d1 -ldwrite -ldwmapi -lgdi32 -luser32 -lshell32 -lruntimeobject -lwindowscodecs -lavrt -lsetupapi -lwinhttp -lpdh -lwinmm -lversion
 // @license         MIT
 // ==/WindhawkMod==
 
@@ -21,7 +21,7 @@ A standalone Windhawk desktop overlay for media controls, clock/date, optional c
 ## Features
 
 - Obsidian, Graphite, Porcelain, and Custom palettes.
-- Click-to-expand by default, with optional automatic expansion restricted to an app allowlist and blocklist. The optional media-source exclusion list is empty by default. Some launchers advertise a Windows media session without playing music or video; add their app name or ID to that list if they displace a real player. App matching does not classify browser content as music or video.
+- Click-to-expand by default, with optional automatic expansion restricted to an app allowlist and blocklist. The separate media-source exclusion list is empty by default. Enter an app or executable name, or a publisher name where the owning program can be identified. `riot games` also covers known Riot game names. App matching does not classify browser content as music or video.
 - Optional date in the compact pill, including during media playback.
 - Clock and date controls appear first in the Modules settings group. The right-click menu no longer overrides the Expand on hover setting.
 - Reorder the scrollable views with the View order setting. The clock or active media view stays first; disabled views are skipped.
@@ -39,7 +39,7 @@ Click the compact pill to expand the overlay. Hover expansion is optional and di
 - **Compact date:** choose no date, a short date, or a date with the weekday. The date can also appear during media playback.
 - **Visibility:** Expand on hover is controlled in Windhawk settings. Auto-hide can hide the Island after an idle timeout. Its hover-reveal switch applies only to idle auto-hide; instant-hide mode keeps its hover area steady to avoid repeated folding. Full-screen action defaults to Hide and takes effect immediately even when idle auto-hide is set to Never. A separate full-screen hover-reveal switch defaults off. The other full-screen action moves the Island to the largest other monitor when an app or game fills its home monitor; with only one monitor, Move behaves like Hide. The hide/show shortcut can temporarily reveal a hidden Island.
 - **Views:** enter `notifications,calendar,weather,hardware` in any order. The first clock/media view stays in place. In Notifications, Shift+wheel selects an older alert; right-click to copy the selected alert's full message, show a test alert, dismiss the current pop-up, or clear history.
-- **Media:** the media controls are together near the top of Modules. **Exclude apps from media detection** removes matching sources from the compact pill and expanded media controls; it is empty by default. Enter a source such as `riot` or `brave.exe` (the `.exe` suffix is optional). Windows may identify a browser site's media session by the site rather than the browser, in which case enter that reported source too. **Prevent automatic expansion for these apps** only stops the Island opening automatically; the app can still appear as media. Automatic expansion is disabled by default. A browser playing a show and the same browser playing music may share a source identity.
+- **Media:** the media controls are together near the top of Modules. **Exclude apps from media detection** removes matching sessions from the compact pill and expanded media controls; it is empty by default. Entries are comma-separated and match app IDs, executable names, product names, or executable publisher names when Windows exposes the owning program. `firefox` or `firefox.exe` excludes Firefox; `riot games` excludes recognized Riot Client, VALORANT, League, Teamfight Tactics, Runeterra, and 2XKO sessions. Matching ignores case, spaces, punctuation, and `.exe`. If an app reports an unrelated media ID and Windows does not expose its process, enter that ID explicitly. **Prevent automatic expansion for these apps** only stops the Island opening automatically; the app can still appear as media. Automatic expansion is disabled by default. A browser playing a show and the same browser playing music may share a source identity.
 - **Hardware:** select the CPU, RAM, GPU, network, and disk-space cards individually. Disk space is disabled by default and currently reports the C: drive.
 - **Calendar:** enable the Calendar tab to make it available in the overlay. Windows Calendar Plus can supply its passive event preview; other Island modules work without that mod.
 
@@ -344,7 +344,7 @@ SOFTWARE.
     $description: Automatically expand the island when a new song or video starts playing. If disabled, album art updates smoothly in the collapsed pill without unprompted expansion.
   - MediaSourceBlocklist: ""
     $name: Exclude apps from media detection
-    $description: Comma-separated media-source names or IDs, for example riot or brave.exe. The .exe suffix is optional. Excluded sources never appear in media controls. Browser sites may report their own source ID, so exclude that ID too if needed. Separate from auto-expand below.
+    $description: Comma-separated app, executable, or publisher names, such as firefox or riot games. Spaces, punctuation, and .exe are ignored. Riot Games also matches its known game names. Publisher matching uses the owning executable when Windows identifies it; enter a source ID directly if an app cannot be identified. This removes matching media sessions, unlike the auto-expand controls below.
   - MediaExpandAllowlist: ""
     $name: Music apps allowed to auto-expand
     $description: Comma-separated app names or IDs. Leave empty for no automatic expansion.
@@ -519,6 +519,9 @@ SOFTWARE.
 #include <winhttp.h>
 #include <pdh.h>
 #include <pdhmsg.h>
+#include <appmodel.h>
+#include <tlhelp32.h>
+#include <winver.h>
 
 #include <algorithm>
 #include <array>
@@ -3886,6 +3889,148 @@ void TriggerNudge() {
     }
 }
 
+// Match an entered app, executable, or publisher without making punctuation,
+// spaces, or an optional .exe suffix significant. Media titles are deliberately
+// excluded: a video about Firefox must not be treated as a Firefox session.
+std::wstring MediaIdentityKey(std::wstring_view value) {
+    std::wstring text(value);
+    text = ToLowerCopy(std::move(text));
+    if (text.size() > 4 && text.compare(text.size() - 4, 4, L".exe") == 0)
+        text.resize(text.size() - 4);
+    std::wstring key;
+    key.reserve(text.size());
+    for (wchar_t ch : text) {
+        if (iswalnum(ch)) key.push_back(ch);
+    }
+    return key;
+}
+
+bool MediaIdentityContains(const std::wstring& value, const std::wstring& entry) {
+    return entry.size() >= 3 && value.find(entry) != std::wstring::npos;
+}
+
+bool IsRiotGamesMediaSource(const std::wstring& sourceKey) {
+    constexpr std::wstring_view names[] = {
+        L"riot", L"valorant", L"leagueoflegends", L"leagueclient",
+        L"teamfighttactics", L"runeterra", L"2xko"
+    };
+    for (std::wstring_view name : names) {
+        if (sourceKey.find(name) != std::wstring::npos) return true;
+    }
+    return false;
+}
+
+struct MediaProcessIdentity {
+    std::wstring executable;
+    std::wstring company;
+    std::wstring product;
+};
+
+bool MediaExclusionEntryMatches(const std::wstring& entry,
+                                const std::wstring& sourceKey,
+                                const std::wstring& nameKey,
+                                const MediaProcessIdentity* process) {
+    if (MediaIdentityContains(sourceKey, entry) ||
+        MediaIdentityContains(nameKey, entry) ||
+        ((entry == L"riotgames" || entry == L"riot") &&
+         IsRiotGamesMediaSource(sourceKey))) return true;
+    return process &&
+        (MediaIdentityContains(process->executable, entry) ||
+         MediaIdentityContains(process->company, entry) ||
+         MediaIdentityContains(process->product, entry));
+}
+
+MediaProcessIdentity ReadMediaProcessIdentity(const std::wstring& path) {
+    MediaProcessIdentity identity;
+    identity.executable = MediaIdentityKey(BaseNameFromPath(path));
+    DWORD ignored = 0;
+    const DWORD bytes = GetFileVersionInfoSizeW(path.c_str(), &ignored);
+    if (!bytes || bytes > 1024 * 1024) return identity;
+    std::vector<uint8_t> data(bytes);
+    if (!GetFileVersionInfoW(path.c_str(), 0, bytes, data.data())) return identity;
+    struct LanguageAndCodePage { WORD language; WORD codePage; };
+    LanguageAndCodePage* translations = nullptr;
+    UINT translationBytes = 0;
+    if (!VerQueryValueW(data.data(), L"\\VarFileInfo\\Translation",
+                        reinterpret_cast<void**>(&translations), &translationBytes) ||
+        translationBytes < sizeof(LanguageAndCodePage)) return identity;
+    const size_t count = std::min<size_t>(translationBytes / sizeof(LanguageAndCodePage), 8);
+    for (size_t i = 0; i < count; ++i) {
+        auto readField = [&](const wchar_t* field) -> std::wstring {
+            wchar_t key[96];
+            swprintf_s(key, L"\\StringFileInfo\\%04x%04x\\%ls",
+                       translations[i].language, translations[i].codePage, field);
+            void* value = nullptr;
+            UINT length = 0;
+            if (!VerQueryValueW(data.data(), key, &value, &length) || !value || !length)
+                return {};
+            const auto* characters = static_cast<const wchar_t*>(value);
+            size_t count = std::min<size_t>(length, 512);
+            if (count && characters[count - 1] == L'\0') --count;
+            return MediaIdentityKey(std::wstring_view(characters, count));
+        };
+        if (identity.company.empty()) identity.company = readField(L"CompanyName");
+        if (identity.product.empty()) identity.product = readField(L"ProductName");
+        if (!identity.company.empty() && !identity.product.empty()) break;
+    }
+    return identity;
+}
+
+MediaProcessIdentity ResolveMediaProcessIdentity(const std::wstring& sourceKey) {
+    MediaProcessIdentity empty;
+    if (sourceKey.size() < 4) return empty;
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (snapshot == INVALID_HANDLE_VALUE) return empty;
+    PROCESSENTRY32W process = {};
+    process.dwSize = sizeof(process);
+    std::vector<DWORD> possibleAppIds;
+    if (Process32FirstW(snapshot, &process)) {
+        do {
+            const std::wstring exeKey = MediaIdentityKey(process.szExeFile);
+            if (exeKey.size() >= 4 &&
+                (sourceKey.find(exeKey) != std::wstring::npos ||
+                 exeKey.find(sourceKey) != std::wstring::npos)) {
+                std::wstring path;
+                if (ProcessImageNameForPid(process.th32ProcessID, &path)) {
+                    CloseHandle(snapshot);
+                    return ReadMediaProcessIdentity(path);
+                }
+            }
+            possibleAppIds.push_back(process.th32ProcessID);
+        } while (Process32NextW(snapshot, &process));
+    }
+    CloseHandle(snapshot);
+    // Packaged apps can use an AUMID unrelated to their executable name.
+    for (DWORD pid : possibleAppIds) {
+        HANDLE handle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+        if (!handle) continue;
+        wchar_t appId[512] = {};
+        UINT32 length = ARRAYSIZE(appId);
+        const bool sameApp = GetApplicationUserModelId(handle, &length, appId) == ERROR_SUCCESS &&
+                             MediaIdentityKey(appId) == sourceKey;
+        CloseHandle(handle);
+        if (!sameApp) continue;
+        std::wstring path;
+        if (ProcessImageNameForPid(pid, &path)) return ReadMediaProcessIdentity(path);
+    }
+    return empty;
+}
+
+// Called only on the media worker, after a nonempty exclusion list has failed
+// the cheap app-name check. Cache the process and version lookup for 30 seconds.
+MediaProcessIdentity CachedMediaProcessIdentity(const std::wstring& sourceKey) {
+    struct Entry { MediaProcessIdentity identity; double expiresAt; };
+    static std::unordered_map<std::wstring, Entry> cache;
+    const double now = NowSeconds();
+    auto found = cache.find(sourceKey);
+    if (found != cache.end() && found->second.expiresAt > now)
+        return found->second.identity;
+    if (cache.size() >= 32) cache.clear();
+    MediaProcessIdentity identity = ResolveMediaProcessIdentity(sourceKey);
+    cache[sourceKey] = {identity, now + (identity.executable.empty() ? 10.0 : 30.0)};
+    return identity;
+}
+
 // Chooses which SMTC session the island should follow.
 //
 // GetCurrentSession() returns whatever Windows last treated as the foreground
@@ -3906,20 +4051,25 @@ winrt::Windows::Media::Control::GlobalSystemMediaTransportControlsSession Select
             const std::wstring source = ToLowerCopy(std::wstring(candidate.SourceAppUserModelId().c_str()));
             const std::wstring name = ToLowerCopy(FriendlyMediaSourceName(source));
             const auto settings = GetSettingsSnapshot();
-            for (const auto& blocked : settings->mediaSourceBlocklist) {
-                if (blocked.empty()) continue;
-                // A Windows media session can report a friendly name or AUMID
-                // without the .exe suffix entered by the user.
-                std::wstring executableName = blocked;
-                if (executableName.size() > 4 &&
-                    executableName.compare(executableName.size() - 4, 4, L".exe") == 0) {
-                    executableName.resize(executableName.size() - 4);
+            if (!settings->mediaSourceBlocklist.empty()) {
+                const std::wstring sourceKey = MediaIdentityKey(source);
+                const std::wstring nameKey = MediaIdentityKey(name);
+                std::vector<std::wstring> entries;
+                entries.reserve(settings->mediaSourceBlocklist.size());
+                for (const auto& blocked : settings->mediaSourceBlocklist) {
+                    const std::wstring entry = MediaIdentityKey(blocked);
+                    if (entry.size() < 3) continue;
+                    if (MediaExclusionEntryMatches(entry, sourceKey, nameKey, nullptr))
+                        return false;
+                    entries.push_back(entry);
                 }
-                if (source.find(blocked) != std::wstring::npos ||
-                    name.find(blocked) != std::wstring::npos ||
-                    (!executableName.empty() &&
-                     (source.find(executableName) != std::wstring::npos ||
-                      name.find(executableName) != std::wstring::npos))) return false;
+                if (!entries.empty()) {
+                    const MediaProcessIdentity process = CachedMediaProcessIdentity(sourceKey);
+                    for (const auto& entry : entries) {
+                        if (MediaExclusionEntryMatches(entry, sourceKey, nameKey, &process))
+                            return false;
+                    }
+                }
             }
             // A launcher may mark its own UI session Playing and report its
             // app name as the track. It has no distinct media to display.
