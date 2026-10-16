@@ -2,7 +2,7 @@
 // @id              desktop-island-personal
 // @name            Desktop Island
 // @description     Independent desktop pill with focused media, calendar and hardware controls
-// @version         0.1.4
+// @version         0.1.6
 // @author          Jip
 // @github          https://github.com/iiRedPanda
 // @include         windhawk.exe
@@ -42,13 +42,13 @@ Click the compact pill to expand the overlay. Hover expansion is optional and di
 - **Media:** the media controls are together near the top of Modules. **Exclude apps from media detection** removes matching sessions from the compact pill and expanded media controls; it is empty by default. Entries are comma-separated and match app IDs, executable names, product names, or executable company names when Windows exposes the owning program. `firefox` or `firefox.exe` excludes Firefox; `riot games` excludes recognized Riot Client, VALORANT, League, Teamfight Tactics, Runeterra, and 2XKO sessions. Matching ignores case, spaces, punctuation, and `.exe`. For an app with an unrelated ID, play its media, right-click the Island, choose **Copy current media source ID**, and paste that ID into the exclusion setting. **Prevent automatic expansion for these apps** only stops the Island opening automatically; the app can still appear as media. Automatic expansion is disabled by default. A browser playing a show and the same browser playing music may share a source identity.
 - **Hardware:** select the CPU, RAM, GPU, network, and disk-space cards individually. Disk space is disabled by default and currently reports the C: drive.
 - **Calendar:** enable the Calendar tab to make it available in the overlay. Windows Calendar Plus can supply its passive event preview; other Island modules work without that mod.
-- **Weather:** choose an optional city and Celsius or Fahrenheit. Each of the five expanded cards can be switched on or off; wind, feels like, and humidity retain their previous defaults, while today's forecast high and low default off. The compact pill always shows the current temperature when Weather is enabled. Open-Meteo supplies the decimal current reading, forecast high/low, current condition, and day/night state; if it is unavailable, the Island uses wttr.in's whole-degree reading. Readings normally refresh every 15 minutes.
+- **Weather:** choose an optional city and Celsius or Fahrenheit. The compact pill always shows the current temperature when Weather is enabled; **Show weather icon in small pill** can hide its condition icon for a narrower, text-only reading. Each of the five expanded cards can be switched on or off; wind, feels like, and humidity retain their previous defaults, while today's forecast high and low default off. Selected cards appear in one or two rows below the current condition. Open-Meteo supplies the decimal current reading, forecast high/low, current condition, and day/night state; if it is unavailable, the Island uses wttr.in's whole-degree reading. Readings normally refresh every 15 minutes.
 
 The overlay is a separate desktop pill. It does not add a button to the Windows taskbar.
 
 ## Data and privacy
 
-Weather is enabled by default. wttr.in resolves the selected city or, when no city is configured, estimates location from the network request. Open-Meteo then receives the location coordinates for its current and daily forecast readings. Both requests use HTTPS, reject downgrade redirects, and limit response size and read duration. The Weather view labels the active source. Weather data from [Open-Meteo](https://open-meteo.com/) is provided under [CC BY 4.0](https://open-meteo.com/en/terms); the Island changes units, rounds the displayed values to one decimal, and maps condition codes to its own icons. A one-decimal forecast value is more detailed than wttr.in's whole-degree value, but it may still differ from another weather app or a local thermometer. Clipboard and notification previews can display sensitive content on screen and have their own settings.
+Weather is enabled by default. wttr.in resolves the selected city or, when no city is configured, estimates location from the network request. Open-Meteo then receives the location coordinates for its current and daily forecast readings. Both requests use HTTPS, reject downgrade redirects, and limit response size and read duration. Weather data from [Open-Meteo](https://open-meteo.com/) is provided under [CC BY 4.0](https://open-meteo.com/en/terms); the Island changes units, rounds the displayed values to one decimal, and maps condition codes to its own icons. The provider link is also available from the Island's **Weather data credits** right-click action. A one-decimal forecast value is more detailed than wttr.in's whole-degree value, but it may still differ from another weather app or a local thermometer. Clipboard and notification previews can display sensitive content on screen and have their own settings.
 
 Island alert history stores the captured app name, alert text, source, time, and available shell-window metadata in Windhawk local mod storage until you clear it or turn off the history setting. It can include sensitive text. Some shell windows expose only a host name such as “Windows Shell Experience Host.” The Island marks these as unverified shell popups with their cause unknown; the process name alone does not establish a crash or restart. Older entries cannot gain details that were never captured. The Island does not independently monitor process or driver crashes, reliably receive every Windows toast, replace Windows Notification Center, or suppress Windows banners. Keep Windows notifications enabled if you want Windows to retain its own notification history; see [Microsoft's notification settings guide](https://support.microsoft.com/en-us/windows/experience/notifications-and-do-not-disturb-in-windows). Do Not Disturb suppression can prevent alerts from entering Island history.
 
@@ -56,7 +56,7 @@ The optional Calendar tab reads a local, unencrypted snapshot from Windows Calen
 
 ## Compatibility and status
 
-Experimental source release. Compilation and the compact-to-expanded clock display have been checked on one Windows 11 installation. The date, timed-hide, timed-hover-reveal, instant-hide hover, independent full-screen Hide and hover controls, full-screen Move and return, and view order were checked live. With Spotify playing, `brave.exe, riot games` in Exclude apps from media detection kept Brave video and Riot Client out of the Island in a live check. Firefox matching passed source-level checks but has not been tested live. The test alert appeared in the pill and history; Until dismissed, dismissal, persistence after disabling and re-enabling the mod, and clearing history passed live checks. Version 0.1.3 adds source and time details and click-to-inspect for history entries, plus location-aware day/night weather icons and more specific precipitation icons; the saved-entry and new-test-alert details windows passed live interaction checks. The weather icon also appeared correctly in a live check. Version 0.1.4 adds per-card weather switches, forecast high/low, and one-decimal Open-Meteo readings with whole-degree fallback; its one-decimal reading and metric switches passed a live check. The revised card-label layout passed live checks with both four and five cards selected. The provider source label and whole-degree fallback have not been checked live. A Windows PowerShell toast appeared in Windows but was not captured by the Island on the tested PC, so Windows-wide notification replacement is not claimed. The broader Windows compatibility matrix remains unverified. The overlay runs in a separate Windhawk tool process and is not inserted beside the Start button. File Tray and its drop handlers have been removed.
+Experimental source release. Compilation and the compact-to-expanded clock display have been checked on one Windows 11 installation. The date, timed-hide, timed-hover-reveal, instant-hide hover, independent full-screen Hide and hover controls, full-screen Move and return, and view order were checked live. With Spotify playing, `brave.exe, riot games` in Exclude apps from media detection kept Brave video and Riot Client out of the Island in a live check. Firefox matching passed source-level checks but has not been tested live. The test alert appeared in the pill and history; Until dismissed, dismissal, persistence after disabling and re-enabling the mod, and clearing history passed live checks. Version 0.1.3 adds source and time details and click-to-inspect for history entries, plus location-aware day/night weather icons and more specific precipitation icons; the saved-entry and new-test-alert details windows passed live interaction checks. The weather icon also appeared correctly in a live check. Version 0.1.4 adds per-card weather switches, forecast high/low, and one-decimal Open-Meteo readings with whole-degree fallback; its one-decimal reading and metric switches passed a live check. Version 0.1.5 moves the selected metrics into one or two rows, groups the city and condition beside the temperature, and removes the provider name from the Weather view. The first grid passed a live check; the revised top section awaits one. Version 0.1.6 adds an optional compact weather icon and measures the narrower text-only pill; this setting has compiled but has not yet been checked live. The whole-degree fallback has not been checked live. A Windows PowerShell toast appeared in Windows but was not captured by the Island on the tested PC, so Windows-wide notification replacement is not claimed. The broader Windows compatibility matrix remains unverified. The overlay runs in a separate Windhawk tool process and is not inserted beside the Start button. File Tray and its drop handlers have been removed.
 
 ## Credits and license
 
@@ -431,6 +431,9 @@ SOFTWARE.
   - WeatherFahrenheit: false
     $name: Use Fahrenheit
     $description: Display weather temperature and wind speed in imperial units.
+  - WeatherPillIcon: true
+    $name: Show weather icon in small pill
+    $description: Show the current condition icon beside the temperature. Turn off for a text-only weather reading and a narrower pill.
   - WeatherShowWind: true
     $name: Weather card - wind
   - WeatherShowFeelsLike: true
@@ -977,6 +980,7 @@ struct Settings {
     bool weather = true;
     std::wstring weatherCity;
     bool weatherFahrenheit = false;
+    bool weatherPillIcon = true;
     bool weatherShowWind = true;
     bool weatherShowFeelsLike = true;
     bool weatherShowHumidity = true;
@@ -2380,6 +2384,7 @@ void LoadSettings() {
     next.weather = Wh_GetIntSetting(L"Modules.Weather") != 0;
     next.weatherCity = GetStringSettingWithFallback(L"Modules.WeatherCity", L"Weather.WeatherCity", L"CalendarWeather.WeatherCity");
     next.weatherFahrenheit = Wh_GetIntSetting(L"Modules.WeatherFahrenheit") != 0;
+    next.weatherPillIcon = Wh_GetIntSetting(L"Modules.WeatherPillIcon") != 0;
     next.weatherShowWind = Wh_GetIntSetting(L"Modules.WeatherShowWind") != 0;
     next.weatherShowFeelsLike = Wh_GetIntSetting(L"Modules.WeatherShowFeelsLike") != 0;
     next.weatherShowHumidity = Wh_GetIntSetting(L"Modules.WeatherShowHumidity") != 0;
@@ -7198,6 +7203,7 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
     AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(themeMenu), L"Theme");
     AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
     AppendMenuW(menu, MF_STRING, 9, L"Open Windhawk settings");
+    AppendMenuW(menu, MF_STRING, 19, L"Weather data credits");
     AppendMenuW(menu, MF_STRING | (hasMediaSource ? 0 : MF_GRAYED), 17, L"Copy current media source ID");
     AppendMenuW(menu, MF_STRING, 14, L"Show test alert");
     AppendMenuW(menu, MF_STRING, 15, L"Dismiss current alert");
@@ -7370,6 +7376,10 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
         case 18:
             ShellExecuteW(hwnd, L"open", L"perfmon.exe", L"/rel", nullptr,
                           SW_SHOWNORMAL);
+            break;
+        case 19:
+            ShellExecuteW(hwnd, L"open", L"https://open-meteo.com/en/terms", nullptr,
+                          nullptr, SW_SHOWNORMAL);
             break;
         case 30:
             StartFocusTimer(25, false);
@@ -7787,19 +7797,11 @@ class Renderer {
 
         metrics.hasWeather = settings.weather;
         if (metrics.hasWeather) {
-            // Mirrors the label DrawIdleDashboard builds, including the no-data
-            // placeholder, so the reserved slot matches what gets drawn.
+            // The painter uses the same label builder, so hiding the icon also
+            // releases its width rather than leaving an empty icon slot.
             const bool hasData = state.weather.hasData && (now - state.weather.lastUpdated < 3600.0);
-            wchar_t label[32] = {};
-            if (hasData) {
-                std::wstring icon = L"\U0001F321\uFE0F";
-                std::wstring desc = state.weather.weatherDesc;
-                GetWeatherIconAndText(state.weather.weatherCode, state.weather.isNight, icon, desc);
-                swprintf_s(label, state.weather.preciseCurrent ? L"%s %.1f\x00B0" : L"%s %.0f\x00B0",
-                           icon.c_str(), state.weather.temperature);
-            } else {
-                wcscpy_s(label, ARRAYSIZE(label), L"\U0001F321\uFE0F --\x00B0");
-            }
+            const std::wstring label = CompactWeatherLabel(state.weather, hasData,
+                                                            settings.weatherPillIcon);
             metrics.weatherWidth =
                 MeasureTextWidthCached(WidestDigitForm(label), fmt, idleWeatherWidthCache_);
         }
@@ -8716,6 +8718,25 @@ class Renderer {
         }
     }
 
+    static std::wstring CompactWeatherLabel(const WeatherSnapshot& weather, bool hasData,
+                                            bool showIcon) {
+        wchar_t temperature[32] = {};
+        if (hasData) {
+            swprintf_s(temperature, weather.preciseCurrent ? L"%.1f\x00B0" : L"%.0f\x00B0",
+                       weather.temperature);
+        } else {
+            wcscpy_s(temperature, L"--\x00B0");
+        }
+        if (!showIcon) return temperature;
+
+        std::wstring icon = L"\U0001F321\uFE0F";
+        if (hasData) {
+            std::wstring description;
+            GetWeatherIconAndText(weather.weatherCode, weather.isNight, icon, description);
+        }
+        return icon + L" " + temperature;
+    }
+
     static int GetDaysInMonth(int year, int month) {
         if (month == 2) {
             bool leap = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
@@ -9266,17 +9287,12 @@ class Renderer {
         std::wstring desc = wText;
 
         // ── Layout ───────────────────────────────────────────────────────────
-        // Left is an editorial hero block (place / reading / condition), left
-        // aligned so the city, temperature and description share one optical
-        // margin. Right is a stack of metric cards using the same card primitive
-        // as every other dashboard. The old version centred each element in its
-        // own box, which is what left the icon and the temperature floating apart
-        // with a dead gap between them.
-        const float heroLeft = rect.left + 26.0f * scale;
-        const float heroRight = rect.left + 188.0f * scale;
-        const float dividerX = rect.left + 200.0f * scale;
-        const float metricLeft = rect.left + 214.0f * scale;
-        const float metricRight = rect.right - 22.0f * scale;
+        // Keep the current condition in the top band. Metrics use the width
+        // below it, avoiding a tall stack of narrow cards at the right edge.
+        const float heroLeft = rect.left + 24.0f * scale;
+        const float heroRight = rect.left + 215.0f * scale;
+        const float metricLeft = rect.left + 22.0f * scale;
+        const float metricRight = rect.right - 23.0f * scale;
 
         // Accent-tinted icon brushes: `strong` carries the shape, `soft` the
         // secondary detail (rain, rays, fog bands).
@@ -9285,18 +9301,9 @@ class Renderer {
         target_->CreateSolidColorBrush(WithAlpha(material_.accent, 0.95f * settingsOpacity_), &iconStrong);
         target_->CreateSolidColorBrush(WithAlpha(material_.accent, 0.42f * settingsOpacity_), &iconSoft);
 
-        // Place label.
-        textBrush_->SetOpacity(0.55f);
-        if (smallTextFormat_) {
-            smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-            target_->DrawTextW(city.c_str(), static_cast<UINT32>(city.length()), smallTextFormat_.Get(),
-                               D2D1::RectF(heroLeft, rect.top + 26.0f * scale, heroRight, rect.top + 44.0f * scale),
-                               textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
-        }
-
         // Icon and temperature share one band and sit adjacent, so they read as
         // a single unit instead of two centred items.
-        const float readingCenterY = rect.top + 82.0f * scale;
+        const float readingCenterY = rect.top + 66.0f * scale;
         if (hasWeather && iconStrong && iconSoft) {
             DrawWeatherIcon(D2D1::Point2F(heroLeft + 22.0f * scale, readingCenterY), 44.0f * scale,
                             WeatherVisualFromCode(state.weather.weatherCode, state.weather.isNight),
@@ -9316,8 +9323,35 @@ class Renderer {
             hugeTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
         }
 
-        const float descTop = rect.top + 120.0f * scale;
-        const float descBottom = std::min(rect.top + 162.0f * scale, rect.bottom - 25.0f * scale);
+        // Group the place and condition as a two-line label beside the current
+        // reading. A larger city name gives the right half a clear purpose.
+        const float detailsLeft = rect.left + 220.0f * scale;
+        if (clockFormat_ || textFormat_) {
+            IDWriteTextFormat* cityFormat =
+                city.length() <= 11 && clockFormat_ ? clockFormat_.Get() : textFormat_.Get();
+            if (cityFormat) {
+                cityFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+                textBrush_->SetOpacity(0.96f);
+                target_->DrawTextW(city.c_str(), static_cast<UINT32>(city.length()), cityFormat,
+                                   D2D1::RectF(detailsLeft, rect.top + 36.0f * scale,
+                                               rect.right - 23.0f * scale, rect.top + 63.0f * scale),
+                                   textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+                if (cityFormat == clockFormat_.Get())
+                    clockFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+            }
+        }
+
+        ComPtr<ID2D1SolidColorBrush> divider;
+        target_->CreateSolidColorBrush(WithAlpha(material_.hairline,
+            material_.hairline.a * settingsOpacity_), &divider);
+        if (divider) {
+            target_->DrawLine(D2D1::Point2F(rect.left + 205.0f * scale, rect.top + 43.0f * scale),
+                              D2D1::Point2F(rect.left + 205.0f * scale, rect.top + 89.0f * scale),
+                              divider.Get(), 1.0f * scale);
+        }
+
+        const float descTop = rect.top + 61.0f * scale;
+        const float descBottom = rect.top + 87.0f * scale;
 
         // Description
         const size_t descLength = desc.length();
@@ -9360,10 +9394,8 @@ class Renderer {
             }
             if (weatherDescFormat_) {
                 weatherDescFormat_->SetWordWrapping(DWRITE_WORD_WRAPPING_WRAP);
-                // Left aligned to share the hero column's margin with the city
-                // and temperature.
                 weatherDescFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-                weatherDescFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+                weatherDescFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
             }
             weatherDescFormatSize_ = descFontSize;
         }
@@ -9371,37 +9403,14 @@ class Renderer {
         textBrush_->SetOpacity(0.82f);
         target_->DrawTextW(desc.c_str(), static_cast<UINT32>(desc.length()),
                            weatherDescFormat_ ? weatherDescFormat_.Get() : textFormat_.Get(),
-                           D2D1::RectF(heroLeft, descTop, heroRight, descBottom),
+                           D2D1::RectF(detailsLeft, descTop,
+                                       rect.right - 24.0f * scale, descBottom),
                            textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
         textBrush_->SetOpacity(0.96f);
 
-        // The weather data licence requires attribution. Showing the active
-        // source also makes a whole-degree fallback clear to the user.
-        if (hasWeather && smallTextFormat_) {
-            const wchar_t* source = state.weather.preciseCurrent ? L"Open-Meteo" : L"wttr.in";
-            mutedBrush_->SetOpacity(0.55f);
-            smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-            target_->DrawTextW(source, static_cast<UINT32>(wcslen(source)), smallTextFormat_.Get(),
-                               D2D1::RectF(heroLeft, rect.bottom - 23.0f * scale,
-                                           heroRight, rect.bottom - 5.0f * scale),
-                               mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
-        }
-
-        // Hairline divider, inset from both ends so it reads as a separator
-        // rather than a full-height rule.
-        ComPtr<ID2D1SolidColorBrush> divider;
-        target_->CreateSolidColorBrush(WithAlpha(material_.hairline, material_.hairline.a * settingsOpacity_), &divider);
-        target_->FillRoundedRectangle(
-            D2D1::RoundedRect(D2D1::RectF(dividerX, rect.top + 34.0f * scale,
-                                          dividerX + 1.0f * scale, rect.bottom - 34.0f * scale),
-                              0.5f * scale, 0.5f * scale), divider.Get());
-
         // ── Metric cards ─────────────────────────────────────────────────────
-        // Each card is icon + label on one line with the value beneath, which
-        // keeps long localized labels from colliding with the value the way a
-        // single "Label: value" line did.
+        // A label above its value remains readable with three cards per row.
         struct Metric {
-            int glyph;
             const wchar_t* label;
             std::wstring value;
         };
@@ -9415,58 +9424,56 @@ class Renderer {
         std::vector<Metric> metrics;
         metrics.reserve(5);
         if (settings.weatherShowWind)
-            metrics.push_back({0, Loc(L"Wind"),
+            metrics.push_back({Loc(L"Wind"),
                 hasWeather && !state.weather.windSpeed.empty()
                     ? state.weather.windSpeed + windUnit + L" " + WindDirToArrow(state.weather.windDir)
                     : std::wstring(L"--")});
         if (settings.weatherShowFeelsLike)
-            metrics.push_back({1, Loc(L"Feels Like"),
+            metrics.push_back({Loc(L"Feels Like"),
                 hasWeather && !state.weather.feelsLike.empty()
                     ? state.weather.feelsLike + L"\x00B0" : std::wstring(L"--")});
         if (settings.weatherShowHumidity)
-            metrics.push_back({2, Loc(L"Humidity"),
+            metrics.push_back({Loc(L"Humidity"),
                 hasWeather && !state.weather.humidity.empty()
                     ? state.weather.humidity + L"%" : std::wstring(L"--")});
         if (settings.weatherShowHigh)
-            metrics.push_back({1, Loc(L"High"),
+            metrics.push_back({Loc(L"High"),
                 hasWeather && state.weather.hasHigh ? TemperatureLabel(state.weather.high) : std::wstring(L"--")});
         if (settings.weatherShowLow)
-            metrics.push_back({1, Loc(L"Low"),
+            metrics.push_back({Loc(L"Low"),
                 hasWeather && state.weather.hasLow ? TemperatureLabel(state.weather.low) : std::wstring(L"--")});
 
-        const bool compactCards = metrics.size() > 3;
-        if (compactCards && settings.weatherShowWind && hasWeather &&
+        const bool twoRows = metrics.size() > 3;
+        if (twoRows && settings.weatherShowWind && hasWeather &&
             !state.weather.windSpeed.empty()) {
-            // Keep the wind value inside a compact card; the full-height card
-            // still includes direction when at most three metrics are selected.
+            // Keep the wind value within a three-column card.
             metrics.front().value = state.weather.windSpeed + windUnit;
         }
-        const float cardH = (compactCards ? 32.0f : 40.0f) * scale;
-        const float cardGap = (compactCards ? 3.0f : 7.0f) * scale;
-        const float stackH = cardH * static_cast<float>(metrics.size()) +
-            cardGap * static_cast<float>(metrics.empty() ? 0 : metrics.size() - 1);
-        float cardTop = (rect.top + rect.bottom) * 0.5f - stackH * 0.5f;
+        const size_t firstRowCount = twoRows ? (metrics.size() == 4 ? 2 : 3) : metrics.size();
+        const float gap = 6.0f * scale;
+        const float cardH = (twoRows ? 34.0f : 40.0f) * scale;
+        const float gridTop = rect.top + (twoRows ? 103.0f : 131.0f) * scale;
 
-        for (const Metric& m : metrics) {
-            const D2D1_RECT_F card = D2D1::RectF(metricLeft, cardTop, metricRight, cardTop + cardH);
-            DrawCard(card, 10.0f * scale);
+        for (size_t i = 0; i < metrics.size(); ++i) {
+            const bool secondRow = i >= firstRowCount;
+            const size_t rowCount = secondRow ? metrics.size() - firstRowCount : firstRowCount;
+            const size_t column = secondRow ? i - firstRowCount : i;
+            const float cardW = (metricRight - metricLeft -
+                                 gap * static_cast<float>(rowCount - 1)) / static_cast<float>(rowCount);
+            const float x = metricLeft + static_cast<float>(column) * (cardW + gap);
+            const float y = gridTop + (secondRow ? cardH + gap : 0.0f);
+            const D2D1_RECT_F card = D2D1::RectF(x, y, x + cardW, y + cardH);
+            DrawCard(card, 9.0f * scale);
 
-            if (iconSoft) {
-                DrawMetricGlyph(D2D1::Point2F(card.left + 17.0f * scale, card.top + 14.0f * scale),
-                                14.0f * scale, m.glyph, iconSoft.Get());
-            }
-
-            const float textLeft = card.left + 30.0f * scale;
+            const Metric& m = metrics[i];
+            const float textLeft = card.left + 9.0f * scale;
             if (smallTextFormat_) {
                 smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
                 smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
                 mutedBrush_->SetOpacity(0.62f);
                 target_->DrawTextW(m.label, static_cast<UINT32>(wcslen(m.label)), smallTextFormat_.Get(),
-                                   compactCards
-                                       ? D2D1::RectF(textLeft, card.top + 1.0f * scale,
-                                                    card.right - 5.0f * scale, card.top + 16.0f * scale)
-                                       : D2D1::RectF(textLeft, card.top + 4.0f * scale,
-                                                    card.right - 8.0f * scale, card.top + 20.0f * scale),
+                                   D2D1::RectF(textLeft, card.top + 1.0f * scale,
+                                                card.right - 7.0f * scale, card.top + 16.0f * scale),
                                    mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
                 smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
             }
@@ -9476,17 +9483,12 @@ class Renderer {
                 textFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
                 textBrush_->SetOpacity(0.95f);
                 target_->DrawTextW(m.value.c_str(), static_cast<UINT32>(m.value.size()), textFormat_.Get(),
-                                   compactCards
-                                       ? D2D1::RectF(textLeft, card.top + 15.0f * scale,
-                                                    card.right - 5.0f * scale, card.bottom - 1.0f * scale)
-                                       : D2D1::RectF(textLeft, card.top + 19.0f * scale,
-                                                    card.right - 8.0f * scale, card.bottom - 3.0f * scale),
+                                   D2D1::RectF(textLeft, card.top + 15.0f * scale,
+                                                card.right - 7.0f * scale, card.bottom - 1.0f * scale),
                                    textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
                 textFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
                 textFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
             }
-
-            cardTop += cardH + cardGap;
         }
 
         textBrush_->SetOpacity(0.96f);
@@ -9991,15 +9993,12 @@ class Renderer {
                 }
                 slotX += (IdleStripLayout::kDividerWidth + IdleStripLayout::kSlotGap) * scale;
 
-                wchar_t weatherLabel[32] = {};
-                if (hasWeather)
-                    swprintf_s(weatherLabel, state.weather.preciseCurrent ? L"%s %.1f\x00B0" : L"%s %.0f\x00B0",
-                               wIcon.c_str(), state.weather.temperature);
-                else wcscpy_s(weatherLabel, ARRAYSIZE(weatherLabel), L"\U0001F321\uFE0F --\x00B0");
+                const std::wstring weatherLabel = CompactWeatherLabel(
+                    state.weather, hasWeather, settings.weatherPillIcon);
 
                 const D2D1_RECT_F wRect =
                     D2D1::RectF(slotX, rect.top, slotX + idleMetrics.weatherWidth, rect.bottom);
-                target_->DrawTextW(weatherLabel, static_cast<UINT32>(wcslen(weatherLabel)), idleFmt,
+                target_->DrawTextW(weatherLabel.c_str(), static_cast<UINT32>(weatherLabel.size()), idleFmt,
                                    wRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
             }
             textBrush_->SetOpacity(1.0f);
