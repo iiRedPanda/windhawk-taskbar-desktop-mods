@@ -45,7 +45,7 @@ Experimental source release. Compilation and the compact-to-expanded clock displ
 
 Version 0.1.8 places Low before High in the settings and Weather card row. It also orders the controls by placement, animation, theme, privacy, clock, media, alerts, calendar, weather, hardware, game overlay, and system status. All 97 setting paths and defaults remain the same, preserving saved choices. The source compiled, and a live check confirmed the grouped controls, retained selections, and Low/High card order.
 
-Version 0.1.9 adds **Enable Island notifications**, on by default. Switching it off pauses Windows toast polling and shell alert capture, closes any visible Island alert, removes Notifications from the view order, and disables the test-alert action. Saved history is retained until cleared or the separate history setting is turned off. The new source passed a Windhawk toolchain build; live switch behavior has not yet been checked.
+Version 0.1.9 adds **Enable Island notifications**, on by default. Switching it off pauses Windows toast polling and shell alert capture, closes any visible Island alert, removes Notifications from the view order, and disables the test-alert action. Saved history is retained until cleared or the separate history setting is turned off. The source compiled, and a live Windhawk check confirmed that the view and test-alert action disappear when disabled, then saved history and test alerts work again when enabled.
 
 ## Credits and license
 
