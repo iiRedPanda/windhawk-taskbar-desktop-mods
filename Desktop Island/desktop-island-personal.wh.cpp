@@ -25,7 +25,7 @@ A standalone Windhawk desktop overlay for media controls, clock/date, optional c
 - Optional date in the compact pill, including during media playback.
 - Clock and date controls appear first in the Modules settings group. The right-click menu no longer overrides the Expand on hover setting.
 - Reorder the scrollable views with the View order setting. The clock or active media view stays first; disabled views are skipped.
-- Alerts captured by the Island expand from the pill for 4, 8, or 12 seconds, or stay until dismissed. The optional history tab keeps captured alerts across Island restarts until cleared. A right-click test alert checks the pop-up and history without waiting for an external alert.
+- Notifications captured by the Island expand from the pill for 4, 8, or 12 seconds, or stay until dismissed. When history is enabled, captured notifications are kept across restarts until cleared, including crash and fatal-error toasts. The Notifications view shows one entry at a time; its right-click menu can copy the full message for investigation. A test alert checks the pop-up and history without waiting for an external alert.
 - Optional Calendar tab, disabled by default, with a passive Calendar Plus event preview when available.
 - Individually selectable CPU, RAM, GPU, network, and disk-space cards. Disk space defaults off; the disk target remains C:.
 - Inherited timer, volume, battery, Bluetooth, clipboard, privacy indicators, weather, and game-overlay options.
@@ -38,8 +38,8 @@ Click the compact pill to expand the overlay. Hover expansion is optional and di
 
 - **Compact date:** choose no date, a short date, or a date with the weekday. The date can also appear during media playback.
 - **Visibility:** Expand on hover is controlled in Windhawk settings. Auto-hide can hide the Island after an idle timeout. Its hover-reveal switch applies only to idle auto-hide; instant-hide mode keeps its hover area steady to avoid repeated folding. Full-screen action defaults to Hide and takes effect immediately even when idle auto-hide is set to Never. A separate full-screen hover-reveal switch defaults off. The other full-screen action moves the Island to the largest other monitor when an app or game fills its home monitor; with only one monitor, Move behaves like Hide. The hide/show shortcut can temporarily reveal a hidden Island.
-- **Views:** enter `notifications,calendar,weather,hardware` in any order. The first clock/media view stays in place. Shift+wheel on Island alert history pages through older entries; use the right-click menu to show a test alert, dismiss the current alert, or clear the history.
-- **Media:** the media controls are together near the top of Modules. **Exclude apps from media detection** removes matching apps from the compact pill and expanded media controls; it is empty by default. Enter `riot` there if Riot Client replaces a playing Spotify track. **Prevent automatic expansion for these apps** only stops the Island opening automatically; the app can still appear as media. Automatic expansion is disabled by default. A browser playing a show and the same browser playing music share an app identity.
+- **Views:** enter `notifications,calendar,weather,hardware` in any order. The first clock/media view stays in place. In Notifications, Shift+wheel selects an older alert; right-click to copy the selected alert's full message, show a test alert, dismiss the current pop-up, or clear history.
+- **Media:** the media controls are together near the top of Modules. **Exclude apps from media detection** removes matching sources from the compact pill and expanded media controls; it is empty by default. Enter a source such as `riot` or `brave.exe` (the `.exe` suffix is optional). Windows may identify a browser site's media session by the site rather than the browser, in which case enter that reported source too. **Prevent automatic expansion for these apps** only stops the Island opening automatically; the app can still appear as media. Automatic expansion is disabled by default. A browser playing a show and the same browser playing music may share a source identity.
 - **Hardware:** select the CPU, RAM, GPU, network, and disk-space cards individually. Disk space is disabled by default and currently reports the C: drive.
 - **Calendar:** enable the Calendar tab to make it available in the overlay. Windows Calendar Plus can supply its passive event preview; other Island modules work without that mod.
 
@@ -49,7 +49,7 @@ The overlay is a separate desktop pill. It does not add a button to the Windows 
 
 Weather is enabled by default and uses wttr.in. With no city configured, the service determines location from the network request. Weather requests use HTTPS only, reject downgrade redirects, and limit response size and read duration. Clipboard and notification previews can display sensitive content on screen and have their own settings.
 
-Island alert history stores the captured app name and alert text in Windhawk local mod storage until you clear it or turn off the history setting. It can include sensitive text. The Island does not reliably receive every Windows toast, replace Windows Notification Center, or suppress Windows banners. For native alerts that should remain available without a banner, keep Windows notifications and Notification Center enabled and turn off **Show notification banners** for the relevant app in Windows Settings > System > Notifications; see [Microsoft's notification settings guide](https://support.microsoft.com/en-us/windows/experience/notifications-and-do-not-disturb-in-windows). Do Not Disturb suppression can prevent alerts from entering Island history.
+Island alert history stores the captured app name and full alert text in Windhawk local mod storage until you clear it or turn off the history setting. It can include sensitive text. The Island retains alerts only after it has captured them; it cannot recover an earlier crash message that it never received. It does not independently monitor process or driver crashes, reliably receive every Windows toast, replace Windows Notification Center, or suppress Windows banners. Keep Windows notifications enabled if you want Windows to retain its own notification history; see [Microsoft's notification settings guide](https://support.microsoft.com/en-us/windows/experience/notifications-and-do-not-disturb-in-windows). Do Not Disturb suppression can prevent alerts from entering Island history.
 
 The optional Calendar tab reads a local, unencrypted snapshot from Windows Calendar Plus containing event titles, start/end times, and all-day status. It checks at most once a minute and rejects snapshots older than two hours. Calendar Plus is not required for the overlay; the bridge adds no event editing or reminder notifications.
 
@@ -344,7 +344,7 @@ SOFTWARE.
     $description: Automatically expand the island when a new song or video starts playing. If disabled, album art updates smoothly in the collapsed pill without unprompted expansion.
   - MediaSourceBlocklist: ""
     $name: Exclude apps from media detection
-    $description: Comma-separated app names or IDs, for example riot. Excluded apps never appear as media in the pill or expanded controls. Empty by default. This is separate from the auto-expand lists below.
+    $description: Comma-separated media-source names or IDs, for example riot or brave.exe. The .exe suffix is optional. Excluded sources never appear in media controls. Browser sites may report their own source ID, so exclude that ID too if needed. Separate from auto-expand below.
   - MediaExpandAllowlist: ""
     $name: Music apps allowed to auto-expand
     $description: Comma-separated app names or IDs. Leave empty for no automatic expansion.
@@ -383,7 +383,7 @@ SOFTWARE.
     $description: Shows a status alert card when Do Not Disturb is toggled in the Windows notification panel.
   - NotificationHistory: true
     $name: Island alert history
-    $description: Keep alerts captured by the Island across restarts until you clear them. This does not capture every Windows notification. Shift+wheel shows older alerts.
+    $description: Keep every notification the Island captures, including crash toasts, until you clear it. The Notifications view shows one at a time; Shift+wheel selects older entries and right-click copies the full message. Notifications the Island misses cannot be recovered.
   - NotificationPopupSeconds: '8'
     $name: Island alert pop-up duration
     $description: How long an alert captured by the Island opens from the pill. Until dismissed keeps the current alert visible until you dismiss it from the right-click menu. Windows banners are unchanged.
@@ -1093,6 +1093,7 @@ struct NotificationRecord {
     std::wstring title;
     double receivedAt = 0.0;
     int storageIndex = -1;
+    unsigned long long captureSequence = 0;
 };
 
 struct NotificationSnapshot {
@@ -1205,7 +1206,9 @@ struct SharedState {
     MediaSnapshot media;
     ClipboardSnapshot clipboard;
     NotificationSnapshot notification;
-    std::vector<NotificationRecord> notificationHistory;
+    NotificationRecord visibleNotification;
+    int notificationHistoryCount = 0;
+    int notificationHistoryPage = 0;
     VolumeSnapshot volume;
     CapsLockSnapshot capsLock;
     TimerSnapshot timer;
@@ -1369,6 +1372,9 @@ HANDLE g_bluetoothThread = nullptr;
 std::atomic<bool> g_running = false;
 std::atomic<int> g_idleTab = 0;
 std::atomic<int> g_notificationHistoryPage = 0;
+// History lives outside SharedState so a render-frame snapshot copies only
+// the one entry currently shown, regardless of how many alerts were saved.
+std::vector<NotificationRecord> g_notificationHistory;
 std::atomic<bool> g_layoutDirty = true;
 std::atomic<bool> g_clickExpanded = false;
 std::atomic<int> g_pressedMediaButton = -1;
@@ -2252,7 +2258,7 @@ void LoadSettings() {
     next.viewOrder = GetStringSettingCopy(L"Modules.ViewOrder");
     if (!next.notificationHistory) {
         std::lock_guard lock(g_stateMutex);
-        g_state.notificationHistory.clear();
+        g_notificationHistory.clear();
         g_notificationHistoryPage = 0;
         ClearStoredNotificationHistory();
     }
@@ -3899,10 +3905,21 @@ winrt::Windows::Media::Control::GlobalSystemMediaTransportControlsSession Select
         try {
             const std::wstring source = ToLowerCopy(std::wstring(candidate.SourceAppUserModelId().c_str()));
             const std::wstring name = ToLowerCopy(FriendlyMediaSourceName(source));
-            for (const auto& blocked : (*GetSettingsSnapshot()).mediaSourceBlocklist) {
-                if (!blocked.empty() &&
-                    (source.find(blocked) != std::wstring::npos ||
-                     name.find(blocked) != std::wstring::npos)) return false;
+            const auto settings = GetSettingsSnapshot();
+            for (const auto& blocked : settings->mediaSourceBlocklist) {
+                if (blocked.empty()) continue;
+                // A Windows media session can report a friendly name or AUMID
+                // without the .exe suffix entered by the user.
+                std::wstring executableName = blocked;
+                if (executableName.size() > 4 &&
+                    executableName.compare(executableName.size() - 4, 4, L".exe") == 0) {
+                    executableName.resize(executableName.size() - 4);
+                }
+                if (source.find(blocked) != std::wstring::npos ||
+                    name.find(blocked) != std::wstring::npos ||
+                    (!executableName.empty() &&
+                     (source.find(executableName) != std::wstring::npos ||
+                      name.find(executableName) != std::wstring::npos))) return false;
             }
             // A launcher may mark its own UI session Playing and report its
             // app name as the track. It has no distinct media to display.
@@ -4448,14 +4465,13 @@ DWORD WINAPI NotificationThreadProc(void*) {
                             if (!snapshot.body.empty()) {
                                 snapshot.title += L" - " + snapshot.body;
                             }
-                            if (snapshot.title.size() > 120) {
-                                snapshot.title.resize(120);
-                                snapshot.title += L"...";
-                            }
-
                             {
                                 std::lock_guard lock(g_stateMutex);
                                 SaveNotificationLocked(snapshot);
+                                if (snapshot.title.size() > 120) {
+                                    snapshot.title.resize(120);
+                                    snapshot.title += L"...";
+                                }
                                 g_state.notification = std::move(snapshot);
                             }
                             TriggerNudge();
@@ -6048,19 +6064,20 @@ void SaveNotificationLocked(const NotificationSnapshot& notification) {
         g_hotkeyUnhideUntil.store(std::max(g_hotkeyUnhideUntil.load(), notification.expiresAt));
         g_autoHiddenParked = false;
     }
-    if (!(*GetSettingsSnapshot()).notificationHistory || notification.title.empty()) return;
-    auto& history = g_state.notificationHistory;
+    if (!(*GetSettingsSnapshot()).notificationHistory) return;
+    auto& history = g_notificationHistory;
     const double now = NowSeconds();
-    if (!history.empty() && history.back().app == notification.app &&
+    if (notification.captureSequence == 0 && !history.empty() && history.back().app == notification.app &&
         history.back().title == notification.title && now - history.back().receivedAt < 3.0) return;
-    history.push_back({notification.app, notification.title, now});
+    const std::wstring savedTitle = notification.title.empty() ? L"Notification details unavailable" : notification.title;
+    history.push_back({notification.app, savedTitle, now, -1, notification.captureSequence});
     const int index = Wh_GetIntValue(L"IslandAlertHistoryCount", 0);
     if (index >= 0 && index < 100000) {
         wchar_t appKey[48], titleKey[48];
         swprintf_s(appKey, L"IslandAlertApp%08d", index);
         swprintf_s(titleKey, L"IslandAlertTitle%08d", index);
         if (Wh_SetStringValue(appKey, notification.app.c_str()) &&
-            Wh_SetStringValue(titleKey, notification.title.c_str())) {
+            Wh_SetStringValue(titleKey, savedTitle.c_str())) {
             if (Wh_SetIntValue(L"IslandAlertHistoryCount", index + 1))
                 history.back().storageIndex = index;
         }
@@ -6084,12 +6101,12 @@ void LoadStoredNotificationHistory() {
     const int count = ClampInt(Wh_GetIntValue(L"IslandAlertHistoryCount", 0), 0, 100000);
     std::lock_guard lock(g_stateMutex);
     for (int index = 0; index < count; ++index) {
-        wchar_t appKey[48], titleKey[48], app[256]{}, title[256]{};
+        wchar_t appKey[48], titleKey[48], app[512]{}, title[8192]{};
         swprintf_s(appKey, L"IslandAlertApp%08d", index);
         swprintf_s(titleKey, L"IslandAlertTitle%08d", index);
         Wh_GetStringValue(appKey, app, ARRAYSIZE(app));
         if (Wh_GetStringValue(titleKey, title, ARRAYSIZE(title)))
-            g_state.notificationHistory.push_back({app, title, -1000.0, index});
+            g_notificationHistory.push_back({app, title, -1000.0, index});
     }
 }
 
@@ -6133,27 +6150,22 @@ void CaptureShellNotification(HWND hwnd) {
     // Fetch a 64px icon to ensure crisp rendering inside the pill
     notification.icon = GetWindowIconPixels(hwnd, 64);
 
-    if (notification.title.size() > 96) {
-        notification.body = notification.title.substr(64);
-        notification.title.resize(64);
-        notification.title += L"...";
-    }
-
-    size_t alertHistoryIndex = static_cast<size_t>(-1);
     const unsigned long long captureSequence = notification.captureSequence;
     {
         std::lock_guard lock(g_stateMutex);
-        const size_t oldHistorySize = g_state.notificationHistory.size();
         SaveNotificationLocked(notification);
-        if (g_state.notificationHistory.size() > oldHistorySize)
-            alertHistoryIndex = g_state.notificationHistory.size() - 1;
+        if (notification.title.size() > 96) {
+            notification.body = notification.title.substr(64);
+            notification.title.resize(64);
+            notification.title += L"...";
+        }
         g_state.notification = std::move(notification);
     }
     TriggerNudge();
 
     // Spawn a background thread to extract the full rich text body of the toast using UI Automation.
     // Modern Windows Toasts often only provide the App Name via GetWindowTextW, leaving the body hidden in the XAML tree.
-    QueueBackgroundWork(1, true, [hwnd, alertHistoryIndex, captureSequence]() {
+    QueueBackgroundWork(1, true, [hwnd, captureSequence]() {
         Sleep(400); // Give the heavy UWP XAML tree enough time to fully construct the text nodes
         HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
         if (SUCCEEDED(hr)) {
@@ -6206,6 +6218,14 @@ void CaptureShellNotification(HWND hwnd) {
 
                         if (!fullText.empty()) {
                             std::lock_guard lock(g_stateMutex);
+                            for (auto& item : g_notificationHistory) {
+                                if (item.captureSequence == captureSequence) {
+                                    if (!appName.empty()) item.app = appName;
+                                    item.title = fullText;
+                                    UpdateLastStoredNotificationLocked(item);
+                                    break;
+                                }
+                            }
                             if (g_state.notification.active &&
                                 g_state.notification.captureSequence == captureSequence) {
                                 if (!appName.empty()) {
@@ -6218,14 +6238,6 @@ void CaptureShellNotification(HWND hwnd) {
                                     }
                                 }
                                 g_state.notification.title = fullText;
-                                if (alertHistoryIndex < g_state.notificationHistory.size()) {
-                                    auto& item = g_state.notificationHistory[alertHistoryIndex];
-                                    item.app = g_state.notification.app;
-                                    item.title = fullText;
-                                    UpdateLastStoredNotificationLocked(item);
-                                } else {
-                                    SaveNotificationLocked(g_state.notification);
-                                }
                             }
                         }
                     }
@@ -6712,6 +6724,7 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
     AppendMenuW(menu, MF_STRING, 9, L"Open Windhawk settings");
     AppendMenuW(menu, MF_STRING, 14, L"Show test alert");
     AppendMenuW(menu, MF_STRING, 15, L"Dismiss current alert");
+    AppendMenuW(menu, MF_STRING, 16, L"Copy shown Island alert");
     AppendMenuW(menu, MF_STRING, 13, L"Clear Island alert history");
 
     SetForegroundWindow(hwnd);
@@ -6828,7 +6841,7 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
             break;
         }
         case 13:
-            { std::lock_guard lock(g_stateMutex); g_state.notificationHistory.clear(); g_state.notification.active = false; ClearStoredNotificationHistory(); }
+            { std::lock_guard lock(g_stateMutex); g_notificationHistory.clear(); g_state.notification.active = false; ClearStoredNotificationHistory(); }
             g_hotkeyUnhideUntil = 0.0;
             g_notificationHistoryPage = 0;
             g_layoutDirty = true;
@@ -6852,6 +6865,34 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
             g_hotkeyUnhideUntil = 0.0;
             g_layoutDirty = true;
             break;
+        case 16: {
+            std::wstring details;
+            {
+                std::lock_guard lock(g_stateMutex);
+                const auto& history = g_notificationHistory;
+                const int page = g_notificationHistoryPage.load();
+                if (page >= 0 && static_cast<size_t>(page) < history.size()) {
+                    const auto& item = history[history.size() - 1 - page];
+                    details = item.app.empty() ? item.title : item.app + L"\r\n" + item.title;
+                }
+            }
+            if (details.empty() || !OpenClipboard(hwnd)) break;
+            const size_t bytes = (details.size() + 1) * sizeof(wchar_t);
+            HGLOBAL data = GlobalAlloc(GMEM_MOVEABLE, bytes);
+            if (data) {
+                void* buffer = GlobalLock(data);
+                if (buffer) {
+                    memcpy(buffer, details.c_str(), bytes);
+                    GlobalUnlock(data);
+                    EmptyClipboard();
+                    if (!SetClipboardData(CF_UNICODETEXT, data)) GlobalFree(data);
+                } else {
+                    GlobalFree(data);
+                }
+            }
+            CloseClipboard();
+            break;
+        }
         case 30:
             StartFocusTimer(25, false);
             break;
@@ -8895,8 +8936,8 @@ class Renderer {
                                D2D1::RectF(left, rect.top + 12.0f * scale, right, rect.top + 36.0f * scale),
                                textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
         }
-        const int page = std::max(0, g_notificationHistoryPage.load());
-        const int total = static_cast<int>(state.notificationHistory.size());
+        const int page = state.notificationHistoryPage;
+        const int total = state.notificationHistoryCount;
         if (total == 0) {
             const wchar_t* empty = L"No recent notifications";
             if (smallTextFormat_) target_->DrawTextW(empty, static_cast<UINT32>(wcslen(empty)), smallTextFormat_.Get(),
@@ -8904,22 +8945,22 @@ class Renderer {
                 textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
         } else if (smallTextFormat_) {
             smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-            const int first = std::min(page * 3, std::max(0, total - 1));
-            for (int row = 0; row < 3 && first + row < total; ++row) {
-                const auto& item = state.notificationHistory[total - 1 - first - row];
-                std::wstring line = item.app.empty() ? item.title : item.app + L": " + item.title;
-                const float y = rect.top + (40.0f + row * 34.0f) * scale;
-                target_->DrawTextW(line.c_str(), static_cast<UINT32>(line.size()), smallTextFormat_.Get(),
-                    D2D1::RectF(left, y, right, y + 30.0f * scale), textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
-            }
-            if (total > 3) {
-                wchar_t footer[64];
-                swprintf_s(footer, L"%d-%d of %d  |  Shift+wheel for older", first + 1,
-                           std::min(first + 3, total), total);
-                target_->DrawTextW(footer, static_cast<UINT32>(wcslen(footer)), smallTextFormat_.Get(),
-                    D2D1::RectF(left, rect.bottom - 23.0f * scale, right, rect.bottom - 4.0f * scale),
-                    textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
-            }
+            const int selected = std::min(page, total - 1);
+            const auto& item = state.visibleNotification;
+            const std::wstring app = item.app.empty() ? L"Notification" : item.app;
+            target_->DrawTextW(app.c_str(), static_cast<UINT32>(app.size()), smallTextFormat_.Get(),
+                D2D1::RectF(left, rect.top + 40.0f * scale, right, rect.top + 62.0f * scale),
+                textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+            smallTextFormat_->SetWordWrapping(DWRITE_WORD_WRAPPING_WRAP);
+            target_->DrawTextW(item.title.c_str(), static_cast<UINT32>(item.title.size()), smallTextFormat_.Get(),
+                D2D1::RectF(left, rect.top + 64.0f * scale, right, rect.bottom - 25.0f * scale),
+                textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+            smallTextFormat_->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+            wchar_t footer[100];
+            swprintf_s(footer, L"%d/%d  |  Shift+wheel  |  Right-click: copy", selected + 1, total);
+            target_->DrawTextW(footer, static_cast<UINT32>(wcslen(footer)), smallTextFormat_.Get(),
+                D2D1::RectF(left, rect.bottom - 23.0f * scale, right, rect.bottom - 4.0f * scale),
+                textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
         }
         textBrush_->SetOpacity(1.0f);
     }
@@ -11778,8 +11819,8 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             if ((GET_KEYSTATE_WPARAM(wParam) & MK_SHIFT) &&
                 tabs[NormalizedTabIndex(settings)] == 4) {
                 int count = 0;
-                { std::lock_guard lock(g_stateMutex); count = static_cast<int>(g_state.notificationHistory.size()); }
-                const int maxPage = std::max(0, (count - 1) / 3);
+                { std::lock_guard lock(g_stateMutex); count = static_cast<int>(g_notificationHistory.size()); }
+                const int maxPage = std::max(0, count - 1);
                 g_notificationHistoryPage = ClampInt(g_notificationHistoryPage.load() + (delta < 0 ? 1 : -1), 0, maxPage);
                 g_layoutDirty = true;
                 return 0;
@@ -12193,6 +12234,12 @@ DWORD WINAPI RenderThreadProc(void*) {
         {
             std::lock_guard lock(g_stateMutex);
             snapshot = g_state;
+            snapshot.notificationHistoryCount = static_cast<int>(g_notificationHistory.size());
+            if (snapshot.notificationHistoryCount > 0) {
+                const int page = ClampInt(g_notificationHistoryPage.load(), 0, snapshot.notificationHistoryCount - 1);
+                snapshot.notificationHistoryPage = page;
+                snapshot.visibleNotification = g_notificationHistory[snapshot.notificationHistoryCount - 1 - page];
+            }
             if (g_state.timer.active && g_state.timer.running && now >= g_state.timer.endsAt) {
                 g_state.timer.active = false;
                 g_state.timer.running = false;
