@@ -39,7 +39,7 @@ Click the compact pill to expand the overlay. Hover expansion is optional and di
 - **Compact date:** choose no date, a short date, or a date with the weekday. The date can also appear during media playback.
 - **Visibility:** Expand on hover is controlled in Windhawk settings. Auto-hide can hide the Island after an idle timeout. Its hover-reveal switch applies only to idle auto-hide; instant-hide mode keeps its hover area steady to avoid repeated folding. Full-screen action defaults to Hide and takes effect immediately even when idle auto-hide is set to Never. A separate full-screen hover-reveal switch defaults off. The other full-screen action moves the Island to the largest other monitor when an app or game fills its home monitor; with only one monitor, Move behaves like Hide. The hide/show shortcut can temporarily reveal a hidden Island.
 - **Views:** enter `notifications,calendar,weather,hardware` in any order. The first clock/media view stays in place. In Notifications, Shift+wheel selects an older alert; right-click to copy the selected alert's full message, show a test alert, dismiss the current pop-up, or clear history.
-- **Media:** the media controls are together near the top of Modules. **Exclude apps from media detection** removes matching sessions from the compact pill and expanded media controls; it is empty by default. Entries are comma-separated and match app IDs, executable names, product names, or executable publisher names when Windows exposes the owning program. `firefox` or `firefox.exe` excludes Firefox; `riot games` excludes recognized Riot Client, VALORANT, League, Teamfight Tactics, Runeterra, and 2XKO sessions. Matching ignores case, spaces, punctuation, and `.exe`. If an app reports an unrelated media ID and Windows does not expose its process, enter that ID explicitly. **Prevent automatic expansion for these apps** only stops the Island opening automatically; the app can still appear as media. Automatic expansion is disabled by default. A browser playing a show and the same browser playing music may share a source identity.
+- **Media:** the media controls are together near the top of Modules. **Exclude apps from media detection** removes matching sessions from the compact pill and expanded media controls; it is empty by default. Entries are comma-separated and match app IDs, executable names, product names, or executable company names when Windows exposes the owning program. `firefox` or `firefox.exe` excludes Firefox; `riot games` excludes recognized Riot Client, VALORANT, League, Teamfight Tactics, Runeterra, and 2XKO sessions. Matching ignores case, spaces, punctuation, and `.exe`. For an app with an unrelated ID, play its media, right-click the Island, choose **Copy current media source ID**, and paste that ID into the exclusion setting. **Prevent automatic expansion for these apps** only stops the Island opening automatically; the app can still appear as media. Automatic expansion is disabled by default. A browser playing a show and the same browser playing music may share a source identity.
 - **Hardware:** select the CPU, RAM, GPU, network, and disk-space cards individually. Disk space is disabled by default and currently reports the C: drive.
 - **Calendar:** enable the Calendar tab to make it available in the overlay. Windows Calendar Plus can supply its passive event preview; other Island modules work without that mod.
 
@@ -344,7 +344,7 @@ SOFTWARE.
     $description: Automatically expand the island when a new song or video starts playing. If disabled, album art updates smoothly in the collapsed pill without unprompted expansion.
   - MediaSourceBlocklist: ""
     $name: Exclude apps from media detection
-    $description: Comma-separated app, executable, or publisher names, such as firefox or riot games. Spaces, punctuation, and .exe are ignored. Riot Games also matches its known game names. Publisher matching uses the owning executable when Windows identifies it; enter a source ID directly if an app cannot be identified. This removes matching media sessions, unlike the auto-expand controls below.
+    $description: Comma-separated app, executable, or publisher names, such as firefox or riot games. Spaces, punctuation, and .exe are ignored. Riot Games also matches its known game names. If an app cannot be identified, play it and right-click the Island to copy its media source ID, then enter that ID here. This removes matching sessions, unlike the auto-expand controls below.
   - MediaExpandAllowlist: ""
     $name: Music apps allowed to auto-expand
     $description: Comma-separated app names or IDs. Leave empty for no automatic expansion.
@@ -6813,13 +6813,37 @@ void DismissTransientState() {
     Wh_SetIntValue(L"ProgressPercent", -1);
 }
 
+bool CopyIslandText(HWND hwnd, const std::wstring& value) {
+    if (value.empty() || !OpenClipboard(hwnd)) return false;
+    const size_t bytes = (value.size() + 1) * sizeof(wchar_t);
+    HGLOBAL data = GlobalAlloc(GMEM_MOVEABLE, bytes);
+    if (!data) {
+        CloseClipboard();
+        return false;
+    }
+    void* buffer = GlobalLock(data);
+    if (!buffer) {
+        GlobalFree(data);
+        CloseClipboard();
+        return false;
+    }
+    memcpy(buffer, value.c_str(), bytes);
+    GlobalUnlock(data);
+    const bool copied = EmptyClipboard() && SetClipboardData(CF_UNICODETEXT, data);
+    if (!copied) GlobalFree(data);
+    CloseClipboard();
+    return copied;
+}
+
 void ShowContextMenu(HWND hwnd, POINT screenPoint) {
     bool timerActive = false;
     bool timerRunning = false;
+    bool hasMediaSource = false;
     {
         std::lock_guard lock(g_stateMutex);
         timerActive = g_state.timer.active;
         timerRunning = g_state.timer.running;
+        hasMediaSource = !g_state.media.sourceAppUserModelId.empty();
     }
 
     HMENU menu = CreatePopupMenu();
@@ -6872,6 +6896,7 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
     AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(themeMenu), L"Theme");
     AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
     AppendMenuW(menu, MF_STRING, 9, L"Open Windhawk settings");
+    AppendMenuW(menu, MF_STRING | (hasMediaSource ? 0 : MF_GRAYED), 17, L"Copy current media source ID");
     AppendMenuW(menu, MF_STRING, 14, L"Show test alert");
     AppendMenuW(menu, MF_STRING, 15, L"Dismiss current alert");
     AppendMenuW(menu, MF_STRING, 16, L"Copy shown Island alert");
@@ -7026,21 +7051,16 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
                     details = item.app.empty() ? item.title : item.app + L"\r\n" + item.title;
                 }
             }
-            if (details.empty() || !OpenClipboard(hwnd)) break;
-            const size_t bytes = (details.size() + 1) * sizeof(wchar_t);
-            HGLOBAL data = GlobalAlloc(GMEM_MOVEABLE, bytes);
-            if (data) {
-                void* buffer = GlobalLock(data);
-                if (buffer) {
-                    memcpy(buffer, details.c_str(), bytes);
-                    GlobalUnlock(data);
-                    EmptyClipboard();
-                    if (!SetClipboardData(CF_UNICODETEXT, data)) GlobalFree(data);
-                } else {
-                    GlobalFree(data);
-                }
+            CopyIslandText(hwnd, details);
+            break;
+        }
+        case 17: {
+            std::wstring source;
+            {
+                std::lock_guard lock(g_stateMutex);
+                source = g_state.media.sourceAppUserModelId;
             }
-            CloseClipboard();
+            CopyIslandText(hwnd, source);
             break;
         }
         case 30:
