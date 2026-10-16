@@ -19,7 +19,7 @@
 /*
 # Windows Calendar Plus
 
-Display Google Calendar and ICS events in the native Windows calendar pane, with account management, refresh controls, and optional reminders.
+Bring Google Calendar and ICS feed events into the native Windows calendar pane. View upcoming events, refresh them from the pane, and choose whether to receive reminders.
 
 ## Features
 

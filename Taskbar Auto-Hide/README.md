@@ -1,6 +1,6 @@
 # Taskbar Auto-Hide
 
-Independent controls for taskbar auto-hide policy and animation speed in one Windhawk mod.
+Choose when the Windows taskbar hides and how quickly it appears again. Policy and animation controls can be used separately.
 
 ## Features
 

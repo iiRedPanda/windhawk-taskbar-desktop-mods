@@ -1,7 +1,7 @@
 // ==WindhawkMod==
 // @id              taskbar-tray-personal
 // @name            Taskbar Tray
-// @description     Independent tray icon, bell and Show Desktop controls
+// @description     Customize system tray icons, notification bell and Show Desktop button
 // @version         0.1.0
 // @author          Jip
 // @github          https://github.com/iiRedPanda
@@ -20,7 +20,7 @@
 /*
 # Taskbar Tray
 
-Control system tray icon visibility, notification-bell behavior, battery coloring, and Show Desktop width.
+Make room in the Windows system tray by hiding supported indicators you do not use. Tune the notification bell, battery icon, and Show Desktop button separately.
 
 ## Features
 
@@ -28,8 +28,6 @@ Control system tray icon visibility, notification-bell behavior, battery colorin
 - Conditional bell visibility based on notifications and Do Not Disturb.
 - Optional grayscale battery icon.
 - Show Desktop width from 0 to 80 pixels; 0 hides the button.
-
-Most behavior is inherited from the original mod. This fork bounds Show Desktop width and uses an independent mod identity.
 
 ## Settings
 

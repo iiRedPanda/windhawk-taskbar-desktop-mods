@@ -1,7 +1,7 @@
 // ==WindhawkMod==
 // @id              taskbar-auto-hide-personal
 // @name            Taskbar Auto-Hide
-// @description     Auto-hide policy and animation speed in one independent mod
+// @description     Choose when the taskbar hides and adjust its show and hide animation speeds
 // @version         0.1.1
 // @author          Jip
 // @github          https://github.com/iiRedPanda
@@ -17,7 +17,7 @@
 /*
 # Taskbar Auto-Hide
 
-Independent controls for taskbar auto-hide policy and animation speed in one Windhawk mod.
+Choose when the Windows taskbar hides and how quickly it appears again. Policy and animation controls can be used separately.
 
 ## Features
 

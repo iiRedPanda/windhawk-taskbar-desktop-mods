@@ -1,7 +1,7 @@
 // ==WindhawkMod==
 // @id              desktop-island-personal
 // @name            Desktop Island
-// @description     Independent desktop pill with focused media, calendar and hardware controls
+// @description     Floating desktop pill for media, clock, weather, hardware and optional calendar
 // @version         0.1.9
 // @author          Jip
 // @github          https://github.com/iiRedPanda
@@ -16,19 +16,19 @@
 /*
 # Desktop Island
 
-A standalone Windhawk desktop overlay for media controls, clock/date, optional calendar, hardware cards, and system indicators.
+A floating desktop pill for Windhawk that puts time, media controls, weather, hardware readings, and selected system activity within reach. Expand it for more detail or keep it compact.
 
 ## Features
 
-- Obsidian, Graphite, Porcelain, and Custom palettes.
-- Click-to-expand by default, with optional automatic expansion restricted to an app allowlist and blocklist. The separate media-source exclusion list is empty by default. Enter an app or executable name, or a publisher name where the owning program can be identified. `riot games` also covers known Riot game names. App matching does not classify browser content as music or video.
+- Choose a color theme: **Obsidian** (near-black), **Graphite** (dark gray), **Porcelain** (light), or **Custom Colors**. Appearance and transparency can be adjusted further in settings.
+- Click to expand, or enable automatic expansion for selected media apps. A separate exclusion list removes unwanted apps from media detection entirely; it starts empty.
 - Optional date in the compact pill, including during media playback.
-- Clock and date controls appear first in the Modules settings group. The right-click menu no longer overrides the Expand on hover setting.
+- Keep the pill visible, auto-hide it when idle, or hide or move it to another monitor while a full-screen app or game runs.
 - Reorder the scrollable views with the View order setting. The clock or active media view stays first; disabled views are skipped.
 - Island notifications have a master switch. When enabled, alerts captured by the Island appear from the pill for 4, 8, or 12 seconds, or stay until dismissed. With history enabled, captured alerts are kept across restarts until cleared. The Notifications view shows one entry at a time; click an entry for its full saved text, source, and capture time, or use the right-click menu to copy them. A test alert checks the pop-up and history without waiting for an external alert.
 - Optional Calendar tab, disabled by default, with a passive Calendar Plus event preview when available.
 - Individually selectable CPU, RAM, GPU, network, and disk-space cards. Disk space defaults off; the disk target remains C:.
-- Inherited timer, volume, battery, Bluetooth, clipboard, privacy indicators, weather, and game-overlay options. Weather uses separate day and night icons for clear and partly cloudy conditions, distinct precipitation icons, a one-decimal current temperature when available, and selectable wind, feels-like, humidity, forecast-high, and forecast-low cards.
+- Optional timer, volume, battery, Bluetooth, clipboard, privacy indicators, weather, and game-overlay information. Weather uses day and night icons, a one-decimal current temperature when available, and selectable wind, feels-like, humidity, forecast-low, and forecast-high cards.
 
 GPU, network, and disk measurements are requested when their visible card or game-overlay metric needs them. Animation defaults to 60 FPS; static idle frames are checked at 10 Hz. In separate 20-second samples on Windows 11 build 26100.6899, the Island process averaged 19% of one CPU core during Spotify playback and 11% while playback was paused. It used about 56 MB working set (32 MB private). These are observations, not a performance guarantee across systems or settings.
 
@@ -39,7 +39,7 @@ Click the compact pill to expand the overlay. Hover expansion is optional and di
 - **Compact date:** choose no date, a short date, or a date with the weekday. The date can also appear during media playback.
 - **Visibility:** Expand on hover is controlled in Windhawk settings. Auto-hide can hide the Island after an idle timeout. Its hover-reveal switch applies only to idle auto-hide; instant-hide mode keeps its hover area steady to avoid repeated folding. Full-screen action defaults to Hide and takes effect immediately even when idle auto-hide is set to Never. A separate full-screen hover-reveal switch defaults off. The other full-screen action moves the Island to the largest other monitor when an app or game fills its home monitor; with only one monitor, Move behaves like Hide. The hide/show shortcut can temporarily reveal a hidden Island.
 - **Views:** enter `notifications,calendar,weather,hardware` in any order. The first clock/media view stays in place. In Notifications, Shift+wheel selects an older alert; click it to inspect the saved details, or right-click to copy them, show a test alert, dismiss the current pop-up, open Windows Reliability Monitor, or clear history. Reliability Monitor can help investigate a crash near the saved capture time, but an unverified shell popup alone does not prove one occurred. Clicking a compact alert pop-up also opens its details.
-- **Media:** the media controls are together near the top of Modules. **Exclude apps from media detection** removes matching sessions from the compact pill and expanded media controls; it is empty by default. Entries are comma-separated and match app IDs, executable names, product names, or executable company names when Windows exposes the owning program. `firefox` or `firefox.exe` excludes Firefox; `riot games` excludes recognized Riot Client, VALORANT, League, Teamfight Tactics, Runeterra, and 2XKO sessions. Matching ignores case, spaces, punctuation, and `.exe`. For an app with an unrelated ID, play its media, right-click the Island, choose **Copy current media source ID**, and paste that ID into the exclusion setting. **Prevent automatic expansion for these apps** only stops the Island opening automatically; the app can still appear as media. Automatic expansion is disabled by default. A browser playing a show and the same browser playing music may share a source identity.
+- **Media:** **Exclude apps from media detection** removes matching media sessions from both the compact pill and expanded controls. Enter comma-separated app names, executable names, publishers, or media source IDs. Matching ignores case, spaces, punctuation, and `.exe`; publisher and product matching work when Windows exposes the owning program. If a session is hard to identify, play it, right-click the Island, choose **Copy current media source ID**, and add that ID to the list. **Prevent automatic expansion for these apps** only keeps the Island from opening automatically; those apps can still appear in media controls. Automatic expansion is off by default. Browser tabs that share a browser media identity cannot be excluded individually by site or content type.
 - **Notifications:** turn off **Enable Island notifications** to stop the Island capturing and showing alerts and remove its Notifications view. Saved Island history remains available when you turn it back on. Turning off **Keep Island alert history** clears that history. These controls do not change Windows notifications or the Island's separate volume, battery, and other status indicators.
 - **Hardware:** select the CPU, RAM, GPU, network, and disk-space cards individually. Disk space is disabled by default and currently reports the C: drive.
 - **Calendar:** enable the Calendar tab to make it available in the overlay. Windows Calendar Plus can supply its passive event preview; other Island modules work without that mod.
@@ -57,7 +57,7 @@ The optional Calendar tab reads a local, unencrypted snapshot from Windows Calen
 
 ## Compatibility and status
 
-Experimental source release. Compilation and the compact-to-expanded clock display have been checked on one Windows 11 installation. The date, timed-hide, timed-hover-reveal, instant-hide hover, independent full-screen Hide and hover controls, full-screen Move and return, and view order were checked live. With Spotify playing, `brave.exe, riot games` in Exclude apps from media detection kept Brave video and Riot Client out of the Island in a live check. Firefox matching passed source-level checks but has not been tested live. The test alert appeared in the pill and history; Until dismissed, dismissal, persistence after disabling and re-enabling the mod, and clearing history passed live checks. Version 0.1.3 adds source and time details and click-to-inspect for history entries, plus location-aware day/night weather icons and more specific precipitation icons; the saved-entry and new-test-alert details windows passed live interaction checks. The weather icon also appeared correctly in a live check. Version 0.1.4 adds per-card weather switches, forecast high/low, and one-decimal Open-Meteo readings with whole-degree fallback; its one-decimal reading and metric switches passed a live check. Version 0.1.5 moves the selected metrics into one or two rows, groups the city and condition beside the temperature, and removes the provider name from the Weather view. Version 0.1.6 adds an optional compact weather icon and measures the narrower text-only pill. Both the expanded Weather layout and compact icon toggle passed a live visual check. Version 0.1.7 enlarges and raises the clock and current weather reading to better use the top space; both views passed a live visual check with the privacy chip and five weather cards readable. The whole-degree fallback has not been checked live. A Windows PowerShell toast appeared in Windows but was not captured by the Island on the tested PC, so Windows-wide notification replacement is not claimed. The broader Windows compatibility matrix remains unverified. The overlay runs in a separate Windhawk tool process and is not inserted beside the Start button. File Tray and its drop handlers have been removed.
+Experimental source release. Compilation, compact and expanded clock views, date options, auto-hide and full-screen actions, view order, media exclusions, alert history, and weather layout were checked on one multi-display Windows 11 installation. Browser and game-client media sessions were excluded in live checks; matching an additional browser passed source-level checks but has not been tested live. Alert details, persistence, dismissal, and clearing passed live checks. Weather card switches, one-decimal readings, day/night icons, and the compact weather-icon toggle passed live checks; the whole-degree fallback has not been checked live. A test Windows toast appeared in Windows but was not captured by the Island, so Windows-wide notification replacement is not claimed. Compatibility across other Windows builds remains unverified. The overlay runs in a separate Windhawk tool process and does not add a taskbar button. File Tray and its drop handlers have been removed.
 
 Version 0.1.8 places Low before High in the settings and Weather card row. It also orders the controls by placement, animation, theme, privacy, clock, media, alerts, calendar, weather, hardware, game overlay, and system status. All 97 setting paths and defaults remain the same, preserving saved choices. The source compiled, and a live check confirmed the grouped controls, retained selections, and Low/High card order.
 
@@ -222,8 +222,8 @@ SOFTWARE.
   $name: Animations & Performance
 - Themes:
   - ThemePreset: obsidian
-    $name: Theme preset
-    $description: Select a curated color theme, or choose Custom to use your own hex colors below.
+    $name: Island color theme
+    $description: Choose Obsidian for near-black, Graphite for dark gray, Porcelain for a light appearance, or Custom Colors to use your own hex colors below.
     $options:
       - obsidian: Obsidian - true black (Default)
       - graphite: Graphite - neutral Windows 11 dark
@@ -368,7 +368,7 @@ SOFTWARE.
     $description: Shows album art, track info, and playback controls for Windows media sessions. Some launchers report a session even without actual playback; use Exclude apps from media detection below for those apps.
   - MediaSourceBlocklist: ""
     $name: Exclude apps from media detection
-    $description: Comma-separated app, executable, or publisher names, such as firefox or riot games. Spaces, punctuation, and .exe are ignored. Riot Games also matches its known game names. If an app cannot be identified, play it and right-click the Island to copy its media source ID, then enter that ID here. This removes matching sessions, unlike the auto-expand controls below.
+    $description: Comma-separated app, executable, publisher, or media source names. Matching ignores case, spaces, punctuation, and .exe; publisher and product names work when Windows exposes the owning program. For an unidentified session, play its media and right-click the Island to copy its media source ID, then enter that ID here. This removes matching sessions; the auto-expand controls below only change when the Island opens.
   - MediaAutoExpand: false
     $name: Auto-expand only for listed music apps
     $description: Expand on track changes only when this is on and the source matches the music-app list below. Otherwise media updates quietly in the small pill.
@@ -7246,7 +7246,7 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
     AppendMenuW(themeMenu, MF_SEPARATOR, 0, nullptr);
     AppendMenuW(themeMenu, MF_STRING | (activeTheme >= kCustomThemeIndex ? MF_CHECKED : 0),
                 kThemeMenuIdBase + static_cast<UINT>(kCustomThemeIndex), L"Custom Colors");
-    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(themeMenu), L"Theme");
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(themeMenu), L"Color theme");
     AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
     AppendMenuW(menu, MF_STRING, 9, L"Open Windhawk settings");
     AppendMenuW(menu, MF_STRING, 19, L"Weather data credits");

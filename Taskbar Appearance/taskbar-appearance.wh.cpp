@@ -1,7 +1,7 @@
 // ==WindhawkMod==
 // @id              taskbar-appearance-personal
 // @name            Taskbar Appearance
-// @description     Themes, Start button and optional Matter-style clock in one mod
+// @description     Taskbar color and layout themes with Start button and clock customization
 // @version         0.1.0
 // @author          Jip
 // @github          https://github.com/iiRedPanda
@@ -20,11 +20,11 @@
 /*
 # Taskbar Appearance
 
-Taskbar themes, Start button appearance, and clock/date formatting in one Windhawk mod for Windows 11.
+Change the Windows 11 taskbar's look and tune its Start button and clock from one Windhawk mod. Switch themes without giving up independent control of the date and seconds.
 
 ## Features
 
-- Frosty Matter, WinXP, Windows 7, Translucent, and Command Center themes, plus Windows default.
+- Choose a taskbar theme: **Frosty Matter** (split frosted panels), **WinXP** or **Windows 7** (classic-inspired styling), **Translucent** (minimal transparent background), **Command Center** (dark app panels), or **Windows default**.
 - Frosty Matter combines the split FrostyGlass layout with an optional Matter-style clock: time above date, Tektur when installed, and Segoe UI fallback.
 - Adjustable Frosty Matter split gap, Start icon color/effects/size, and empty-area click-through behavior.
 - Independent clock switch, date visibility, seconds, formats, locale, typography, and spacing.
