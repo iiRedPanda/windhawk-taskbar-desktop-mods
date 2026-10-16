@@ -2,7 +2,7 @@
 // @id              taskbar-auto-hide-personal
 // @name            Taskbar Auto-Hide
 // @description     Auto-hide policy and animation speed in one independent mod
-// @version         0.1.0
+// @version         0.1.1
 // @author          Jip
 // @github          https://github.com/iiRedPanda
 // @license         GPL-3.0
@@ -37,11 +37,11 @@ Policy and animation default to Windows behavior. The frame-rate setting applies
 
 ## Compatibility and status
 
-Experimental source release. Compilation and the default no-override configuration have been checked on one Windows 11 PC with three displays. The maximized-window policy was checked with desktop, small-window, and maximized-window states. Speed customization did not change the visible result there because Windows animation effects were disabled. Other policy modes, animation behavior with effects enabled, broader multi-monitor behavior, and Explorer restart recovery remain unverified. The inherited ExplorerPatcher path is retained; StartAllBack compatibility is unverified. Concurrent policy/speed mods can apply overlapping hooks.
+Experimental source release. Compilation and the default no-override configuration have been checked on one Windows 11 PC with three displays. The maximized-window policy was checked with desktop, small-window, and maximized-window states. When the mod enabled Windows auto-hide itself, hover reveal became unreliable on all three monitors; version 0.1.1 waits for Explorer's `TaskbarCreated` message before applying the policy, and hover reveal passed live checks on all three monitors both before and after an Explorer restart. Speed customization did not change the visible result there because Windows animation effects were disabled. Other policy modes, animation behavior with effects enabled, and broader Windows compatibility remain unverified. The inherited ExplorerPatcher path is retained; StartAllBack compatibility is unverified. Concurrent policy/speed mods can apply overlapping hooks.
 
 ## Credits and license
 
-Modified GPLv3 fork of m417z's [Taskbar Auto-Hide When Maximized](https://github.com/ramensoftware/windhawk-mods/blob/main/mods/taskbar-auto-hide-when-maximized.wh.cpp) and [Taskbar Auto-Hide Speed](https://github.com/ramensoftware/windhawk-mods/blob/main/mods/taskbar-auto-hide-speed.wh.cpp). Fork modifications are credited in the source metadata.
+Modified GPLv3 fork of m417z's [Taskbar Auto-Hide When Maximized](https://github.com/ramensoftware/windhawk-mods/blob/main/mods/taskbar-auto-hide-when-maximized.wh.cpp) and [Taskbar Auto-Hide Speed](https://github.com/ramensoftware/windhawk-mods/blob/main/mods/taskbar-auto-hide-speed.wh.cpp). Version 0.1.1 incorporates the upstream [TaskbarCreated initialization fix](https://github.com/m417z/my-windhawk-mods/commit/e36cbee240792241df6b29328151a0582588f384). Fork modifications are credited in the source metadata.
 */
 // ==/WindhawkModReadme==
 
@@ -136,6 +136,10 @@ enum {
 
 constexpr WCHAR kUpdateTaskbarStatePendingTickCount[] =
     L"Windhawk_UpdateTaskbarStatePendingTickCount_" WH_MOD_ID;
+
+// Explorer broadcasts this once the taskbar windows are ready to use.
+static const UINT g_taskbarCreatedMsg =
+    RegisterWindowMessage(L"TaskbarCreated");
 
 static const UINT g_getTaskbarRectRegisteredMsg =
     RegisterWindowMessage(L"Windhawk_GetTaskbarRect_" WH_MOD_ID);
@@ -836,12 +840,13 @@ LRESULT WINAPI TrayUI_WndProc_Hook(void* pThis,
                                    bool* flag) {
     if (Msg == WM_NCCREATE) {
         Wh_Log(L"WM_NCCREATE: %08X", (DWORD)(ULONG_PTR)hWnd);
-        AdjustTaskbar(hWnd);
     } else if (Msg == WM_NCDESTROY) {
         Wh_Log(L"WM_NCDESTROY: %08X", (DWORD)(ULONG_PTR)hWnd);
         g_taskbarsKeptShown.erase(
             QueryViaVtableBackwards(pThis, TrayUI_vftable_IInspectable));
         g_taskbarToViewCoordinator.erase(hWnd);
+    } else if (g_taskbarCreatedMsg && Msg == g_taskbarCreatedMsg) {
+        AdjustTaskbar(hWnd);
     } else if (Msg == kHandleTrayPrivateSettingMessage) {
         // Prevent auto-hide from being disabled while the mod is loaded.
         if ((DWORD)wParam == 4) {
@@ -923,11 +928,12 @@ LRESULT WINAPI CSecondaryTray_v_WndProc_Hook(void* pThis,
                                              LPARAM lParam) {
     if (Msg == WM_NCCREATE) {
         Wh_Log(L"WM_NCCREATE: %08X", (DWORD)(ULONG_PTR)hWnd);
-        AdjustTaskbar(hWnd);
     } else if (Msg == WM_NCDESTROY) {
         Wh_Log(L"WM_NCDESTROY: %08X", (DWORD)(ULONG_PTR)hWnd);
         g_taskbarsKeptShown.erase(pThis);
         g_taskbarToViewCoordinator.erase(hWnd);
+    } else if (g_taskbarCreatedMsg && Msg == g_taskbarCreatedMsg) {
+        AdjustTaskbar(hWnd);
     } else if (Msg == g_updateTaskbarStateRegisteredMsg) {
         void* pCSecondaryTray_ISecondaryTray =
             QueryViaVtable(pThis, CSecondaryTray_vftable_ISecondaryTray);
