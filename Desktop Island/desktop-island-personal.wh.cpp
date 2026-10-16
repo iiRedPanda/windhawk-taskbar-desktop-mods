@@ -2,7 +2,7 @@
 // @id              desktop-island-personal
 // @name            Desktop Island
 // @description     Independent desktop pill with focused media, calendar and hardware controls
-// @version         0.1.7
+// @version         0.1.8
 // @author          Jip
 // @github          https://github.com/iiRedPanda
 // @include         windhawk.exe
@@ -42,7 +42,7 @@ Click the compact pill to expand the overlay. Hover expansion is optional and di
 - **Media:** the media controls are together near the top of Modules. **Exclude apps from media detection** removes matching sessions from the compact pill and expanded media controls; it is empty by default. Entries are comma-separated and match app IDs, executable names, product names, or executable company names when Windows exposes the owning program. `firefox` or `firefox.exe` excludes Firefox; `riot games` excludes recognized Riot Client, VALORANT, League, Teamfight Tactics, Runeterra, and 2XKO sessions. Matching ignores case, spaces, punctuation, and `.exe`. For an app with an unrelated ID, play its media, right-click the Island, choose **Copy current media source ID**, and paste that ID into the exclusion setting. **Prevent automatic expansion for these apps** only stops the Island opening automatically; the app can still appear as media. Automatic expansion is disabled by default. A browser playing a show and the same browser playing music may share a source identity.
 - **Hardware:** select the CPU, RAM, GPU, network, and disk-space cards individually. Disk space is disabled by default and currently reports the C: drive.
 - **Calendar:** enable the Calendar tab to make it available in the overlay. Windows Calendar Plus can supply its passive event preview; other Island modules work without that mod.
-- **Weather:** choose an optional city and Celsius or Fahrenheit. The compact pill always shows the current temperature when Weather is enabled; **Show weather icon in small pill** can hide its condition icon for a narrower, text-only reading. Each of the five expanded cards can be switched on or off; wind, feels like, and humidity retain their previous defaults, while today's forecast high and low default off. Selected cards appear in one or two rows below the current condition. Open-Meteo supplies the decimal current reading, forecast high/low, current condition, and day/night state; if it is unavailable, the Island uses wttr.in's whole-degree reading. Readings normally refresh every 15 minutes.
+- **Weather:** choose an optional city and Celsius or Fahrenheit. The compact pill always shows the current temperature when Weather is enabled; **Show weather icon in small pill** can hide its condition icon for a narrower, text-only reading. Each of the five expanded cards can be switched on or off; wind, feels like, and humidity retain their previous defaults, while today's forecast low and high default off. Selected cards appear in one or two rows below the current condition, with Low to the left of High when both are shown. Open-Meteo supplies the decimal current reading, forecast high/low, current condition, and day/night state; if it is unavailable, the Island uses wttr.in's whole-degree reading. Readings normally refresh every 15 minutes.
 
 The overlay is a separate desktop pill. It does not add a button to the Windows taskbar.
 
@@ -57,6 +57,8 @@ The optional Calendar tab reads a local, unencrypted snapshot from Windows Calen
 ## Compatibility and status
 
 Experimental source release. Compilation and the compact-to-expanded clock display have been checked on one Windows 11 installation. The date, timed-hide, timed-hover-reveal, instant-hide hover, independent full-screen Hide and hover controls, full-screen Move and return, and view order were checked live. With Spotify playing, `brave.exe, riot games` in Exclude apps from media detection kept Brave video and Riot Client out of the Island in a live check. Firefox matching passed source-level checks but has not been tested live. The test alert appeared in the pill and history; Until dismissed, dismissal, persistence after disabling and re-enabling the mod, and clearing history passed live checks. Version 0.1.3 adds source and time details and click-to-inspect for history entries, plus location-aware day/night weather icons and more specific precipitation icons; the saved-entry and new-test-alert details windows passed live interaction checks. The weather icon also appeared correctly in a live check. Version 0.1.4 adds per-card weather switches, forecast high/low, and one-decimal Open-Meteo readings with whole-degree fallback; its one-decimal reading and metric switches passed a live check. Version 0.1.5 moves the selected metrics into one or two rows, groups the city and condition beside the temperature, and removes the provider name from the Weather view. Version 0.1.6 adds an optional compact weather icon and measures the narrower text-only pill. Both the expanded Weather layout and compact icon toggle passed a live visual check. Version 0.1.7 enlarges and raises the clock and current weather reading to better use the top space; both views passed a live visual check with the privacy chip and five weather cards readable. The whole-degree fallback has not been checked live. A Windows PowerShell toast appeared in Windows but was not captured by the Island on the tested PC, so Windows-wide notification replacement is not claimed. The broader Windows compatibility matrix remains unverified. The overlay runs in a separate Windhawk tool process and is not inserted beside the Start button. File Tray and its drop handlers have been removed.
+
+Version 0.1.8 places Low before High in the settings and Weather card row. It also orders the controls by placement, animation, theme, privacy, clock, media, alerts, calendar, weather, hardware, game overlay, and system status. All 97 setting paths and defaults remain the same, preserving saved choices. The source compiles; the revised settings panel has not yet been checked live.
 
 ## Credits and license
 
@@ -112,6 +114,16 @@ SOFTWARE.
       - '4': Display 4
       - '5': Display 5
       - 'follow': Follow Mouse (Active Monitor)
+  - ShapeStyle: default
+    $name: Island Shape Style
+    $description: Change the overall shape of the island (Pill, Windows 11, or macOS Notch).
+    $options:
+      - default: Default (Apple Pill)
+      - w11: Windows 11 (Rounded Box)
+      - notch: macOS Notch (Top Edge Flush)
+  - BorderMergedMode: false
+    $name: Border-Merged Mode
+    $description: Attach the island flush to the top edge of the monitor without a floating gap.
   - OffsetX: 0
     $name: Offset X
     $description: Adjust the horizontal position (in pixels). Positive values move it right, negative values move it left.
@@ -124,16 +136,6 @@ SOFTWARE.
   - OffsetYExpanded: 0
     $name: Offset Y (expanded)
     $description: Vertical position in pixels while the island is expanded. Only used when the separate expanded offset above is on. The island eases between this and Offset Y as it expands and collapses, so the two never snap.
-  - BorderMergedMode: false
-    $name: Border-Merged Mode
-    $description: Attach the island flush to the top edge of the monitor without a floating gap.
-  - ShapeStyle: default
-    $name: Island Shape Style
-    $description: Change the overall shape of the island (Pill, Windows 11, or macOS Notch).
-    $options:
-      - default: Default (Apple Pill)
-      - w11: Windows 11 (Rounded Box)
-      - notch: macOS Notch (Top Edge Flush)
   - SizeScale: '1.0'
     $name: Size scale
     $description: Makes the entire island and its contents larger or smaller.
@@ -168,7 +170,7 @@ SOFTWARE.
       - '60': Hide after 60 seconds
   - UnhideOnHover: true
     $name: Unhide on hover after auto-hide
-    $description: Reveal the Island after the general idle or instant auto-hide. Full-screen hiding has its own hover setting above.
+    $description: Reveal the Island after the general idle or instant auto-hide. Full-screen hiding has its own hover setting below.
   - AutoHideFullscreen: true
     $name: Handle full-screen apps
     $description: Apply the full-screen action below when a full-screen app or game uses the Island's monitor.
@@ -183,19 +185,6 @@ SOFTWARE.
     $description: When the full-screen action is Hide, hovering the Island's former position temporarily reveals it. Off by default so games keep that screen clear.
   $name: Behavior & Visibility
 - Animations:
-  - TargetFPS: '60'
-    $name: Refresh rate / FPS
-    $description: Set the animation frame rate. Choose Auto to dynamically match your active monitor's refresh rate (up to 360Hz/500Hz), or select a fixed FPS.
-    $options:
-      - auto: Auto (Match Monitor Refresh Rate)
-      - '60': 60 FPS (Eco / Standard)
-      - '90': 90 FPS
-      - '120': 120 FPS
-      - '144': 144 FPS
-      - '165': 165 FPS
-      - '240': 240 FPS
-      - '360': 360 FPS (Ultra Smooth)
-      - '500': 500 FPS (Maximum / Uncapped)
   - AnimationStyle: default
     $name: Animation bounciness / style
     $description: Control the spring physics and feel of the animation.
@@ -214,6 +203,19 @@ SOFTWARE.
       - fast: Fast (1.35x)
       - very-fast: Very Fast (1.65x)
       - ultra-fast: Ultra Fast (2.0x)
+  - TargetFPS: '60'
+    $name: Animation frame limit
+    $description: Set the maximum animation frame rate. Auto follows the active monitor's refresh rate, up to 500 FPS; 60 FPS is the lighter default.
+    $options:
+      - auto: Auto (Match Monitor Refresh Rate)
+      - '60': 60 FPS (Eco / Standard)
+      - '90': 90 FPS
+      - '120': 120 FPS
+      - '144': 144 FPS
+      - '165': 165 FPS
+      - '240': 240 FPS
+      - '360': 360 FPS (Ultra Smooth)
+      - '500': 500 FPS (Highest limit)
   $name: Animations & Performance
 - Themes:
   - ThemePreset: obsidian
@@ -249,12 +251,6 @@ SOFTWARE.
   - DropShadow: true
     $name: Soft drop shadow
     $description: Casts a soft shadow beneath the island to lift it off the desktop.
-  - AccentBloom: 100
-    $name: Accent bloom intensity
-    $description: 0 to 200. Strength of the soft accent-coloured wash bleeding in from the top of the island. Driven by album art when the accent mode is Auto. Set to 0 to remove it.
-  - TextScale: 100
-    $name: Text size
-    $description: 70 to 160. Scales all island text independently of the overall Size scale, so you can keep the island compact while making the clock and labels easier to read.
   - AccentColorMode: auto
     $name: Accent color mode
     $description: How the glowing accent color is chosen. Auto extracts it from album art.
@@ -265,18 +261,24 @@ SOFTWARE.
   - CustomAccentHex: "#4cc9f0"
     $name: Custom accent hex
     $description: The hex color to use when the accent mode is set to Custom.
+  - AccentBloom: 100
+    $name: Accent bloom intensity
+    $description: 0 to 200. Strength of the soft accent-coloured wash bleeding in from the top of the island. Driven by album art when the accent mode is Auto. Set to 0 to remove it.
+  - ClockAccentGlow: true
+    $name: Show clock background circle/glow
+    $description: Display the soft accent circle/glow behind the time in the expanded clock view. Turn off for a clean, minimal clock without background glow.
   - CalendarAccent: red
     $name: Calendar accent color
     $description: Accent color used in the calendar view for month name, weekends, and today's date highlight.
     $options:
       - red: Default Red
       - system: System (Device Accent)
-  - ClockAccentGlow: true
-    $name: Show clock background circle/glow
-    $description: Display the soft accent circle/glow behind the time in the expanded clock view. Turn off for a clean, minimal clock without background glow.
   - FontFamily: ""
     $name: Font family
     $description: Custom font family for island text (e.g. Segoe UI, Arial, Aptos, Consolas). Leave empty for system default.
+  - TextScale: 100
+    $name: Text size
+    $description: 70 to 160. Scales all island text independently of the overall Size scale, so you can keep the island compact while making the clock and labels easier to read.
   - ContourBorderMode: default
     $name: Contour border
     $description: Choose the island's border style. Default uses the theme's matching border, Auto extracts the border color from album art, and Borderless removes all outer border outlines.
@@ -315,6 +317,26 @@ SOFTWARE.
     $description: Custom hex color for camera privacy indicator.
   $name: Privacy Indicators
 - Modules:
+  - Language: auto
+    $name: Island language
+    $description: Language for the island's own text labels. Auto follows your Windows display language.
+    $options:
+      - auto: Auto (Follow Windows)
+      - en: English
+      - fr: Français (French)
+      - es: Español (Spanish)
+      - de: Deutsch (German)
+      - pt: Português (Portuguese)
+      - it: Italiano (Italian)
+      - ru: Русский (Russian)
+      - tr: Türkçe (Turkish)
+      - hi: हिन्दी (Hindi)
+      - zh: 简体中文 (Simplified Chinese)
+      - ja: 日本語 (Japanese)
+      - ko: 한국어 (Korean)
+  - ViewOrder: 'notifications,calendar,weather,hardware'
+    $name: Scrollable view order
+    $description: Comma-separated order after the first clock or media view. Use notifications, calendar, weather, and hardware. Disabled views are skipped; missing names go last.
   - ClockFormat: system
     $name: Clock format
     $description: Choose 12-hour or 24-hour time, or follow your Windows locale setting.
@@ -324,6 +346,7 @@ SOFTWARE.
       - 24h: 24-hour (15:07)
   - CompactDate: short
     $name: Date in the small pill
+    $description: Choose whether the compact clock also shows a short date. The expanded clock's date is controlled separately below.
     $options:
       - off: Off
       - short: Month and day
@@ -338,20 +361,112 @@ SOFTWARE.
     $name: Show date above the time
     $description: Swap the idle dashboard so the date is the headline and the time sits beneath it.
   - Media: true
-    $name: Media module
+    $name: Show media controls
     $description: Shows album art, track info, and playback controls for Windows media sessions. Some launchers report a session even without actual playback; use Exclude apps from media detection below for those apps.
-  - MediaAutoExpand: false
-    $name: Auto-expand only for listed music apps
-    $description: Automatically expand the island when a new song or video starts playing. If disabled, album art updates smoothly in the collapsed pill without unprompted expansion.
   - MediaSourceBlocklist: ""
     $name: Exclude apps from media detection
     $description: Comma-separated app, executable, or publisher names, such as firefox or riot games. Spaces, punctuation, and .exe are ignored. Riot Games also matches its known game names. If an app cannot be identified, play it and right-click the Island to copy its media source ID, then enter that ID here. This removes matching sessions, unlike the auto-expand controls below.
+  - MediaAutoExpand: false
+    $name: Auto-expand only for listed music apps
+    $description: Expand on track changes only when this is on and the source matches the music-app list below. Otherwise media updates quietly in the small pill.
   - MediaExpandAllowlist: ""
     $name: Music apps allowed to auto-expand
     $description: Comma-separated app names or IDs. Leave empty for no automatic expansion.
   - MediaExpandBlocklist: ""
     $name: Prevent automatic expansion for these apps
     $description: 'Comma-separated list of app or site names that should never make the island expand on a track change, while still updating quietly in the collapsed pill. Matched loosely against the media source and title, for example: chrome, tiktok, youtube.'
+  - NotificationHistory: true
+    $name: Keep Island alert history
+    $description: Keep every notification the Island captures, including crash toasts, until you clear it. The Notifications view shows one at a time; Shift+wheel selects older entries and right-click copies the full message. Notifications the Island misses cannot be recovered.
+  - NotificationPopupSeconds: '8'
+    $name: Island alert pop-up duration
+    $description: How long an alert captured by the Island opens from the pill. Until dismissed keeps the current alert visible until you dismiss it from the right-click menu. Windows banners are unchanged.
+    $options:
+      - '0': Until dismissed
+      - '4': 4 seconds
+      - '8': 8 seconds
+      - '12': 12 seconds
+  - NotificationRespectDnD: true
+    $name: Notifications respect Do Not Disturb
+    $description: Suppresses Dynamic Island notification alerts when Windows Do Not Disturb is active.
+  - DoNotDisturbIndicator: true
+    $name: Do Not Disturb status alert
+    $description: Shows a status alert card when Do Not Disturb is toggled in the Windows notification panel.
+  - StatusCountdownProgress: false
+    $name: Status countdown progress bar
+    $description: Shows a subtle countdown progress bar at the bottom of temporary status alert cards (such as Clipboard, Notifications, and Device alerts). Disabled by default.
+  - Calendar: false
+    $name: Show Calendar view
+    $description: Include the month grid in the scroll loop.
+  - Weather: true
+    $name: Show Weather in pill and views
+    $description: Show the current temperature in the small pill and include the expanded Weather view. Other enabled modules remain available when this is off.
+  - WeatherCity: ""
+    $name: Weather city (optional)
+    $description: Enter your city (e.g. London). Leave blank to use auto IP geolocation.
+  - WeatherFahrenheit: false
+    $name: Use Fahrenheit
+    $description: Display weather temperature and wind speed in imperial units.
+  - WeatherPillIcon: true
+    $name: Show weather icon in small pill
+    $description: Show the current condition icon beside the temperature. Turn off for a text-only weather reading and a narrower pill.
+  - WeatherShowWind: true
+    $name: Weather card - wind
+    $description: Show wind speed in the expanded Weather view.
+  - WeatherShowFeelsLike: true
+    $name: Weather card - feels like
+    $description: Show the apparent temperature in the expanded Weather view.
+  - WeatherShowHumidity: true
+    $name: Weather card - humidity
+    $description: Show relative humidity in the expanded Weather view.
+  - WeatherShowLow: false
+    $name: Weather card - forecast low today
+    $description: Show today's forecast low to the left of High when both are enabled.
+  - WeatherShowHigh: false
+    $name: Weather card - forecast high today
+    $description: Show today's forecast high to the right of Low when both are enabled.
+  - HardwareMonitorModule: true
+    $name: Show Hardware Monitor view
+    $description: Include the selected CPU, RAM, GPU, network, and disk-space cards in the scroll loop.
+  - HardwareCpu: true
+    $name: CPU card
+    $description: Show CPU utilization in the expanded Hardware Monitor view.
+  - HardwareRam: true
+    $name: RAM card
+    $description: Show used and total memory in the expanded Hardware Monitor view.
+  - HardwareGpu: true
+    $name: GPU card
+    $description: Show GPU utilization when Windows reports it.
+  - HardwareNetwork: true
+    $name: Network cards
+    $description: Show separate upload and download throughput cards.
+  - HardwareDiskSpace: false
+    $name: Disk space card
+    $description: 'Show C: drive space usage on the hardware card.'
+  - GameOverlay: false
+    $name: Show game overlay metrics
+    $description: Replaces the clock with live stats like FPS, CPU, and RAM usage.
+  - GameOverlayCompact: false
+    $name: Game overlay - compact size
+    $description: Shrink the game overlay to a narrow strip that fits neatly inside the taskbar area.
+  - ShowMetricText: false
+    $name: Show labels in metric chips
+    $description: Adds text labels (like "CPU") inside the game overlay bars.
+  - GameOverlayShowFps: true
+    $name: Game overlay - show FPS
+    $description: Include the frame rate in the game overlay strip.
+  - GameOverlayShowCpu: true
+    $name: Game overlay - show CPU
+    $description: Include CPU utilization in the game overlay strip.
+  - GameOverlayShowGpu: true
+    $name: Game overlay - show GPU
+    $description: Include GPU utilization in the game overlay strip.
+  - GameOverlayShowRam: true
+    $name: Game overlay - show RAM
+    $description: Include memory usage in the game overlay strip.
+  - GameOverlayShowDisk: true
+    $name: Game overlay - show disk
+    $description: Include disk usage in the game overlay strip.
   - Volume: true
     $name: Volume slider flyout
     $description: Shows a volume slider banner on the island when adjusting system volume. Disable if you prefer the default Windows volume flyout.
@@ -376,110 +491,8 @@ SOFTWARE.
   - Clipboard: true
     $name: Clipboard module
     $description: Shows a quick preview of the text or images you just copied.
-  - StatusCountdownProgress: false
-    $name: Status countdown progress bar
-    $description: Shows a subtle countdown progress bar at the bottom of temporary status alert cards (such as Clipboard, Notifications, and Device alerts). Disabled by default.
-  - DoNotDisturbIndicator: true
-    $name: Do Not Disturb status alert
-    $description: Shows a status alert card when Do Not Disturb is toggled in the Windows notification panel.
-  - NotificationHistory: true
-    $name: Island alert history
-    $description: Keep every notification the Island captures, including crash toasts, until you clear it. The Notifications view shows one at a time; Shift+wheel selects older entries and right-click copies the full message. Notifications the Island misses cannot be recovered.
-  - NotificationPopupSeconds: '8'
-    $name: Island alert pop-up duration
-    $description: How long an alert captured by the Island opens from the pill. Until dismissed keeps the current alert visible until you dismiss it from the right-click menu. Windows banners are unchanged.
-    $options:
-      - '0': Until dismissed
-      - '4': 4 seconds
-      - '8': 8 seconds
-      - '12': 12 seconds
-  - ViewOrder: 'notifications,calendar,weather,hardware'
-    $name: Scrollable view order
-    $description: Comma-separated order after the first clock/media view. Use notifications, calendar, weather, and hardware. Disabled views are skipped; missing names go last.
-  - NotificationRespectDnD: true
-    $name: Notifications respect Do Not Disturb
-    $description: Suppresses Dynamic Island notification alerts when Windows Do Not Disturb is active.
-  - Calendar: false
-    $name: Calendar tab
-    $description: Include the month grid in the scroll loop.
-  - HardwareCpu: true
-    $name: CPU card
-  - HardwareRam: true
-    $name: RAM card
-  - HardwareGpu: true
-    $name: GPU card
-  - HardwareNetwork: true
-    $name: Network cards
-  - HardwareDiskSpace: false
-    $name: Disk space card
-    $description: 'Show C: drive space usage on the hardware card.'
-  - HardwareMonitorModule: true
-    $name: Include Hardware Monitor in scroll loop
-    $description: Add CPU, GPU, RAM, FPS and Network stats card to mouse-wheel scroll loop.
-  - GameOverlay: false
-    $name: Enable game overlay mode
-    $description: Replaces the clock with live stats like FPS, CPU, and RAM usage.
-  - ShowMetricText: false
-    $name: Show labels in metric chips
-    $description: Adds text labels (like "CPU") inside the game overlay bars.
-  - Weather: true
-    $name: Weather module
-    $description: Shows the weather on the right side of the pill. Turn off to only show the clock.
-  - WeatherCity: ""
-    $name: Weather City (Optional)
-    $description: Enter your city (e.g. London). Leave blank to use auto IP geolocation.
-  - WeatherFahrenheit: false
-    $name: Use Fahrenheit
-    $description: Display weather temperature and wind speed in imperial units.
-  - WeatherPillIcon: true
-    $name: Show weather icon in small pill
-    $description: Show the current condition icon beside the temperature. Turn off for a text-only weather reading and a narrower pill.
-  - WeatherShowWind: true
-    $name: Weather card - wind
-  - WeatherShowFeelsLike: true
-    $name: Weather card - feels like
-  - WeatherShowHumidity: true
-    $name: Weather card - humidity
-  - WeatherShowHigh: false
-    $name: Weather card - forecast high today
-  - WeatherShowLow: false
-    $name: Weather card - forecast low today
-  - Language: auto
-    $name: Language
-    $description: Language for the island's own text labels. Auto follows your Windows display language.
-    $options:
-      - auto: Auto (Follow Windows)
-      - en: English
-      - fr: Français (French)
-      - es: Español (Spanish)
-      - de: Deutsch (German)
-      - pt: Português (Portuguese)
-      - it: Italiano (Italian)
-      - ru: Русский (Russian)
-      - tr: Türkçe (Turkish)
-      - hi: हिन्दी (Hindi)
-      - zh: 简体中文 (Simplified Chinese)
-      - ja: 日本語 (Japanese)
-      - ko: 한국어 (Korean)
-  - GameOverlayShowFps: true
-    $name: Game overlay - show FPS
-    $description: Include the frame rate in the game overlay strip.
-  - GameOverlayShowCpu: true
-    $name: Game overlay - show CPU
-    $description: Include CPU utilization in the game overlay strip.
-  - GameOverlayShowGpu: true
-    $name: Game overlay - show GPU
-    $description: Include GPU utilization in the game overlay strip.
-  - GameOverlayShowRam: true
-    $name: Game overlay - show RAM
-    $description: Include memory usage in the game overlay strip.
-  - GameOverlayShowDisk: true
-    $name: Game overlay - show disk
-    $description: Include disk usage in the game overlay strip.
-  - GameOverlayCompact: false
-    $name: Game overlay - compact size
-    $description: Shrink the game overlay to a narrow strip that fits neatly inside the taskbar area.
   $name: Modules & Features
+  $description: Settings are ordered by language and navigation, clock, media, alerts, calendar, weather, hardware, game overlay, and system status.
 - Shortcuts:
   - HideShowHotkeyEnabled: true
     $name: Enable hide/show hotkey
@@ -9464,12 +9477,12 @@ class Renderer {
             metrics.push_back({Loc(L"Humidity"),
                 hasWeather && !state.weather.humidity.empty()
                     ? state.weather.humidity + L"%" : std::wstring(L"--")});
-        if (settings.weatherShowHigh)
-            metrics.push_back({Loc(L"High"),
-                hasWeather && state.weather.hasHigh ? TemperatureLabel(state.weather.high) : std::wstring(L"--")});
         if (settings.weatherShowLow)
             metrics.push_back({Loc(L"Low"),
                 hasWeather && state.weather.hasLow ? TemperatureLabel(state.weather.low) : std::wstring(L"--")});
+        if (settings.weatherShowHigh)
+            metrics.push_back({Loc(L"High"),
+                hasWeather && state.weather.hasHigh ? TemperatureLabel(state.weather.high) : std::wstring(L"--")});
 
         const bool twoRows = metrics.size() > 3;
         if (twoRows && settings.weatherShowWind && hasWeather &&
