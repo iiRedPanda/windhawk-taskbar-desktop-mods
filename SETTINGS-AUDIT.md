@@ -4,7 +4,7 @@ This review covers the five mods in this repository. It checks whether each expo
 
 | Mod | Exposed settings | Result |
 | --- | ---: | --- |
-| Desktop Island | 96 | Every setting has a runtime read. The redundant Custom Colors theme choice was removed; accent and hex overrides remain available with every color theme. Auto DPI scaling is functional, but uses the primary monitor's scale. Its description now says so. |
+| Desktop Island | 99 | Every setting has a runtime read. The redundant Custom Colors theme choice was removed; accent and hex overrides remain available with every color theme. Auto DPI scaling is functional, but uses the primary monitor's scale. Its description now says so. The former view-order text entry was replaced with four dropdowns. |
 | Taskbar Appearance | 50 | Every setting has a runtime read. The ineffective Frosty Matter split-gap control was removed. Clock controls work independently of the selected taskbar theme. Some clock dimensions and the legacy-taskbar switch only apply to the older taskbar path. |
 | Taskbar Auto-Hide | 9 | Every setting has a runtime read. Policy and speed controls are independent. Native Windows 11 speed changes require Windows animation effects; frame rate applies to the legacy taskbar path. |
 | Taskbar Tray | 12 | Every setting has a runtime read. Each icon switch applies when Windows exposes that icon. Bell behavior and Show Desktop width use their selected modes and values. |

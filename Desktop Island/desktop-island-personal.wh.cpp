@@ -2,7 +2,7 @@
 // @id              desktop-island-personal
 // @name            Desktop Island
 // @description     Floating desktop pill for media, clock, weather, hardware and optional calendar
-// @version         0.1.13
+// @version         0.1.14
 // @author          Jip
 // @github          https://github.com/iiRedPanda
 // @include         windhawk.exe
@@ -24,7 +24,7 @@ A floating desktop pill for Windhawk that puts time, media controls, weather, ha
 - Click to expand, or enable automatic expansion for selected media apps. A separate exclusion list removes unwanted apps from media detection entirely; it starts empty.
 - Choose time only, date only, or both in the idle small pill. Weather is a separate choice, and the selected date can also appear during media playback.
 - Keep the pill visible, auto-hide it when idle, or hide or move it to another monitor while a full-screen app or game runs.
-- Reorder the scrollable views with the View order setting. The clock or active media view stays first; disabled views are skipped.
+- Choose the first, second, third, and fourth extra views from dropdowns. The clock or active media view stays first; disabled views are skipped.
 - Island notifications are off by default. When enabled, alerts captured by the Island appear from the pill for 4, 8, or 12 seconds, or stay until dismissed. With history enabled, captured alerts are kept across restarts until cleared. The Notifications view shows one entry at a time; click an entry for its full saved text, source, and capture time, or use the right-click menu to copy them. A test alert checks the pop-up and history without waiting for an external alert.
 - Optional Calendar tab, disabled by default, with a passive Calendar Plus event preview when available.
 - Individually selectable CPU, RAM, GPU, network, and disk-space cards. Disk space defaults off; the disk target remains C:.
@@ -38,7 +38,7 @@ Click the compact pill to expand the overlay. Hover expansion is optional and di
 
 - **Small pill content:** choose **Time only**, **Time and date**, or **Date only** under **Time and date in small pill**. Date choices include month and day or weekday and day. When Weather is enabled, **Show weather in small pill** separately adds or removes the temperature and optional condition icon. At least time or date remains visible in the idle pill. The expanded clock remains available with every choice. During media playback, the compact media pill shows album art and can show the selected date; it does not show the time or weather.
 - **Visibility:** Expand on hover is controlled in Windhawk settings. Auto-hide can hide the Island after an idle timeout. Its hover-reveal switch applies only to idle auto-hide; instant-hide mode keeps its hover area steady to avoid repeated folding. Full-screen action defaults to Hide and takes effect immediately even when idle auto-hide is set to Never. A separate full-screen hover-reveal switch defaults off. The other full-screen action moves the Island to the largest other monitor when an app or game fills its home monitor; with only one monitor, Move behaves like Hide. The hide/show shortcut can temporarily reveal a hidden Island.
-- **Views:** the default order after the first clock/media view is `weather,hardware,calendar,notifications`. Enter those names in any order to customize it. Disabled views are skipped. In Notifications, Shift+wheel selects an older alert; click it to inspect the saved details, or right-click to copy them, show a test alert, dismiss the current pop-up, open Windows Reliability Monitor, or clear history. These notification menu actions are hidden when Island notifications are off. Reliability Monitor can help investigate a crash near the saved capture time, but an unverified shell popup alone does not prove one occurred. Clicking a compact alert pop-up also opens its details.
+- **Views:** the default order after the first clock/media view is Weather, Hardware Monitor, Calendar, then Notifications. Choose positions with the four **extra view** dropdowns; there is no text list to type. Only enabled views appear, so turn on **Show Calendar view** or **Enable Island notifications** if you want those cards in the loop. Duplicate choices are skipped and any omitted enabled views follow in the default order. In Notifications, Shift+wheel selects an older alert; click it to inspect the saved details, or right-click to copy them, show a test alert, dismiss the current pop-up, open Windows Reliability Monitor, or clear history. These notification menu actions are hidden when Island notifications are off. Reliability Monitor can help investigate a crash near the saved capture time, but an unverified shell popup alone does not prove one occurred. Clicking a compact alert pop-up also opens its details.
 - **Media:** **Exclude apps from media detection** removes matching media sessions from both the compact pill and expanded controls. Enter comma-separated app names, executable names, publishers, or media source IDs. Matching ignores case, spaces, punctuation, and `.exe`; publisher and product matching work when Windows exposes the owning program. If a session is hard to identify, play it, right-click the Island, choose **Copy current media source ID**, and add that ID to the list. **Prevent automatic expansion for these apps** only keeps the Island from opening automatically; those apps can still appear in media controls. Automatic expansion is off by default. Browser tabs that share a browser media identity cannot be excluded individually by site or content type.
 - **Notifications:** turn on **Enable Island notifications** to let the Island capture and show alerts and include its Notifications view. It is off by default. Turning it off again pauses capture and hides the view and its right-click actions; saved Island history remains available when you turn it back on. Turning off **Keep Island alert history** clears that history. These controls do not change Windows notifications or the Island's separate volume, battery, and other status indicators.
 - **Hardware:** select the CPU, RAM, GPU, network, and disk-space cards individually. Disk space is disabled by default and currently reports the C: drive.
@@ -70,7 +70,9 @@ Version 0.1.11 removes the unreliable real Windows blur and acrylic backdrop mod
 
 Version 0.1.12 removes the redundant **Custom Colors** theme choice from settings and the right-click menu. Accent color mode, custom accent hex, and individual background, text, and border hex overrides remain available with Obsidian, Graphite, and Porcelain. Previously saved Custom Colors selections fall back to Obsidian while nondefault hex overrides remain active. A live Windhawk check confirmed that the choice is gone and accent controls still work with Obsidian and Graphite. The settings audit also clarified Auto DPI scaling's primary-monitor behavior and removed unused internal setting copies without changing the controls.
 
-Version 0.1.13 changes the default scrollable view order to Weather, Hardware Monitor, Calendar, then Notifications. Island notifications now default off, and their right-click actions are hidden while off. Existing saved settings remain selected after an update; set View order and Enable Island notifications in Windhawk if you want these defaults on an existing installation.
+Version 0.1.13 changed the default scrollable view order to Weather, Hardware Monitor, Calendar, then Notifications. Island notifications now default off, and their right-click actions are hidden while off. Existing saved notification choices remain selected after an update; turn **Enable Island notifications** off in Windhawk if you want the new default on an existing installation.
+
+Version 0.1.14 replaces the comma-separated View order text field with four dropdowns. This makes the order explicit and avoids a text edit that appears ineffective when the named views are disabled. The old text field is no longer used; choose positions once with the new controls if you had customized it. Changing a dropdown resets the expanded view to the first clock/media card before scrolling in the new order.
 
 ## Credits and license
 
@@ -332,9 +334,38 @@ SOFTWARE.
       - zh: 简体中文 (Simplified Chinese)
       - ja: 日本語 (Japanese)
       - ko: 한국어 (Korean)
-  - ViewOrder: 'weather,hardware,calendar,notifications'
-    $name: Scrollable view order
-    $description: Comma-separated order after the first clock or media view. Use weather, hardware, calendar, and notifications in any order. Disabled views are skipped; missing names go last in the default order.
+  - ViewFirst: weather
+    $name: First extra view
+    $description: Views follow the clock or media card. Only enabled views appear; duplicates are skipped.
+    $options:
+      - weather: Weather
+      - hardware: Hardware Monitor
+      - calendar: Calendar
+      - notifications: Notifications
+  - ViewSecond: hardware
+    $name: Second extra view
+    $description: Only enabled views appear; duplicates are skipped.
+    $options:
+      - weather: Weather
+      - hardware: Hardware Monitor
+      - calendar: Calendar
+      - notifications: Notifications
+  - ViewThird: calendar
+    $name: Third extra view
+    $description: Only enabled views appear; duplicates are skipped.
+    $options:
+      - weather: Weather
+      - hardware: Hardware Monitor
+      - calendar: Calendar
+      - notifications: Notifications
+  - ViewFourth: notifications
+    $name: Fourth extra view
+    $description: Only enabled views appear; duplicates are skipped.
+    $options:
+      - weather: Weather
+      - hardware: Hardware Monitor
+      - calendar: Calendar
+      - notifications: Notifications
   - ClockFormat: system
     $name: Clock format
     $description: Choose 12-hour or 24-hour time, or follow your Windows locale setting.
@@ -1026,7 +1057,7 @@ struct Settings {
     bool notificationRespectDnD = true;
     bool notificationHistory = true;
     int notificationPopupSeconds = 8;
-    std::wstring viewOrder = L"weather,hardware,calendar,notifications";
+    std::array<int, 4> viewOrder{2, 3, 1, 4}; // Weather, Hardware, Calendar, Notifications.
 
     // ── Premium material / redesign ──────────────────────────────────────────
     bool materialDepth = true;      // downward depth shading + accent bloom
@@ -1479,27 +1510,14 @@ int ClampInt(int v, int lo, int hi) {
 // both renderers and in input handling.
 std::vector<int> ActiveDashboardTabs(const Settings& settings) {
     std::vector<int> tabs{0};
-    std::wstring order = settings.viewOrder;
-    std::transform(order.begin(), order.end(), order.begin(), towlower);
-    auto add = [&](const std::wstring& name) {
-        int id = name == L"calendar" ? 1 : name == L"weather" ? 2 :
-                 name == L"hardware" ? 3 : name == L"notifications" ? 4 : -1;
+    auto add = [&](int id) {
         bool enabled = id == 1 ? settings.calendar : id == 2 ? settings.weather :
                        id == 3 ? settings.hardwareMonitorModule :
                        id == 4 ? (settings.notificationsEnabled && settings.notificationHistory) : false;
         if (enabled && std::find(tabs.begin(), tabs.end(), id) == tabs.end()) tabs.push_back(id);
     };
-    size_t start = 0;
-    while (start < order.size()) {
-        size_t end = order.find(L',', start);
-        if (end == std::wstring::npos) end = order.size();
-        std::wstring name = order.substr(start, end - start);
-        const size_t first = name.find_first_not_of(L" \t");
-        const size_t last = name.find_last_not_of(L" \t");
-        if (first != std::wstring::npos) add(name.substr(first, last - first + 1));
-        start = end + 1;
-    }
-    for (const wchar_t* name : {L"weather", L"hardware", L"calendar", L"notifications"}) add(name);
+    for (int id : settings.viewOrder) add(id);
+    for (int id : {2, 3, 1, 4}) add(id); // Omitted or duplicate choices follow the default order.
     return tabs;
 }
 
@@ -2297,7 +2315,16 @@ void LoadSettings() {
     next.notificationHistory = Wh_GetIntSetting(L"Modules.NotificationHistory") != 0;
     const int alertDuration = _wtoi(GetStringSettingCopy(L"Modules.NotificationPopupSeconds").c_str());
     next.notificationPopupSeconds = alertDuration == 0 ? 0 : ClampInt(alertDuration, 4, 12);
-    next.viewOrder = GetStringSettingCopy(L"Modules.ViewOrder");
+    constexpr PCWSTR viewOrderKeys[] = {
+        L"Modules.ViewFirst", L"Modules.ViewSecond",
+        L"Modules.ViewThird", L"Modules.ViewFourth"};
+    for (size_t i = 0; i < next.viewOrder.size(); ++i) {
+        const std::wstring choice = GetStringSettingCopy(viewOrderKeys[i]);
+        if (EqualsNoCase(choice, L"weather")) next.viewOrder[i] = 2;
+        else if (EqualsNoCase(choice, L"hardware")) next.viewOrder[i] = 3;
+        else if (EqualsNoCase(choice, L"calendar")) next.viewOrder[i] = 1;
+        else if (EqualsNoCase(choice, L"notifications")) next.viewOrder[i] = 4;
+    }
     if (!next.notificationHistory) {
         std::lock_guard lock(g_stateMutex);
         g_notificationHistory.clear();
@@ -13559,7 +13586,12 @@ BOOL WhTool_ModInit() {
 }
 
 void WhTool_ModSettingsChanged() {
+    const auto previous = GetSettingsSnapshot();
     LoadSettings();
+    if (previous->viewOrder != (*GetSettingsSnapshot()).viewOrder) {
+        g_idleTab = 0;
+        g_layoutDirty = true;
+    }
 }
 
 void WhTool_ModUninit() {
