@@ -18,7 +18,7 @@ Configure a Google account or ICS feed as described below, then open the Windows
 
 Experimental Windhawk fork. Compilation and calendar parser/cache regression tests have passed; a full live Windows compatibility matrix has not been established. The original Agenda in Calendar View and Tray Agenda can produce duplicate controls or reminders when enabled concurrently with this fork.
 
-Version 0.2.3 keeps the Google accounts menu focused on connected accounts and sign-in. Sign-in is disabled until the Google OAuth client details are saved in Windhawk. Hover over the disabled item for setup guidance, and follow the steps below. The source compiles and the calendar and account-request checks pass; the updated hover behavior still needs a live check.
+Version 0.2.3 keeps the Google accounts menu focused on connected accounts and sign-in. Sign-in is inactive until the Google OAuth client details are saved in Windhawk. Hover over the dimmed item for setup guidance, and follow the steps below. The source compiles, and the calendar and account-request checks pass. A live check without OAuth settings confirmed the dimmed sign-in item, its hover tip, the simplified menu, and that clicking it does not open a browser.
 
 ## Connect a Google account
 
