@@ -2,7 +2,7 @@
 // @id              desktop-island-personal
 // @name            Desktop Island
 // @description     Floating desktop pill for media, clock, weather, hardware and optional calendar
-// @version         0.1.9
+// @version         0.1.10
 // @author          Jip
 // @github          https://github.com/iiRedPanda
 // @include         windhawk.exe
@@ -22,7 +22,7 @@ A floating desktop pill for Windhawk that puts time, media controls, weather, ha
 
 - Choose a color theme: **Obsidian** (near-black), **Graphite** (dark gray), **Porcelain** (light), or **Custom Colors**. Appearance and transparency can be adjusted further in settings.
 - Click to expand, or enable automatic expansion for selected media apps. A separate exclusion list removes unwanted apps from media detection entirely; it starts empty.
-- Optional date in the compact pill, including during media playback.
+- Choose time only, date only, or both in the idle small pill. Weather is a separate choice, and the selected date can also appear during media playback.
 - Keep the pill visible, auto-hide it when idle, or hide or move it to another monitor while a full-screen app or game runs.
 - Reorder the scrollable views with the View order setting. The clock or active media view stays first; disabled views are skipped.
 - Island notifications have a master switch. When enabled, alerts captured by the Island appear from the pill for 4, 8, or 12 seconds, or stay until dismissed. With history enabled, captured alerts are kept across restarts until cleared. The Notifications view shows one entry at a time; click an entry for its full saved text, source, and capture time, or use the right-click menu to copy them. A test alert checks the pop-up and history without waiting for an external alert.
@@ -36,20 +36,20 @@ GPU, network, and disk measurements are requested when their visible card or gam
 
 Click the compact pill to expand the overlay. Hover expansion is optional and disabled by default. Choose a palette and target monitor in the mod's settings, and select which modules to show.
 
-- **Compact date:** choose no date, a short date, or a date with the weekday. The date can also appear during media playback.
+- **Small pill content:** choose **Time only**, **Time and date**, or **Date only** under **Time and date in small pill**. Date choices include month and day or weekday and day. When Weather is enabled, **Show weather in small pill** separately adds or removes the temperature and optional condition icon. At least time or date remains visible in the idle pill. The expanded clock remains available with every choice. During media playback, the compact media pill shows album art and can show the selected date; it does not show the time or weather.
 - **Visibility:** Expand on hover is controlled in Windhawk settings. Auto-hide can hide the Island after an idle timeout. Its hover-reveal switch applies only to idle auto-hide; instant-hide mode keeps its hover area steady to avoid repeated folding. Full-screen action defaults to Hide and takes effect immediately even when idle auto-hide is set to Never. A separate full-screen hover-reveal switch defaults off. The other full-screen action moves the Island to the largest other monitor when an app or game fills its home monitor; with only one monitor, Move behaves like Hide. The hide/show shortcut can temporarily reveal a hidden Island.
 - **Views:** enter `notifications,calendar,weather,hardware` in any order. The first clock/media view stays in place. In Notifications, Shift+wheel selects an older alert; click it to inspect the saved details, or right-click to copy them, show a test alert, dismiss the current pop-up, open Windows Reliability Monitor, or clear history. Reliability Monitor can help investigate a crash near the saved capture time, but an unverified shell popup alone does not prove one occurred. Clicking a compact alert pop-up also opens its details.
 - **Media:** **Exclude apps from media detection** removes matching media sessions from both the compact pill and expanded controls. Enter comma-separated app names, executable names, publishers, or media source IDs. Matching ignores case, spaces, punctuation, and `.exe`; publisher and product matching work when Windows exposes the owning program. If a session is hard to identify, play it, right-click the Island, choose **Copy current media source ID**, and add that ID to the list. **Prevent automatic expansion for these apps** only keeps the Island from opening automatically; those apps can still appear in media controls. Automatic expansion is off by default. Browser tabs that share a browser media identity cannot be excluded individually by site or content type.
 - **Notifications:** turn off **Enable Island notifications** to stop the Island capturing and showing alerts and remove its Notifications view. Saved Island history remains available when you turn it back on. Turning off **Keep Island alert history** clears that history. These controls do not change Windows notifications or the Island's separate volume, battery, and other status indicators.
 - **Hardware:** select the CPU, RAM, GPU, network, and disk-space cards individually. Disk space is disabled by default and currently reports the C: drive.
 - **Calendar:** enable the Calendar tab to make it available in the overlay. Windows Calendar Plus can supply its passive event preview; other Island modules work without that mod.
-- **Weather:** choose an optional city and Celsius or Fahrenheit. The compact pill always shows the current temperature when Weather is enabled; **Show weather icon in small pill** can hide its condition icon for a narrower, text-only reading. Each of the five expanded cards can be switched on or off; wind, feels like, and humidity retain their previous defaults, while today's forecast low and high default off. Selected cards appear in one or two rows below the current condition, with Low to the left of High when both are shown. Open-Meteo supplies the decimal current reading, forecast high/low, current condition, and day/night state; if it is unavailable, the Island uses wttr.in's whole-degree reading. Readings normally refresh every 15 minutes.
+- **Weather:** **Enable Weather and view** controls weather retrieval and the expanded Weather view. **Show weather in small pill** separately hides the compact weather reading while leaving the expanded view available. Choose an optional city and Celsius or Fahrenheit. **Show weather icon in small pill** hides just the condition icon for a narrower, temperature-only reading. Turning off **Enable Weather and view** stops weather requests and removes weather from both views. Each of the five expanded cards can be switched on or off; wind, feels like, and humidity retain their previous defaults, while today's forecast low and high default off. Selected cards appear in one or two rows below the current condition, with Low to the left of High when both are shown. Open-Meteo supplies the decimal current reading, forecast high/low, current condition, and day/night state; if it is unavailable, the Island uses wttr.in's whole-degree reading. Readings normally refresh every 15 minutes when enabled.
 
 The overlay is a separate desktop pill. It does not add a button to the Windows taskbar.
 
 ## Data and privacy
 
-Weather is enabled by default. wttr.in resolves the selected city or, when no city is configured, estimates location from the network request. Open-Meteo then receives the location coordinates for its current and daily forecast readings. Both requests use HTTPS, reject downgrade redirects, and limit response size and read duration. Weather data from [Open-Meteo](https://open-meteo.com/) is provided under [CC BY 4.0](https://open-meteo.com/en/terms); the Island changes units, rounds the displayed values to one decimal, and maps condition codes to its own icons. The provider link is also available from the Island's **Weather data credits** right-click action. A one-decimal forecast value is more detailed than wttr.in's whole-degree value, but it may still differ from another weather app or a local thermometer. Clipboard and notification previews can display sensitive content on screen and have their own settings.
+Weather in the small pill and expanded view is enabled by default. wttr.in resolves the selected city or, when no city is configured, estimates location from the network request. Open-Meteo then receives the location coordinates for its current and daily forecast readings. Turning off **Enable Weather and view** stops these requests. Both requests use HTTPS, reject downgrade redirects, and limit response size and read duration. Weather data from [Open-Meteo](https://open-meteo.com/) is provided under [CC BY 4.0](https://open-meteo.com/en/terms); the Island changes units, rounds the displayed values to one decimal, and maps condition codes to its own icons. The provider link is also available from the Island's **Weather data credits** right-click action. A one-decimal forecast value is more detailed than wttr.in's whole-degree value, but it may still differ from another weather app or a local thermometer. Clipboard and notification previews can display sensitive content on screen and have their own settings.
 
 Island alert history stores the captured app name, alert text, source, time, and available shell-window metadata in Windhawk local mod storage until you clear it or turn off the history setting. The master notification switch pauses new capture and hides the Island history view without deleting saved entries. History can include sensitive text. Some shell windows expose only a host name such as “Windows Shell Experience Host.” The Island marks these as unverified shell popups with their cause unknown; the process name alone does not establish a crash or restart. Older entries cannot gain details that were never captured. The Island does not independently monitor process or driver crashes, reliably receive every Windows toast, replace Windows Notification Center, or suppress Windows banners. Keep Windows notifications enabled if you want Windows to retain its own notification history; see [Microsoft's notification settings guide](https://support.microsoft.com/en-us/windows/experience/notifications-and-do-not-disturb-in-windows). Do Not Disturb suppression can prevent alerts from entering Island history.
 
@@ -62,6 +62,8 @@ Experimental source release. Compilation, compact and expanded clock views, date
 Version 0.1.8 places Low before High in the settings and Weather card row. It also orders the controls by placement, animation, theme, privacy, clock, media, alerts, calendar, weather, hardware, game overlay, and system status. All 97 setting paths and defaults remain the same, preserving saved choices. The source compiled, and a live check confirmed the grouped controls, retained selections, and Low/High card order.
 
 Version 0.1.9 adds **Enable Island notifications**, on by default. Switching it off pauses Windows toast polling and shell alert capture, closes any visible Island alert, removes Notifications from the view order, and disables the test-alert action. Saved history is retained until cleared or the separate history setting is turned off. The source compiled, and a live Windhawk check confirmed that the view and test-alert action disappear when disabled, then saved history and test alerts work again when enabled.
+
+Version 0.1.10 adds **Time only**, **Date only**, and **Time and date** choices for the idle pill. It always displays at least time or date. A separate switch hides compact weather while keeping the Weather view when weather is enabled. The existing weather master switch still disables all weather and its network requests. Existing saved date choices retain their previous behavior. The source compiled; the new combinations await a live visual check.
 
 ## Credits and license
 
@@ -348,12 +350,17 @@ SOFTWARE.
       - 12h: 12-hour (3:07 PM)
       - 24h: 24-hour (15:07)
   - CompactDate: short
-    $name: Date in the small pill
-    $description: Choose whether the compact clock also shows a short date. The expanded clock's date is controlled separately below.
+    $name: Time and date in small pill
+    $description: Choose time only, date only, or both while the Island is idle and compact. The expanded clock is unaffected. Existing saved choices are preserved.
     $options:
-      - off: Off
-      - short: Month and day
-      - weekday: Weekday and day
+      - off: Time only
+      - short: Time and date (month and day)
+      - weekday: Time and date (weekday and day)
+      - date: Date only (month and day)
+      - date-weekday: Date only (weekday and day)
+  - WeatherInPill: true
+    $name: Show weather in small pill
+    $description: When Weather is enabled, show the current temperature and optional condition icon while the Island is idle and compact. Turning this off keeps the expanded Weather view available.
   - ShowSeconds: false
     $name: Show seconds on the clock
     $description: Include seconds in the expanded clock. Costs a little more CPU because the clock then redraws every second.
@@ -405,8 +412,8 @@ SOFTWARE.
     $name: Show Calendar view
     $description: Include the month grid in the scroll loop.
   - Weather: true
-    $name: Show Weather in pill and views
-    $description: Show the current temperature in the small pill and include the expanded Weather view. Other enabled modules remain available when this is off.
+    $name: Enable Weather and view
+    $description: Retrieve current weather and include the expanded Weather view. Turn off to disable all Island weather. The separate small-pill switch near Time and date hides just the compact reading.
   - WeatherCity: ""
     $name: Weather city (optional)
     $description: Enter your city (e.g. London). Leave blank to use auto IP geolocation.
@@ -415,7 +422,7 @@ SOFTWARE.
     $description: Display weather temperature and wind speed in imperial units.
   - WeatherPillIcon: true
     $name: Show weather icon in small pill
-    $description: Show the current condition icon beside the temperature. Turn off for a text-only weather reading and a narrower pill.
+    $description: When weather is shown in the small pill, show its condition icon beside the temperature. Turn off for a text-only reading and a narrower pill.
   - WeatherShowWind: true
     $name: Weather card - wind
     $description: Show wind speed in the expanded Weather view.
@@ -997,6 +1004,7 @@ struct Settings {
     bool gameOverlay = false;
     bool showMetricText = true;
     bool weather = true;
+    bool weatherInPill = true;
     std::wstring weatherCity;
     bool weatherFahrenheit = false;
     bool weatherPillIcon = true;
@@ -1054,7 +1062,7 @@ struct Settings {
 
     // ── Clock / date presentation (#61) ──────────────────────────────────────
     bool showSeconds = false;
-    int compactDate = 1; // 0 off, 1 short, 2 weekday
+    int compactDate = 1; // 0 time, 1/2 time+date, 3/4 date only
     bool use24HourClock = false;    // false = follow system locale
     bool clockFollowSystem = true;
     std::wstring dateFormat;        // empty = locale default
@@ -1645,12 +1653,19 @@ std::wstring FormatIslandDate(const SYSTEMTIME& local, const std::wstring& custo
 }
 
 std::wstring CompactClockLabel(const SYSTEMTIME& local, const Settings& settings) {
-    std::wstring label = FormatIslandTime(local, settings.clockFollowSystem,
-                                          settings.use24HourClock, settings.showSeconds);
+    std::wstring label;
+    if (settings.compactDate <= 2) {
+        label = FormatIslandTime(local, settings.clockFollowSystem,
+                                 settings.use24HourClock, settings.showSeconds);
+    }
     if (settings.compactDate != 0) {
-        const wchar_t* pattern = settings.compactDate == 2 ? L"ddd d" : L"MMM d";
+        const wchar_t* pattern = (settings.compactDate == 2 || settings.compactDate == 4)
+                                  ? L"ddd d" : L"MMM d";
         const std::wstring date = FormatIslandDate(local, L"", pattern);
-        if (!date.empty()) label += L"  ·  " + date;
+        if (!date.empty()) {
+            if (!label.empty()) label += L"  ·  ";
+            label += date;
+        }
     }
     return label;
 }
@@ -2341,7 +2356,9 @@ void LoadSettings() {
     next.showSeconds = Wh_GetIntSetting(L"Modules.ShowSeconds") != 0;
     const std::wstring compactDate = GetStringSettingCopy(L"Modules.CompactDate");
     next.compactDate = EqualsNoCase(compactDate, L"off") ? 0 :
-                       (EqualsNoCase(compactDate, L"weekday") ? 2 : 1);
+                       EqualsNoCase(compactDate, L"weekday") ? 2 :
+                       EqualsNoCase(compactDate, L"date") ? 3 :
+                       EqualsNoCase(compactDate, L"date-weekday") ? 4 : 1;
     const std::wstring clockMode = GetStringSettingCopy(L"Modules.ClockFormat");
     next.clockFollowSystem = clockMode.empty() || EqualsNoCase(clockMode, L"system");
     next.use24HourClock = EqualsNoCase(clockMode, L"24h");
@@ -2403,6 +2420,7 @@ void LoadSettings() {
     next.gameOverlay = Wh_GetIntSetting(L"Modules.GameOverlay") != 0;
     next.showMetricText = Wh_GetIntSetting(L"Modules.ShowMetricText") != 0;
     next.weather = Wh_GetIntSetting(L"Modules.Weather") != 0;
+    next.weatherInPill = Wh_GetIntSetting(L"Modules.WeatherInPill") != 0;
     next.weatherCity = GetStringSettingWithFallback(L"Modules.WeatherCity", L"Weather.WeatherCity", L"CalendarWeather.WeatherCity");
     next.weatherFahrenheit = Wh_GetIntSetting(L"Modules.WeatherFahrenheit") != 0;
     next.weatherPillIcon = Wh_GetIntSetting(L"Modules.WeatherPillIcon") != 0;
@@ -7533,6 +7551,7 @@ struct MarqueeLayoutCache {
 struct IdleStripMetrics {
     float clockWidth = 0.0f;
     float weatherWidth = 0.0f;
+    bool hasClock = false;
     bool hasWeather = false;
     bool hasPrivacy = false;
     float totalWidth = IdleStripLayout::kMinWidth;
@@ -7841,10 +7860,13 @@ class Renderer {
         SYSTEMTIME local = {};
         GetLocalTime(&local);
         const std::wstring clock = CompactClockLabel(local, settings);
-        metrics.clockWidth =
-            MeasureTextWidthCached(WidestDigitForm(clock), fmt, idleClockWidthCache_);
+        metrics.hasClock = !clock.empty();
+        if (metrics.hasClock) {
+            metrics.clockWidth =
+                MeasureTextWidthCached(WidestDigitForm(clock), fmt, idleClockWidthCache_);
+        }
 
-        metrics.hasWeather = settings.weather;
+        metrics.hasWeather = settings.weather && settings.weatherInPill;
         if (metrics.hasWeather) {
             // The painter uses the same label builder, so hiding the icon also
             // releases its width rather than leaving an empty icon slot.
@@ -7861,8 +7883,10 @@ class Renderer {
 
         float total = IdleStripLayout::kPadX * 2.0f + metrics.clockWidth;
         if (metrics.hasWeather) {
-            total += IdleStripLayout::kSlotGap * 2.0f + IdleStripLayout::kDividerWidth +
-                     metrics.weatherWidth;
+            if (metrics.hasClock) {
+                total += IdleStripLayout::kSlotGap * 2.0f + IdleStripLayout::kDividerWidth;
+            }
+            total += metrics.weatherWidth;
         }
         if (metrics.hasPrivacy) {
             total += IdleStripLayout::kPrivacyReserve;
@@ -10037,9 +10061,11 @@ class Renderer {
 
             float blockWidth = idleMetrics.clockWidth;
             if (idleMetrics.hasWeather) {
-                blockWidth += (IdleStripLayout::kSlotGap * 2.0f +
-                               IdleStripLayout::kDividerWidth) * scale +
-                              idleMetrics.weatherWidth;
+                if (idleMetrics.hasClock) {
+                    blockWidth += (IdleStripLayout::kSlotGap * 2.0f +
+                                   IdleStripLayout::kDividerWidth) * scale;
+                }
+                blockWidth += idleMetrics.weatherWidth;
             }
 
             // Centre the block in whatever room the pill currently has. Mid-spring
@@ -10052,28 +10078,32 @@ class Renderer {
             // widest-digit form, so the live string is centred inside a box it is
             // guaranteed to fit rather than drifting as the digits change.
             textBrush_->SetOpacity(0.96f);
-            const D2D1_RECT_F timeRect =
-                D2D1::RectF(slotX, rect.top, slotX + idleMetrics.clockWidth, rect.bottom);
-            target_->DrawTextW(timeBuf, static_cast<UINT32>(wcslen(timeBuf)), idleFmt,
-                               timeRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
-            slotX += idleMetrics.clockWidth;
+            if (idleMetrics.hasClock) {
+                const D2D1_RECT_F timeRect =
+                    D2D1::RectF(slotX, rect.top, slotX + idleMetrics.clockWidth, rect.bottom);
+                target_->DrawTextW(timeBuf, static_cast<UINT32>(wcslen(timeBuf)), idleFmt,
+                                   timeRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+                slotX += idleMetrics.clockWidth;
+            }
 
             if (idleMetrics.hasWeather) {
-                slotX += IdleStripLayout::kSlotGap * scale;
+                if (idleMetrics.hasClock) {
+                    slotX += IdleStripLayout::kSlotGap * scale;
 
-                ComPtr<ID2D1SolidColorBrush> divider;
-                target_->CreateSolidColorBrush(
-                    WithAlpha(material_.hairline, material_.hairline.a * settingsOpacity_),
-                    &divider);
-                if (divider) {
-                    const float divW = IdleStripLayout::kDividerWidth * scale;
-                    const float divTop = rect.top + IdleStripLayout::kDividerInsetY * scale;
-                    const float divBottom = rect.bottom - IdleStripLayout::kDividerInsetY * scale;
-                    target_->FillRoundedRectangle(
-                        D2D1::RoundedRect(D2D1::RectF(slotX, divTop, slotX + divW, divBottom),
-                                          divW * 0.5f, divW * 0.5f), divider.Get());
+                    ComPtr<ID2D1SolidColorBrush> divider;
+                    target_->CreateSolidColorBrush(
+                        WithAlpha(material_.hairline, material_.hairline.a * settingsOpacity_),
+                        &divider);
+                    if (divider) {
+                        const float divW = IdleStripLayout::kDividerWidth * scale;
+                        const float divTop = rect.top + IdleStripLayout::kDividerInsetY * scale;
+                        const float divBottom = rect.bottom - IdleStripLayout::kDividerInsetY * scale;
+                        target_->FillRoundedRectangle(
+                            D2D1::RoundedRect(D2D1::RectF(slotX, divTop, slotX + divW, divBottom),
+                                              divW * 0.5f, divW * 0.5f), divider.Get());
+                    }
+                    slotX += (IdleStripLayout::kDividerWidth + IdleStripLayout::kSlotGap) * scale;
                 }
-                slotX += (IdleStripLayout::kDividerWidth + IdleStripLayout::kSlotGap) * scale;
 
                 const std::wstring weatherLabel = CompactWeatherLabel(
                     state.weather, hasWeather, settings.weatherPillIcon);
@@ -10082,6 +10112,17 @@ class Renderer {
                     D2D1::RectF(slotX, rect.top, slotX + idleMetrics.weatherWidth, rect.bottom);
                 target_->DrawTextW(weatherLabel.c_str(), static_cast<UINT32>(weatherLabel.size()), idleFmt,
                                    wRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
+            } else if (!idleMetrics.hasClock) {
+                // Keep an unobtrusive click target when all optional readings
+                // are hidden. Privacy indicators can still use the right edge.
+                const float centerX = (innerLeft + innerRight) * 0.5f;
+                const float centerY = (rect.top + rect.bottom) * 0.5f;
+                textBrush_->SetOpacity(0.55f);
+                for (int i = -1; i <= 1; ++i) {
+                    target_->FillEllipse(
+                        D2D1::Ellipse(D2D1::Point2F(centerX + i * 7.0f * scale, centerY),
+                                       1.5f * scale, 1.5f * scale), textBrush_.Get());
+                }
             }
             textBrush_->SetOpacity(1.0f);
 
@@ -10602,7 +10643,8 @@ class Renderer {
             if (settings.compactDate != 0) {
                 SYSTEMTIME local = {};
                 GetLocalTime(&local);
-                const wchar_t* pattern = settings.compactDate == 2 ? L"ddd d" : L"MMM d";
+                const wchar_t* pattern = (settings.compactDate == 2 || settings.compactDate == 4)
+                                          ? L"ddd d" : L"MMM d";
                 const std::wstring compactDate = FormatIslandDate(local, L"", pattern);
                 IDWriteTextFormat* dateFmt = idleTextFormat_ ? idleTextFormat_.Get() :
                                               smallTextFormat_.Get();
@@ -11926,7 +11968,7 @@ Activity ActivityForKind(IslandKind kind, const Settings& settings, const Shared
                 // width here was the whole bug behind windhawk-mods#5086: dead
                 // air around a short "9:41", and clipping on "10:41:32 PM" once
                 // Text size reached 140.
-                activity.width = settings.weather ? 170.0f : 96.0f;
+                activity.width = settings.weather && settings.weatherInPill ? 170.0f : 96.0f;
                 activity.height = IdleStripLayout::kHeight;
             }
             break;
@@ -13472,7 +13514,8 @@ DWORD WINAPI RenderThreadProc(void*) {
                                (secondary && secondary->kind == IslandKind::Timer);
         if (timerShown && snapshot.timer.running) {
             shownSecond = static_cast<int>(std::ceil(snapshot.timer.endsAt - now));
-        } else if (primary.kind == IslandKind::Idle && (*GetSettingsSnapshot()).showSeconds && !isHidden) {
+        } else if (primary.kind == IslandKind::Idle && (*GetSettingsSnapshot()).showSeconds &&
+                   ((*GetSettingsSnapshot()).compactDate <= 2 || isHoverExpanded || pinned) && !isHidden) {
             SYSTEMTIME st = {};
             GetLocalTime(&st);
             shownSecond = st.wSecond;
