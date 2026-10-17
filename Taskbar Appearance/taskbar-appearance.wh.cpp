@@ -56,7 +56,7 @@ Clock line formats support the tokens below, numbered extra time/date formats, c
 
 Experimental source release. Compilation, Frosty Matter's split layout, the seconds/date toggles, Windows default styling with the custom clock, and the WinXP, Windows 7, and Translucent presets have been checked on one Windows 11 installation. The inherited Command Center preset crashed Explorer there; its smaller replacement loads without crashing, has working empty-area click-through, and its app boxes and running dots were reported to look correct on the main and portrait displays. Restore-on-disable behavior and compatibility across Windows builds remain unverified. Avoid overlapping overrides from the original Styler, Start Button Colorizer, or Clock Customization mods. Legacy clock paths are inherited; this does not establish legacy theme support or StartAllBack compatibility.
 
-Version 0.1.1 removes the Frosty Matter split-gap setting because changing it had no visible effect. The preset's split-panel layout remains. Previously saved gap values are ignored.
+Version 0.1.1 removes the Frosty Matter split-gap setting because changing it had no visible effect. The preset's split-panel layout remains. Previously saved gap values are ignored. A live Windhawk check confirmed that the setting is gone and Frosty Matter still displays its split layout.
 
 ## Data and limitations
 
