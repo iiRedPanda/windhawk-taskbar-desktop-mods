@@ -2,7 +2,7 @@
 // @id              calendar-agenda-plus
 // @name            Windows Calendar Plus
 // @description     Native Windows calendar agenda with Google accounts, ICS feeds, daylight saving handling and reminders.
-// @version         0.2.2
+// @version         0.2.3
 // @author          Jip
 // @github          https://github.com/iiRedPanda
 // @include         explorer.exe
@@ -37,11 +37,11 @@ Configure a Google account or ICS feed as described below, then open the Windows
 
 Experimental Windhawk fork. Compilation and calendar parser/cache regression tests have passed; a full live Windows compatibility matrix has not been established. The original Agenda in Calendar View and Tray Agenda can produce duplicate controls or reminders when enabled concurrently with this fork.
 
-Version 0.2.2 makes Google sign-in clickable on a fresh installation and opens this guide when OAuth client settings are missing. The source compiles and the calendar and account-request checks pass. The new first-run menu path has not yet been verified live on a PC without saved accounts or client settings.
+Version 0.2.3 keeps the Google accounts menu focused on connected accounts and sign-in. Sign-in is disabled until the Google OAuth client details are saved in Windhawk. Hover over the disabled item for setup guidance, and follow the steps below. The source compiles and the calendar and account-request checks pass; the updated hover behavior still needs a live check.
 
 ## Connect a Google account
 
-**Sign in with Google** is available in the calendar pane even when no accounts have been added. Once a Google OAuth client is configured, clicking it opens Google's sign-in and consent page in your default browser. This source release does not include a shared OAuth client, so a first-time user must create a Google Cloud Desktop app client once. If the client is missing, clicking **Sign in with Google** explains this and opens this guide instead of leaving a disabled button.
+**Sign in with Google** appears in the calendar pane even when no accounts have been added. It stays disabled until a Google OAuth client is configured in Windhawk. After setup, clicking it opens Google's sign-in and consent page in your default browser. This source release does not include a shared OAuth client, so a first-time user must create a Google Cloud Desktop app client once.
 
 1. Open the [Google Cloud Console](https://console.cloud.google.com/) and create or select a project for Calendar Plus.
 2. [Enable the Google Calendar API](https://console.cloud.google.com/apis/library/calendar-json.googleapis.com) for that project.
@@ -61,7 +61,7 @@ Timed events are resolved by date-aware IANA/Windows timezone rules, then displa
 
 ## Range and refresh
 
-Default range is 30 days back and 90 days ahead, configurable up to 90/180. Provider limits: 16 calendars, 2000 events per calendar, 4000 events total, 512 occurrences per ICS event. Dates outside the downloaded range can be empty. The native calendar reads updates every 1.5 seconds while its process is running. The three-dot menu offers Refresh events (normally within 15 seconds, plus network time) and Go to today. Account requests are also handled by the provider in Explorer, normally within 15 seconds. Reopen Google accounts to see the latest account list and sign-in status. Partial/stale states are shown. Shared snapshots are limited to 32 million UTF-16 code units; a larger or unreadable snapshot retains previously readable data and shows an error.
+Default range is 30 days back and 90 days ahead, configurable up to 90/180. Provider limits: 16 calendars, 2000 events per calendar, 4000 events total, 512 occurrences per ICS event. Dates outside the downloaded range can be empty. The native calendar reads updates every 1.5 seconds while its process is running. The three-dot menu offers Refresh events (normally within 15 seconds, plus network time) and Go to today. Account requests are also handled by the provider in Explorer, normally within 15 seconds. Reopen Google accounts to see the latest account list. Partial/stale calendar states are shown. Shared snapshots are limited to 32 million UTF-16 code units; a larger or unreadable snapshot retains previously readable data and shows an error.
 
 ## Privacy
 
@@ -6110,26 +6110,6 @@ void UpdateMaxHeight(int maxHeight) {
     }
 }
 
-void OpenGoogleAccountSetupGuide() {
-    constexpr wchar_t guideUrl[] =
-        L"https://github.com/iiRedPanda/windhawk-taskbar-desktop-mods/blob/main/"
-        L"Windows%20Calendar%20Plus/README.md#connect-a-google-account";
-    const auto statusKey = calendar_provider::UserValueName(L"account_status");
-    Wh_SetStringValue(statusKey.c_str(),
-                      L"Create a Google Desktop-app OAuth client, save its ID and secret in Windhawk settings, then choose Sign in with Google again.");
-    MessageBoxW(nullptr,
-                L"Google sign-in needs a one-time OAuth client setup. A Google login page cannot work until the client ID and secret are saved in this mod's Windhawk settings.\n\n"
-                L"The step-by-step setup guide will now open in your browser. After setup, choose Sign in with Google again to open Google's account and consent page.",
-                L"Windows Calendar Plus - Set up Google sign-in",
-                MB_OK | MB_ICONINFORMATION);
-    if (reinterpret_cast<INT_PTR>(ShellExecuteW(nullptr, L"open", guideUrl,
-                                                nullptr, nullptr, SW_SHOWNORMAL)) <= 32) {
-        Wh_SetStringValue(statusKey.c_str(),
-                          L"Could not open the Google setup guide. See the Windows Calendar Plus mod description.");
-        Wh_Log(L"Could not open Google account setup guide");
-    }
-}
-
 void ShowCalendarMenu() {
     if (!m_menuButton) return;
     try {
@@ -6139,12 +6119,7 @@ void ShowCalendarMenu() {
         auto accounts = calendar_provider::LoadAccounts();
         auto settings = calendar_provider::SettingsCopy();
 
-        if (accounts.empty()) {
-            auto empty = wuxc::MenuFlyoutItem();
-            empty.Text(L"No Google accounts connected");
-            empty.IsEnabled(false);
-            accountsMenu.Items().Append(empty);
-        } else {
+        if (!accounts.empty()) {
             for (const auto& account : accounts) {
                 std::wstring label = account.label;
                 if (label.size() > 64) label = label.substr(0, 61) + L"...";
@@ -6172,15 +6147,32 @@ void ShowCalendarMenu() {
             }
         }
 
-        accountsMenu.Items().Append(wuxc::MenuFlyoutSeparator());
+        if (!accounts.empty()) {
+            accountsMenu.Items().Append(wuxc::MenuFlyoutSeparator());
+        }
         auto signIn = wuxc::MenuFlyoutItem();
         signIn.Text(L"Sign in with Google");
-        signIn.IsEnabled(accounts.size() < calendar_provider::kMaxAccounts);
+        bool clientConfigured = calendar_provider::ClientConfigured(settings);
+        bool canSignIn = clientConfigured &&
+                         accounts.size() < calendar_provider::kMaxAccounts;
+        // UWP flyout items don't show tooltips while IsEnabled is false.
+        // Keep hover active, dim the item, and suppress sign-in below.
+        if (!canSignIn) signIn.Opacity(0.45);
+        if (!clientConfigured) {
+            wuxc::ToolTipService::SetToolTip(
+                signIn,
+                winrt::box_value(
+                    L"Set up Google OAuth in this mod's Windhawk settings. "
+                    L"See the mod details for step-by-step instructions."));
+        } else if (accounts.size() >= calendar_provider::kMaxAccounts) {
+            wuxc::ToolTipService::SetToolTip(
+                signIn,
+                winrt::box_value(L"Sign out of an account before adding another."));
+        }
         signIn.Click([](wf::IInspectable const&, wux::RoutedEventArgs const&) {
-            if (!calendar_provider::ClientConfigured(calendar_provider::SettingsCopy())) {
-                OpenGoogleAccountSetupGuide();
-                return;
-            }
+            if (!calendar_provider::ClientConfigured(calendar_provider::SettingsCopy())) return;
+            if (calendar_provider::LoadAccounts().size() >=
+                calendar_provider::kMaxAccounts) return;
             auto statusKey = calendar_provider::UserValueName(L"account_status");
             Wh_SetStringValue(statusKey.c_str(),
                               L"Sign-in requested. Your browser will open shortly.");
@@ -6191,30 +6183,6 @@ void ShowCalendarMenu() {
         });
         accountsMenu.Items().Append(signIn);
 
-        if (!calendar_provider::ClientConfigured(settings)) {
-            auto hint = wuxc::MenuFlyoutItem();
-            hint.Text(L"How to set up Google sign-in");
-            hint.Click([](wf::IInspectable const&, wux::RoutedEventArgs const&) {
-                OpenGoogleAccountSetupGuide();
-            });
-            accountsMenu.Items().Append(hint);
-        } else if (accounts.size() >= calendar_provider::kMaxAccounts) {
-            auto hint = wuxc::MenuFlyoutItem();
-            hint.Text(L"Four-account limit reached");
-            hint.IsEnabled(false);
-            accountsMenu.Items().Append(hint);
-        }
-
-        std::wstring status = calendar_provider::ReadShortUserValue(
-            calendar_provider::UserValueName(L"account_status"));
-        if (!status.empty()) {
-            if (status.size() > 120) status = status.substr(0, 117) + L"...";
-            accountsMenu.Items().Append(wuxc::MenuFlyoutSeparator());
-            auto statusItem = wuxc::MenuFlyoutItem();
-            statusItem.Text(status);
-            statusItem.IsEnabled(false);
-            accountsMenu.Items().Append(statusItem);
-        }
         menu.Items().Append(accountsMenu);
 
         auto refresh = wuxc::MenuFlyoutItem();

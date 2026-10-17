@@ -18,11 +18,11 @@ Configure a Google account or ICS feed as described below, then open the Windows
 
 Experimental Windhawk fork. Compilation and calendar parser/cache regression tests have passed; a full live Windows compatibility matrix has not been established. The original Agenda in Calendar View and Tray Agenda can produce duplicate controls or reminders when enabled concurrently with this fork.
 
-Version 0.2.2 makes Google sign-in clickable on a fresh installation and opens this guide when OAuth client settings are missing. The source compiles and the calendar and account-request checks pass. The new first-run menu path has not yet been verified live on a PC without saved accounts or client settings.
+Version 0.2.3 keeps the Google accounts menu focused on connected accounts and sign-in. Sign-in is disabled until the Google OAuth client details are saved in Windhawk. Hover over the disabled item for setup guidance, and follow the steps below. The source compiles and the calendar and account-request checks pass; the updated hover behavior still needs a live check.
 
 ## Connect a Google account
 
-**Sign in with Google** is available in the calendar pane even when no accounts have been added. Once a Google OAuth client is configured, clicking it opens Google's sign-in and consent page in your default browser. This source release does not include a shared OAuth client, so a first-time user must create a Google Cloud Desktop app client once. If the client is missing, clicking **Sign in with Google** explains this and opens this guide instead of leaving a disabled button.
+**Sign in with Google** appears in the calendar pane even when no accounts have been added. It stays disabled until a Google OAuth client is configured in Windhawk. After setup, clicking it opens Google's sign-in and consent page in your default browser. This source release does not include a shared OAuth client, so a first-time user must create a Google Cloud Desktop app client once.
 
 1. Open the [Google Cloud Console](https://console.cloud.google.com/) and create or select a project for Calendar Plus.
 2. [Enable the Google Calendar API](https://console.cloud.google.com/apis/library/calendar-json.googleapis.com) for that project.
@@ -42,7 +42,7 @@ Timed events are resolved by date-aware IANA/Windows timezone rules, then displa
 
 ## Range and refresh
 
-Default range is 30 days back and 90 days ahead, configurable up to 90/180. Provider limits: 16 calendars, 2000 events per calendar, 4000 events total, 512 occurrences per ICS event. Dates outside the downloaded range can be empty. The native calendar reads updates every 1.5 seconds while its process is running. The three-dot menu offers Refresh events (normally within 15 seconds, plus network time) and Go to today. Account requests are also handled by the provider in Explorer, normally within 15 seconds. Reopen Google accounts to see the latest account list and sign-in status. Partial/stale states are shown. Shared snapshots are limited to 32 million UTF-16 code units; a larger or unreadable snapshot retains previously readable data and shows an error.
+Default range is 30 days back and 90 days ahead, configurable up to 90/180. Provider limits: 16 calendars, 2000 events per calendar, 4000 events total, 512 occurrences per ICS event. Dates outside the downloaded range can be empty. The native calendar reads updates every 1.5 seconds while its process is running. The three-dot menu offers Refresh events (normally within 15 seconds, plus network time) and Go to today. Account requests are also handled by the provider in Explorer, normally within 15 seconds. Reopen Google accounts to see the latest account list. Partial/stale calendar states are shown. Shared snapshots are limited to 32 million UTF-16 code units; a larger or unreadable snapshot retains previously readable data and shows an error.
 
 ## Privacy
 
