@@ -22,19 +22,19 @@ Version 0.2.3 keeps the Google accounts menu focused on connected accounts and s
 
 ## Connect a Google account
 
-**Sign in with Google** appears in the calendar pane even when no accounts have been added. It stays disabled until a Google OAuth client is configured in Windhawk. After setup, clicking it opens Google's sign-in and consent page in your default browser. This source release does not include a shared OAuth client, so a first-time user must create a Google Cloud Desktop app client once.
+**Sign in with Google** stays dimmed until you complete this one-time setup. The mod does not ship a shared Google OAuth client, so each user needs a Google Cloud **Desktop app** client. After that, sign-in opens in your default browser.
 
-1. Open the [Google Cloud Console](https://console.cloud.google.com/) and create or select a project for Calendar Plus.
-2. [Enable the Google Calendar API](https://console.cloud.google.com/apis/library/calendar-json.googleapis.com) for that project.
-3. In **Google Auth platform → Branding**, start the OAuth setup and enter an app name, support email, and contact email. Under **Audience**, choose **External** for a personal Google account. If the project is in **Testing**, add the Google account you will sign in with as a test user.
-4. Under **Data Access**, add the read-only scopes `https://www.googleapis.com/auth/calendar.events.readonly` and `https://www.googleapis.com/auth/calendar.calendarlist.readonly` if Google asks you to configure scopes. The mod requests these two scopes during sign-in.
-5. Under **Google Auth platform → Clients**, create an OAuth client with application type **Desktop app**. Copy its client ID and client secret from the result or downloaded JSON. You do not need to run Google's sample code or add a redirect URL for this desktop client. [Google's Calendar API quickstart](https://developers.google.com/workspace/calendar/api/quickstart/python) shows the current Cloud Console screens.
-6. Open **Windows Calendar Plus → Settings** in Windhawk. Paste the values into **Google OAuth client ID** and **Google OAuth client secret**, then save the settings. Do not put these values in a public issue or settings export.
-7. Open the Windows calendar pane. Select **⋯ → Google accounts → Sign in with Google**. Your default browser opens Google's account chooser and consent page. Choose your account and grant the requested read-only calendar permissions. Return to the calendar pane, then reopen **Google accounts** to see the connection status; use **Refresh events** if events have not appeared yet.
+1. Open the [Google Cloud Console](https://console.cloud.google.com/). Create a project or select one you already have, then [enable the Google Calendar API](https://console.cloud.google.com/apis/library/calendar-json.googleapis.com) in it.
+2. Open **Google Auth platform → Branding** and complete the consent setup with an app name and your email. Choose **External** under **Audience** for a personal Google account and add the account you will use under **Test users** while the app is in Testing. Under **Data Access**, add the Calendar scopes ending in `calendar.events.readonly` and `calendar.calendarlist.readonly`.
+3. Under **Google Auth platform → Clients**, create a client of type **Desktop app**. Copy its **Client ID** and **Client secret**. You do not need to run Google's sample code or enter a redirect URL.
+4. In Windhawk, open **Windows Calendar Plus → Settings**, paste those two values into **Google OAuth client ID** and **Google OAuth client secret**, and save.
+5. Open the Windows calendar pane and select **⋯ → Google accounts → Sign in with Google**. Choose your account in the browser and allow read-only calendar access. Reopen **Google accounts** to see the connected account; use **Refresh events** if events have not appeared yet.
 
-Google sign-in supports up to four accounts. Calendar IDs are optional; otherwise selected calendars are used. Existing Tray Agenda sign-ins are separate and are not copied. If Google blocks access while your OAuth project is in Testing, check that the exact Google email is listed under **Audience → Test users**. [Google's OAuth desktop app guide](https://developers.google.com/identity/protocols/oauth2/native-app) explains why the OAuth client is needed and how the browser returns to a desktop app.
+Google's [Calendar API quickstart](https://developers.google.com/workspace/calendar/api/quickstart/python) shows the current Cloud Console screens; only its Cloud setup sections apply here. If Google blocks sign-in during Testing, check that the exact email is listed under **Audience → Test users**. Testing-mode Google Calendar access expires after seven days; see [Google's publishing-status guidance](https://support.google.com/cloud/answer/15549945?hl=en) before switching to **In production**, which can show an unverified-app warning or require verification.
 
-Alternatively paste a Google Calendar secret iCal address under ICS feed URLs. Use Label|https://... to name a feed. Outlook HTTPS feeds and webcal links also work. Local ICS files are not supported by this provider. Never post private feed URLs publicly.
+One Desktop app client can connect up to four Google accounts. Calendar IDs are optional; otherwise selected calendars are used. Existing Tray Agenda sign-ins are separate and are not copied. Do not publish your client details or a Windhawk settings export containing them.
+
+**Simpler view-only option:** If you only need events from one Google calendar, [copy its secret iCal address](https://support.google.com/calendar/answer/37648?hl=en) and paste it under **ICS feed URLs** instead. This does not connect a Google account or require OAuth setup. Use `Label|https://...` to name a feed. Outlook HTTPS feeds and webcal links also work. Local ICS files are not supported by this provider. Never post private feed URLs publicly.
 
 ## Timezones
 
