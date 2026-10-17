@@ -2,7 +2,7 @@
 // @id              desktop-island-personal
 // @name            Desktop Island
 // @description     Floating desktop pill for media, clock, weather, hardware and optional calendar
-// @version         0.1.12
+// @version         0.1.13
 // @author          Jip
 // @github          https://github.com/iiRedPanda
 // @include         windhawk.exe
@@ -25,7 +25,7 @@ A floating desktop pill for Windhawk that puts time, media controls, weather, ha
 - Choose time only, date only, or both in the idle small pill. Weather is a separate choice, and the selected date can also appear during media playback.
 - Keep the pill visible, auto-hide it when idle, or hide or move it to another monitor while a full-screen app or game runs.
 - Reorder the scrollable views with the View order setting. The clock or active media view stays first; disabled views are skipped.
-- Island notifications have a master switch. When enabled, alerts captured by the Island appear from the pill for 4, 8, or 12 seconds, or stay until dismissed. With history enabled, captured alerts are kept across restarts until cleared. The Notifications view shows one entry at a time; click an entry for its full saved text, source, and capture time, or use the right-click menu to copy them. A test alert checks the pop-up and history without waiting for an external alert.
+- Island notifications are off by default. When enabled, alerts captured by the Island appear from the pill for 4, 8, or 12 seconds, or stay until dismissed. With history enabled, captured alerts are kept across restarts until cleared. The Notifications view shows one entry at a time; click an entry for its full saved text, source, and capture time, or use the right-click menu to copy them. A test alert checks the pop-up and history without waiting for an external alert.
 - Optional Calendar tab, disabled by default, with a passive Calendar Plus event preview when available.
 - Individually selectable CPU, RAM, GPU, network, and disk-space cards. Disk space defaults off; the disk target remains C:.
 - Optional timer, volume, battery, Bluetooth, clipboard, privacy indicators, weather, and game-overlay information. Weather uses day and night icons, a one-decimal current temperature when available, and selectable wind, feels-like, humidity, forecast-low, and forecast-high cards.
@@ -38,9 +38,9 @@ Click the compact pill to expand the overlay. Hover expansion is optional and di
 
 - **Small pill content:** choose **Time only**, **Time and date**, or **Date only** under **Time and date in small pill**. Date choices include month and day or weekday and day. When Weather is enabled, **Show weather in small pill** separately adds or removes the temperature and optional condition icon. At least time or date remains visible in the idle pill. The expanded clock remains available with every choice. During media playback, the compact media pill shows album art and can show the selected date; it does not show the time or weather.
 - **Visibility:** Expand on hover is controlled in Windhawk settings. Auto-hide can hide the Island after an idle timeout. Its hover-reveal switch applies only to idle auto-hide; instant-hide mode keeps its hover area steady to avoid repeated folding. Full-screen action defaults to Hide and takes effect immediately even when idle auto-hide is set to Never. A separate full-screen hover-reveal switch defaults off. The other full-screen action moves the Island to the largest other monitor when an app or game fills its home monitor; with only one monitor, Move behaves like Hide. The hide/show shortcut can temporarily reveal a hidden Island.
-- **Views:** enter `notifications,calendar,weather,hardware` in any order. The first clock/media view stays in place. In Notifications, Shift+wheel selects an older alert; click it to inspect the saved details, or right-click to copy them, show a test alert, dismiss the current pop-up, open Windows Reliability Monitor, or clear history. Reliability Monitor can help investigate a crash near the saved capture time, but an unverified shell popup alone does not prove one occurred. Clicking a compact alert pop-up also opens its details.
+- **Views:** the default order after the first clock/media view is `weather,hardware,calendar,notifications`. Enter those names in any order to customize it. Disabled views are skipped. In Notifications, Shift+wheel selects an older alert; click it to inspect the saved details, or right-click to copy them, show a test alert, dismiss the current pop-up, open Windows Reliability Monitor, or clear history. These notification menu actions are hidden when Island notifications are off. Reliability Monitor can help investigate a crash near the saved capture time, but an unverified shell popup alone does not prove one occurred. Clicking a compact alert pop-up also opens its details.
 - **Media:** **Exclude apps from media detection** removes matching media sessions from both the compact pill and expanded controls. Enter comma-separated app names, executable names, publishers, or media source IDs. Matching ignores case, spaces, punctuation, and `.exe`; publisher and product matching work when Windows exposes the owning program. If a session is hard to identify, play it, right-click the Island, choose **Copy current media source ID**, and add that ID to the list. **Prevent automatic expansion for these apps** only keeps the Island from opening automatically; those apps can still appear in media controls. Automatic expansion is off by default. Browser tabs that share a browser media identity cannot be excluded individually by site or content type.
-- **Notifications:** turn off **Enable Island notifications** to stop the Island capturing and showing alerts and remove its Notifications view. Saved Island history remains available when you turn it back on. Turning off **Keep Island alert history** clears that history. These controls do not change Windows notifications or the Island's separate volume, battery, and other status indicators.
+- **Notifications:** turn on **Enable Island notifications** to let the Island capture and show alerts and include its Notifications view. It is off by default. Turning it off again pauses capture and hides the view and its right-click actions; saved Island history remains available when you turn it back on. Turning off **Keep Island alert history** clears that history. These controls do not change Windows notifications or the Island's separate volume, battery, and other status indicators.
 - **Hardware:** select the CPU, RAM, GPU, network, and disk-space cards individually. Disk space is disabled by default and currently reports the C: drive.
 - **Display scaling:** Auto DPI scaling uses the primary monitor's Windows display scaling. If the Island is placed on another monitor with a different scale, use Size scale to adjust it.
 - **Calendar:** enable the Calendar tab to make it available in the overlay. Windows Calendar Plus can supply its passive event preview; other Island modules work without that mod.
@@ -62,13 +62,15 @@ Experimental source release. Compilation, compact and expanded clock views, date
 
 Version 0.1.8 places Low before High in the settings and Weather card row. It also orders the controls by placement, animation, theme, privacy, clock, media, alerts, calendar, weather, hardware, game overlay, and system status. All 97 setting paths and defaults remain the same, preserving saved choices. The source compiled, and a live check confirmed the grouped controls, retained selections, and Low/High card order.
 
-Version 0.1.9 adds **Enable Island notifications**, on by default. Switching it off pauses Windows toast polling and shell alert capture, closes any visible Island alert, removes Notifications from the view order, and disables the test-alert action. Saved history is retained until cleared or the separate history setting is turned off. The source compiled, and a live Windhawk check confirmed that the view and test-alert action disappear when disabled, then saved history and test alerts work again when enabled.
+Version 0.1.9 added **Enable Island notifications**, initially on by default; version 0.1.13 changes its default to off. Switching it off pauses Windows toast polling and shell alert capture, closes any visible Island alert, and removes Notifications from the view order and its actions from the right-click menu. Saved history is retained until cleared or the separate history setting is turned off. A live Windhawk check of the earlier version confirmed that the view and test-alert action disappear when disabled, then saved history and test alerts work again when enabled.
 
 Version 0.1.10 adds **Time only**, **Date only**, and **Time and date** choices for the idle pill. It always displays at least time or date. A separate switch hides compact weather while keeping the Weather view when weather is enabled. The existing weather master switch still disables all weather and its network requests. Existing saved date choices retain their previous behavior. The source compiled, and a live Windhawk check confirmed all three time/date choices, both compact weather switch states, and access to the expanded Weather view while compact weather was hidden.
 
 Version 0.1.11 removes the unreliable real Windows blur and acrylic backdrop modes, along with their dedicated fill-opacity and acrylic-tint settings. The Island continues to offer pill transparency, background tint intensity, depth shading, and a soft shadow. Saved choices for those remaining settings are unchanged; previously saved backdrop values are ignored. A live Windhawk check confirmed the backdrop controls are gone and pill transparency and soft shadow still work.
 
 Version 0.1.12 removes the redundant **Custom Colors** theme choice from settings and the right-click menu. Accent color mode, custom accent hex, and individual background, text, and border hex overrides remain available with Obsidian, Graphite, and Porcelain. Previously saved Custom Colors selections fall back to Obsidian while nondefault hex overrides remain active. A live Windhawk check confirmed that the choice is gone and accent controls still work with Obsidian and Graphite. The settings audit also clarified Auto DPI scaling's primary-monitor behavior and removed unused internal setting copies without changing the controls.
+
+Version 0.1.13 changes the default scrollable view order to Weather, Hardware Monitor, Calendar, then Notifications. Island notifications now default off, and their right-click actions are hidden while off. Existing saved settings remain selected after an update; set View order and Enable Island notifications in Windhawk if you want these defaults on an existing installation.
 
 ## Credits and license
 
@@ -330,9 +332,9 @@ SOFTWARE.
       - zh: 简体中文 (Simplified Chinese)
       - ja: 日本語 (Japanese)
       - ko: 한국어 (Korean)
-  - ViewOrder: 'notifications,calendar,weather,hardware'
+  - ViewOrder: 'weather,hardware,calendar,notifications'
     $name: Scrollable view order
-    $description: Comma-separated order after the first clock or media view. Use notifications, calendar, weather, and hardware. Disabled views are skipped; missing names go last.
+    $description: Comma-separated order after the first clock or media view. Use weather, hardware, calendar, and notifications in any order. Disabled views are skipped; missing names go last in the default order.
   - ClockFormat: system
     $name: Clock format
     $description: Choose 12-hour or 24-hour time, or follow your Windows locale setting.
@@ -376,9 +378,9 @@ SOFTWARE.
   - MediaExpandBlocklist: ""
     $name: Prevent automatic expansion for these apps
     $description: 'Comma-separated list of app or site names that should never make the island expand on a track change, while still updating quietly in the collapsed pill. Matched loosely against the media source and title, for example: chrome, tiktok, youtube.'
-  - NotificationsEnabled: true
+  - NotificationsEnabled: false
     $name: Enable Island notifications
-    $description: Show captured Windows and shell alerts, keep new alerts in Island history, and include the Notifications view. Turn off to pause Island notification capture without deleting saved history. Windows notifications and other Island status modules are unaffected.
+    $description: Off by default. Turn on to show captured Windows and shell alerts, keep new alerts in Island history, and include the Notifications view. Turning it off pauses capture and hides notification right-click actions without deleting saved history. Windows notifications and other Island status modules are unaffected.
   - NotificationHistory: true
     $name: Keep Island alert history
     $description: Keep every notification the Island captures, including crash toasts, until you clear it. The Notifications view shows one at a time; Shift+wheel selects older entries and right-click copies the full message. Notifications the Island misses cannot be recovered.
@@ -1020,11 +1022,11 @@ struct Settings {
     bool hardwareDiskSpace = false;
     bool hardwareMonitorModule = true;
     bool doNotDisturbIndicator = true;
-    bool notificationsEnabled = true;
+    bool notificationsEnabled = false;
     bool notificationRespectDnD = true;
     bool notificationHistory = true;
     int notificationPopupSeconds = 8;
-    std::wstring viewOrder = L"notifications,calendar,weather,hardware";
+    std::wstring viewOrder = L"weather,hardware,calendar,notifications";
 
     // ── Premium material / redesign ──────────────────────────────────────────
     bool materialDepth = true;      // downward depth shading + accent bloom
@@ -1497,7 +1499,7 @@ std::vector<int> ActiveDashboardTabs(const Settings& settings) {
         if (first != std::wstring::npos) add(name.substr(first, last - first + 1));
         start = end + 1;
     }
-    for (const wchar_t* name : {L"notifications", L"calendar", L"weather", L"hardware"}) add(name);
+    for (const wchar_t* name : {L"weather", L"hardware", L"calendar", L"notifications"}) add(name);
     return tabs;
 }
 
@@ -7028,12 +7030,14 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
     AppendMenuW(menu, MF_STRING, 9, L"Open Windhawk settings");
     AppendMenuW(menu, MF_STRING, 19, L"Weather data credits");
     AppendMenuW(menu, MF_STRING | (hasMediaSource ? 0 : MF_GRAYED), 17, L"Copy current media source ID");
-    AppendMenuW(menu, MF_STRING | ((*GetSettingsSnapshot()).notificationsEnabled ? 0 : MF_GRAYED),
-                14, L"Show test alert");
-    AppendMenuW(menu, MF_STRING, 15, L"Dismiss current alert");
-    AppendMenuW(menu, MF_STRING, 16, L"Copy shown Island alert");
-    AppendMenuW(menu, MF_STRING, 18, L"Open Windows Reliability Monitor");
-    AppendMenuW(menu, MF_STRING, 13, L"Clear Island alert history");
+    if ((*GetSettingsSnapshot()).notificationsEnabled) {
+        AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
+        AppendMenuW(menu, MF_STRING, 14, L"Show test alert");
+        AppendMenuW(menu, MF_STRING, 15, L"Dismiss current alert");
+        AppendMenuW(menu, MF_STRING, 16, L"Copy shown Island alert");
+        AppendMenuW(menu, MF_STRING, 18, L"Open Windows Reliability Monitor");
+        AppendMenuW(menu, MF_STRING, 13, L"Clear Island alert history");
+    }
 
     SetForegroundWindow(hwnd);
     const UINT cmd = TrackPopupMenu(menu, TPM_RETURNCMD | TPM_RIGHTBUTTON,
