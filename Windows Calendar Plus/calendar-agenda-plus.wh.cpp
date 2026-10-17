@@ -2,7 +2,7 @@
 // @id              calendar-agenda-plus
 // @name            Windows Calendar Plus
 // @description     Native Windows calendar agenda with Google accounts, ICS feeds, daylight saving handling and reminders.
-// @version         0.2.1
+// @version         0.2.2
 // @author          Jip
 // @github          https://github.com/iiRedPanda
 // @include         explorer.exe
@@ -37,9 +37,21 @@ Configure a Google account or ICS feed as described below, then open the Windows
 
 Experimental Windhawk fork. Compilation and calendar parser/cache regression tests have passed; a full live Windows compatibility matrix has not been established. The original Agenda in Calendar View and Tray Agenda can produce duplicate controls or reminders when enabled concurrently with this fork.
 
-## Google Calendar
+Version 0.2.2 makes Google sign-in clickable on a fresh installation and opens this guide when OAuth client settings are missing. The source compiles and the calendar and account-request checks pass. The new first-run menu path has not yet been verified live on a PC without saved accounts or client settings.
 
-Use a Google Cloud Desktop-app OAuth client with Calendar API enabled. Paste its client ID and secret into settings, then open the Windows calendar pane and select the three-dot menu > Google accounts > Sign in with Google. Authentication uses the system browser. Use the same menu to see connected accounts and sign out. Calendar access is read-only; up to four accounts are supported. Calendar IDs are optional; otherwise selected calendars are used. Existing Tray Agenda sign-ins are separate and are not copied.
+## Connect a Google account
+
+**Sign in with Google** is available in the calendar pane even when no accounts have been added. Once a Google OAuth client is configured, clicking it opens Google's sign-in and consent page in your default browser. This source release does not include a shared OAuth client, so a first-time user must create a Google Cloud Desktop app client once. If the client is missing, clicking **Sign in with Google** explains this and opens this guide instead of leaving a disabled button.
+
+1. Open the [Google Cloud Console](https://console.cloud.google.com/) and create or select a project for Calendar Plus.
+2. [Enable the Google Calendar API](https://console.cloud.google.com/apis/library/calendar-json.googleapis.com) for that project.
+3. In **Google Auth platform → Branding**, start the OAuth setup and enter an app name, support email, and contact email. Under **Audience**, choose **External** for a personal Google account. If the project is in **Testing**, add the Google account you will sign in with as a test user.
+4. Under **Data Access**, add the read-only scopes `https://www.googleapis.com/auth/calendar.events.readonly` and `https://www.googleapis.com/auth/calendar.calendarlist.readonly` if Google asks you to configure scopes. The mod requests these two scopes during sign-in.
+5. Under **Google Auth platform → Clients**, create an OAuth client with application type **Desktop app**. Copy its client ID and client secret from the result or downloaded JSON. You do not need to run Google's sample code or add a redirect URL for this desktop client. [Google's Calendar API quickstart](https://developers.google.com/workspace/calendar/api/quickstart/python) shows the current Cloud Console screens.
+6. Open **Windows Calendar Plus → Settings** in Windhawk. Paste the values into **Google OAuth client ID** and **Google OAuth client secret**, then save the settings. Do not put these values in a public issue or settings export.
+7. Open the Windows calendar pane. Select **⋯ → Google accounts → Sign in with Google**. Your default browser opens Google's account chooser and consent page. Choose your account and grant the requested read-only calendar permissions. Return to the calendar pane, then reopen **Google accounts** to see the connection status; use **Refresh events** if events have not appeared yet.
+
+Google sign-in supports up to four accounts. Calendar IDs are optional; otherwise selected calendars are used. Existing Tray Agenda sign-ins are separate and are not copied. If Google blocks access while your OAuth project is in Testing, check that the exact Google email is listed under **Audience → Test users**. [Google's OAuth desktop app guide](https://developers.google.com/identity/protocols/oauth2/native-app) explains why the OAuth client is needed and how the browser returns to a desktop app.
 
 Alternatively paste a Google Calendar secret iCal address under ICS feed URLs. Use Label|https://... to name a feed. Outlook HTTPS feeds and webcal links also work. Local ICS files are not supported by this provider. Never post private feed URLs publicly.
 
@@ -80,10 +92,10 @@ THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED
   $description: Enable calendar fetching, the agenda and reminders.
 - google_client_id: ""
   $name: Google OAuth client ID
-  $description: Client ID of your own Google Cloud "Desktop app" OAuth client (see the mod description).
+  $description: Required for Google sign-in. Create a Desktop app OAuth client in Google Cloud; the mod description has a step-by-step setup guide. Never publish this value with personal settings.
 - google_client_secret: ""
   $name: Google OAuth client secret
-  $description: Client secret of the same OAuth client.
+  $description: Client secret from the same Desktop app OAuth client. Paste it here after creating the client in Google Cloud; do not publish your personal settings.
 - calendar_ids: [""]
   $name: Calendar IDs (optional)
   $description: Calendars to show. Leave empty to use the calendars ticked in Google Calendar.
@@ -6098,6 +6110,26 @@ void UpdateMaxHeight(int maxHeight) {
     }
 }
 
+void OpenGoogleAccountSetupGuide() {
+    constexpr wchar_t guideUrl[] =
+        L"https://github.com/iiRedPanda/windhawk-taskbar-desktop-mods/blob/main/"
+        L"Windows%20Calendar%20Plus/README.md#connect-a-google-account";
+    const auto statusKey = calendar_provider::UserValueName(L"account_status");
+    Wh_SetStringValue(statusKey.c_str(),
+                      L"Create a Google Desktop-app OAuth client, save its ID and secret in Windhawk settings, then choose Sign in with Google again.");
+    MessageBoxW(nullptr,
+                L"Google sign-in needs a one-time OAuth client setup. A Google login page cannot work until the client ID and secret are saved in this mod's Windhawk settings.\n\n"
+                L"The step-by-step setup guide will now open in your browser. After setup, choose Sign in with Google again to open Google's account and consent page.",
+                L"Windows Calendar Plus - Set up Google sign-in",
+                MB_OK | MB_ICONINFORMATION);
+    if (reinterpret_cast<INT_PTR>(ShellExecuteW(nullptr, L"open", guideUrl,
+                                                nullptr, nullptr, SW_SHOWNORMAL)) <= 32) {
+        Wh_SetStringValue(statusKey.c_str(),
+                          L"Could not open the Google setup guide. See the Windows Calendar Plus mod description.");
+        Wh_Log(L"Could not open Google account setup guide");
+    }
+}
+
 void ShowCalendarMenu() {
     if (!m_menuButton) return;
     try {
@@ -6143,9 +6175,12 @@ void ShowCalendarMenu() {
         accountsMenu.Items().Append(wuxc::MenuFlyoutSeparator());
         auto signIn = wuxc::MenuFlyoutItem();
         signIn.Text(L"Sign in with Google");
-        signIn.IsEnabled(calendar_provider::ClientConfigured(settings) &&
-                         accounts.size() < calendar_provider::kMaxAccounts);
+        signIn.IsEnabled(accounts.size() < calendar_provider::kMaxAccounts);
         signIn.Click([](wf::IInspectable const&, wux::RoutedEventArgs const&) {
+            if (!calendar_provider::ClientConfigured(calendar_provider::SettingsCopy())) {
+                OpenGoogleAccountSetupGuide();
+                return;
+            }
             auto statusKey = calendar_provider::UserValueName(L"account_status");
             Wh_SetStringValue(statusKey.c_str(),
                               L"Sign-in requested. Your browser will open shortly.");
@@ -6158,8 +6193,10 @@ void ShowCalendarMenu() {
 
         if (!calendar_provider::ClientConfigured(settings)) {
             auto hint = wuxc::MenuFlyoutItem();
-            hint.Text(L"Set your Google OAuth client in mod settings");
-            hint.IsEnabled(false);
+            hint.Text(L"How to set up Google sign-in");
+            hint.Click([](wf::IInspectable const&, wux::RoutedEventArgs const&) {
+                OpenGoogleAccountSetupGuide();
+            });
             accountsMenu.Items().Append(hint);
         } else if (accounts.size() >= calendar_provider::kMaxAccounts) {
             auto hint = wuxc::MenuFlyoutItem();

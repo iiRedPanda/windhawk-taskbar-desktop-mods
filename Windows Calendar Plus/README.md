@@ -18,9 +18,21 @@ Configure a Google account or ICS feed as described below, then open the Windows
 
 Experimental Windhawk fork. Compilation and calendar parser/cache regression tests have passed; a full live Windows compatibility matrix has not been established. The original Agenda in Calendar View and Tray Agenda can produce duplicate controls or reminders when enabled concurrently with this fork.
 
-## Google Calendar
+Version 0.2.2 makes Google sign-in clickable on a fresh installation and opens this guide when OAuth client settings are missing. The source compiles and the calendar and account-request checks pass. The new first-run menu path has not yet been verified live on a PC without saved accounts or client settings.
 
-Use a Google Cloud Desktop-app OAuth client with Calendar API enabled. Paste its client ID and secret into settings, then open the Windows calendar pane and select the three-dot menu > Google accounts > Sign in with Google. Authentication uses the system browser. Use the same menu to see connected accounts and sign out. Calendar access is read-only; up to four accounts are supported. Calendar IDs are optional; otherwise selected calendars are used. Existing Tray Agenda sign-ins are separate and are not copied.
+## Connect a Google account
+
+**Sign in with Google** is available in the calendar pane even when no accounts have been added. Once a Google OAuth client is configured, clicking it opens Google's sign-in and consent page in your default browser. This source release does not include a shared OAuth client, so a first-time user must create a Google Cloud Desktop app client once. If the client is missing, clicking **Sign in with Google** explains this and opens this guide instead of leaving a disabled button.
+
+1. Open the [Google Cloud Console](https://console.cloud.google.com/) and create or select a project for Calendar Plus.
+2. [Enable the Google Calendar API](https://console.cloud.google.com/apis/library/calendar-json.googleapis.com) for that project.
+3. In **Google Auth platform → Branding**, start the OAuth setup and enter an app name, support email, and contact email. Under **Audience**, choose **External** for a personal Google account. If the project is in **Testing**, add the Google account you will sign in with as a test user.
+4. Under **Data Access**, add the read-only scopes `https://www.googleapis.com/auth/calendar.events.readonly` and `https://www.googleapis.com/auth/calendar.calendarlist.readonly` if Google asks you to configure scopes. The mod requests these two scopes during sign-in.
+5. Under **Google Auth platform → Clients**, create an OAuth client with application type **Desktop app**. Copy its client ID and client secret from the result or downloaded JSON. You do not need to run Google's sample code or add a redirect URL for this desktop client. [Google's Calendar API quickstart](https://developers.google.com/workspace/calendar/api/quickstart/python) shows the current Cloud Console screens.
+6. Open **Windows Calendar Plus → Settings** in Windhawk. Paste the values into **Google OAuth client ID** and **Google OAuth client secret**, then save the settings. Do not put these values in a public issue or settings export.
+7. Open the Windows calendar pane. Select **⋯ → Google accounts → Sign in with Google**. Your default browser opens Google's account chooser and consent page. Choose your account and grant the requested read-only calendar permissions. Return to the calendar pane, then reopen **Google accounts** to see the connection status; use **Refresh events** if events have not appeared yet.
+
+Google sign-in supports up to four accounts. Calendar IDs are optional; otherwise selected calendars are used. Existing Tray Agenda sign-ins are separate and are not copied. If Google blocks access while your OAuth project is in Testing, check that the exact Google email is listed under **Audience → Test users**. [Google's OAuth desktop app guide](https://developers.google.com/identity/protocols/oauth2/native-app) explains why the OAuth client is needed and how the browser returns to a desktop app.
 
 Alternatively paste a Google Calendar secret iCal address under ICS feed URLs. Use Label|https://... to name a feed. Outlook HTTPS feeds and webcal links also work. Local ICS files are not supported by this provider. Never post private feed URLs publicly.
 
