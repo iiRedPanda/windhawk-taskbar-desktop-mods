@@ -27,6 +27,8 @@ The mods can run independently. Windows Calendar Plus supplies an optional event
 
 All five sources compile with Windhawk 1.7.3. Core taskbar and Island behaviors were checked on one Windows 11 Pro 24H2 system (build 26100.6899) with multiple displays. Calendar parsing, recurrence, cache, account-request, and Island bridge checks pass. Each mod README lists the live checks and remaining limits. Compatibility with other Windows builds, ExplorerPatcher, and StartAllBack has not been established as a general guarantee.
 
+The [settings audit](SETTINGS-AUDIT.md) summarizes which controls were reviewed, which redundant controls were removed, and when a remaining setting applies only to a particular feature or taskbar path.
+
 This repository is an experimental source release on GitHub. The mods are not listed in the official Windhawk catalog. Report a reproducible issue with the mod version, Windows build, Windhawk version, enabled taskbar customizers, and relevant settings.
 
 Each mod is a modified fork. Its README credits the original projects and authors and retains the applicable license notices.

@@ -2,7 +2,7 @@
 // @id              desktop-island-personal
 // @name            Desktop Island
 // @description     Floating desktop pill for media, clock, weather, hardware and optional calendar
-// @version         0.1.11
+// @version         0.1.12
 // @author          Jip
 // @github          https://github.com/iiRedPanda
 // @include         windhawk.exe
@@ -20,7 +20,7 @@ A floating desktop pill for Windhawk that puts time, media controls, weather, ha
 
 ## Features
 
-- Choose a color theme: **Obsidian** (near-black), **Graphite** (dark gray), **Porcelain** (light), or **Custom Colors**. Appearance and transparency can be adjusted further in settings.
+- Choose a color theme: **Obsidian** (near-black), **Graphite** (dark gray), or **Porcelain** (light). Accent and hex color controls work with every theme, and transparency can be adjusted separately.
 - Click to expand, or enable automatic expansion for selected media apps. A separate exclusion list removes unwanted apps from media detection entirely; it starts empty.
 - Choose time only, date only, or both in the idle small pill. Weather is a separate choice, and the selected date can also appear during media playback.
 - Keep the pill visible, auto-hide it when idle, or hide or move it to another monitor while a full-screen app or game runs.
@@ -42,6 +42,7 @@ Click the compact pill to expand the overlay. Hover expansion is optional and di
 - **Media:** **Exclude apps from media detection** removes matching media sessions from both the compact pill and expanded controls. Enter comma-separated app names, executable names, publishers, or media source IDs. Matching ignores case, spaces, punctuation, and `.exe`; publisher and product matching work when Windows exposes the owning program. If a session is hard to identify, play it, right-click the Island, choose **Copy current media source ID**, and add that ID to the list. **Prevent automatic expansion for these apps** only keeps the Island from opening automatically; those apps can still appear in media controls. Automatic expansion is off by default. Browser tabs that share a browser media identity cannot be excluded individually by site or content type.
 - **Notifications:** turn off **Enable Island notifications** to stop the Island capturing and showing alerts and remove its Notifications view. Saved Island history remains available when you turn it back on. Turning off **Keep Island alert history** clears that history. These controls do not change Windows notifications or the Island's separate volume, battery, and other status indicators.
 - **Hardware:** select the CPU, RAM, GPU, network, and disk-space cards individually. Disk space is disabled by default and currently reports the C: drive.
+- **Display scaling:** Auto DPI scaling uses the primary monitor's Windows display scaling. If the Island is placed on another monitor with a different scale, use Size scale to adjust it.
 - **Calendar:** enable the Calendar tab to make it available in the overlay. Windows Calendar Plus can supply its passive event preview; other Island modules work without that mod.
 - **Weather:** **Enable Weather and view** controls weather retrieval and the expanded Weather view. **Show weather in small pill** separately hides the compact weather reading while leaving the expanded view available. Choose an optional city and Celsius or Fahrenheit. **Show weather icon in small pill** hides just the condition icon for a narrower, temperature-only reading. Turning off **Enable Weather and view** stops weather requests and removes weather from both views. Each of the five expanded cards can be switched on or off; wind, feels like, and humidity retain their previous defaults, while today's forecast low and high default off. Selected cards appear in one or two rows below the current condition, with Low to the left of High when both are shown. Open-Meteo supplies the decimal current reading, forecast high/low, current condition, and day/night state; if it is unavailable, the Island uses wttr.in's whole-degree reading. Readings normally refresh every 15 minutes when enabled.
 
@@ -66,6 +67,8 @@ Version 0.1.9 adds **Enable Island notifications**, on by default. Switching it 
 Version 0.1.10 adds **Time only**, **Date only**, and **Time and date** choices for the idle pill. It always displays at least time or date. A separate switch hides compact weather while keeping the Weather view when weather is enabled. The existing weather master switch still disables all weather and its network requests. Existing saved date choices retain their previous behavior. The source compiled, and a live Windhawk check confirmed all three time/date choices, both compact weather switch states, and access to the expanded Weather view while compact weather was hidden.
 
 Version 0.1.11 removes the unreliable real Windows blur and acrylic backdrop modes, along with their dedicated fill-opacity and acrylic-tint settings. The Island continues to offer pill transparency, background tint intensity, depth shading, and a soft shadow. Saved choices for those remaining settings are unchanged; previously saved backdrop values are ignored. A live Windhawk check confirmed the backdrop controls are gone and pill transparency and soft shadow still work.
+
+Version 0.1.12 removes the redundant **Custom Colors** theme choice from settings and the right-click menu. Accent color mode, custom accent hex, and individual background, text, and border hex overrides remain available with Obsidian, Graphite, and Porcelain. Previously saved Custom Colors selections fall back to Obsidian while nondefault hex overrides remain active. A live Windhawk check confirmed that the choice is gone and accent controls still work with Obsidian and Graphite. The settings audit also clarified Auto DPI scaling's primary-monitor behavior and removed unused internal setting copies without changing the controls.
 
 ## Credits and license
 
@@ -156,7 +159,7 @@ SOFTWARE.
       - '2.5': 2.5x
   - AutoDpiScale: true
     $name: Auto DPI scaling
-    $description: Automatically scales the island to match your monitor's DPI. Recommended for 4K screens.
+    $description: Scale the island using the primary monitor's Windows display scaling. For a different monitor, adjust Size scale as needed.
   $name: Appearance & Position
 - Behavior:
   - AlwaysOnTop: true
@@ -227,12 +230,11 @@ SOFTWARE.
 - Themes:
   - ThemePreset: obsidian
     $name: Island color theme
-    $description: Choose Obsidian for near-black, Graphite for dark gray, Porcelain for a light appearance, or Custom Colors to use your own hex colors below.
+    $description: Choose Obsidian for near-black, Graphite for dark gray, or Porcelain for a light appearance. Accent and hex color controls below work with every theme.
     $options:
       - obsidian: Obsidian - true black (Default)
       - graphite: Graphite - neutral Windows 11 dark
       - porcelain: Porcelain - light theme
-      - custom: Custom Colors (Use Hex Below)
   - PillOpacity: 96
     $name: Pill transparency
     $description: 35 to 100. Lower values make the island more see-through.
@@ -860,12 +862,11 @@ enum class CalendarAccentMode {
 // separation by value alone -- and one is light, which the old set had none of.
 //
 // Order is load-bearing: it is persisted as an integer index, so append new
-// entries at the end rather than inserting. Custom must stay last.
+// entries at the end rather than inserting.
 enum class ThemePreset {
     Obsidian,
     Graphite,
     Porcelain,
-    Custom,
 };
 
 // One table drives the settings dropdown, the right-click menu labels and the
@@ -890,9 +891,7 @@ static constexpr ThemePalette kThemePalettes[] = {
     {L"porcelain", L"Porcelain (Light)",  L"#F5F6F8", L"#14161A", L"#5B6270", L"#D8DBE1"},
 };
 
-// Custom sits one past the last real palette. Derived, so adding a palette
-// cannot leave a stale literal behind.
-static constexpr int kCustomThemeIndex = static_cast<int>(ARRAYSIZE(kThemePalettes));
+static constexpr int kThemeCount = static_cast<int>(ARRAYSIZE(kThemePalettes));
 
 // Persisted under a new key. Retiring the original palettes renumbered these
 // integers, and reusing "ColorTheme" would have silently reinterpreted a saved
@@ -901,7 +900,7 @@ static constexpr const wchar_t* kThemeValueName = L"ColorThemeV3";
 static constexpr const wchar_t* kLegacyThemeValueName = L"ColorThemeV2";
 
 // Base menu command id for the theme submenu; entries occupy
-// [kThemeMenuIdBase, kThemeMenuIdBase + kCustomThemeIndex].
+// [kThemeMenuIdBase, kThemeMenuIdBase + kThemeCount).
 static constexpr UINT kThemeMenuIdBase = 20;
 
 // Maps a preset id to its palette index, accepting the retired ids too: a
@@ -916,10 +915,10 @@ inline int ThemeIndexFromId(std::wstring_view id) {
         return true;
     };
 
-    for (int i = 0; i < kCustomThemeIndex; ++i) {
+    for (int i = 0; i < kThemeCount; ++i) {
         if (iequals(id, kThemePalettes[i].id)) return i;
     }
-    if (iequals(id, L"custom")) return kCustomThemeIndex;
+    if (iequals(id, L"custom")) return 0;  // Retired preset; hex overrides remain.
 
     if (iequals(id, L"oled-black")) return 0;     // -> Obsidian
     if (iequals(id, L"fluent") ||
@@ -1002,7 +1001,6 @@ struct Settings {
     bool unhideOnHover = true;
     bool alwaysOnTop = true;
     bool expandOnHover = false;
-    bool autoDpiScale = true;
     bool w11Style = false;
     bool notchStyle = false;
     // Color customization
@@ -1014,10 +1012,6 @@ struct Settings {
     bool contourBorderEnabled = true;
     D2D1_COLOR_F contourBorderColor = D2D1::ColorF(0.200f, 0.200f, 0.220f, 1.0f); // #333338
     bool clockAccentGlow = true;
-    bool privacyDotsEnabled = true;
-    bool privacyDotPulsing = true;
-    D2D1_COLOR_F micDotColor = D2D1::ColorF(1.0f, 0.584f, 0.0f, 1.0f); // #FF9500
-    D2D1_COLOR_F camDotColor = D2D1::ColorF(0.204f, 0.780f, 0.349f, 1.0f); // #34C759
     bool calendar = false;
     bool hardwareCpu = true;
     bool hardwareRam = true;
@@ -2398,7 +2392,6 @@ void LoadSettings() {
     next.unhideOnHover = Wh_GetIntSetting(L"Behavior.UnhideOnHover") != 0;
     next.alwaysOnTop = Wh_GetIntSetting(L"Behavior.AlwaysOnTop") != 0;
     next.expandOnHover = Wh_GetIntSetting(L"Behavior.ExpandOnHover") != 0;
-    next.autoDpiScale = Wh_GetIntSetting(L"Appearance.AutoDpiScale") != 0;
     next.offsetX = Wh_GetIntSetting(L"Appearance.OffsetX");
     next.offsetY = Wh_GetIntSetting(L"Appearance.OffsetY");
     next.separateExpandedOffsetY = Wh_GetIntSetting(L"Appearance.SeparateExpandedOffsetY") != 0;
@@ -2505,7 +2498,7 @@ void LoadSettings() {
                 case 0: migrated = 0; break; // Obsidian
                 case 1: migrated = 1; break; // Graphite
                 case 7: migrated = 2; break; // Porcelain
-                case 8: migrated = kCustomThemeIndex; break;
+                case 8: migrated = 0; break; // Retired Custom preset; retain hex overrides.
                 default: migrated = 0; break;
             }
             Wh_SetIntValue(kThemeValueName, migrated);
@@ -2521,27 +2514,14 @@ void LoadSettings() {
         }
     }
 
-    const int theme = Wh_GetIntValue(kThemeValueName, -1);
-    if (theme >= 0 && theme < kCustomThemeIndex) {
-        next.themePreset = static_cast<ThemePreset>(theme);
-        applyPreset(next, theme);
-    } else if (theme >= kCustomThemeIndex || EqualsNoCase(themePresetStr, L"custom")) {
-        // Explicit Custom: the hex fields are authoritative, defaults included.
-        next.themePreset = ThemePreset::Custom;
-        next.pillBgColor = ColorFromHex(GetStringSettingCopy(L"Themes.PillBgColor"),
-                                        D2D1::ColorF(0.031f, 0.031f, 0.039f, 1.0f));
-        next.textPrimaryColor = ColorFromHex(GetStringSettingCopy(L"Themes.TextPrimaryColor"),
-                                             D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f));
-        next.textSecondaryColor = ColorFromHex(GetStringSettingCopy(L"Themes.TextSecondaryColor"),
-                                               D2D1::ColorF(0.608f, 0.608f, 0.647f, 1.0f));
-        next.contourBorderColor = ColorFromHex(GetStringSettingCopy(L"Themes.ContourBorderHex"),
-                                               D2D1::ColorF(0.118f, 0.118f, 0.133f, 1.0f));
-    } else {
+    int theme = Wh_GetIntValue(kThemeValueName, -1);
+    if (theme < 0 || theme >= kThemeCount) {
         const int fromSettings = ThemeIndexFromId(themePresetStr);
-        const int presetIdx = (fromSettings >= 0 && fromSettings < kCustomThemeIndex) ? fromSettings : 0;
-        next.themePreset = static_cast<ThemePreset>(presetIdx);
-        applyPreset(next, presetIdx);
+        theme = fromSettings >= 0 ? fromSettings : 0;
+        Wh_SetIntValue(kThemeValueName, theme);
     }
+    next.themePreset = static_cast<ThemePreset>(theme);
+    applyPreset(next, theme);
 
     // Graphite inherits the old Fluent theme's auto-translucency: it is the
     // neutral Windows 11 grey, and it reads best when the desktop shows through
@@ -2610,12 +2590,6 @@ void LoadSettings() {
 
     std::wstring camHexStr = GetStringSettingWithFallback(L"Indicators.PrivacyDotsCamHex", L"Indicators.CamDotHex", L"Modules.PrivacyDotsCamHex");
     next.privacyDotsCamHex = ColorFromHex(camHexStr, D2D1::ColorF(0.204f, 0.780f, 0.349f, 1.0f));
-
-    // Compatibility aliases: always keep in sync
-    next.privacyDotsEnabled = next.privacyDots;
-    next.privacyDotPulsing = next.privacyDotsPulse;
-    next.micDotColor = next.privacyDotsMicHex;
-    next.camDotColor = next.privacyDotsCamHex;
 
     Wh_SetIntValue(L"PinnedExpanded", 0);
 
@@ -7042,17 +7016,13 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
     AppendMenuW(menu, MF_STRING, 7, L"Transparency 55%");
     AppendMenuW(menu, MF_STRING, 8, L"Reset transparency");
     AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
-    // Color theme presets. Built from kThemePalettes and nested in a submenu:
-    // nine palettes listed flat would dominate the root menu.
+    // Color theme presets share one list with the Windhawk settings.
     const int activeTheme = Wh_GetIntValue(kThemeValueName, static_cast<int>((*GetSettingsSnapshot()).themePreset));
     HMENU themeMenu = CreatePopupMenu();
-    for (int i = 0; i < kCustomThemeIndex; ++i) {
+    for (int i = 0; i < kThemeCount; ++i) {
         AppendMenuW(themeMenu, MF_STRING | (activeTheme == i ? MF_CHECKED : 0),
                     kThemeMenuIdBase + static_cast<UINT>(i), kThemePalettes[i].label);
     }
-    AppendMenuW(themeMenu, MF_SEPARATOR, 0, nullptr);
-    AppendMenuW(themeMenu, MF_STRING | (activeTheme >= kCustomThemeIndex ? MF_CHECKED : 0),
-                kThemeMenuIdBase + static_cast<UINT>(kCustomThemeIndex), L"Custom Colors");
     AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(themeMenu), L"Color theme");
     AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
     AppendMenuW(menu, MF_STRING, 9, L"Open Windhawk settings");
@@ -7073,7 +7043,7 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
     // Theme ids are a contiguous range rather than individual cases, so adding a
     // palette to kThemePalettes needs no change here.
     if (cmd >= kThemeMenuIdBase &&
-        cmd <= kThemeMenuIdBase + static_cast<UINT>(kCustomThemeIndex)) {
+        cmd < kThemeMenuIdBase + static_cast<UINT>(kThemeCount)) {
         Wh_SetIntValue(kThemeValueName, static_cast<int>(cmd - kThemeMenuIdBase));
         LoadSettings();
         return;
