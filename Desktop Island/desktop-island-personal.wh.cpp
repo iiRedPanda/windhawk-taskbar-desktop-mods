@@ -72,7 +72,7 @@ Version 0.1.12 removes the redundant **Custom Colors** theme choice from setting
 
 Version 0.1.13 changed the default scrollable view order to Weather, Hardware Monitor, Calendar, then Notifications. Island notifications now default off, and their right-click actions are hidden while off. Existing saved notification choices remain selected after an update; turn **Enable Island notifications** off in Windhawk if you want the new default on an existing installation.
 
-Version 0.1.14 replaces the comma-separated View order text field with four dropdowns. This makes the order explicit and avoids a text edit that appears ineffective when the named views are disabled. The old text field is no longer used; choose positions once with the new controls if you had customized it. Changing a dropdown resets the expanded view to the first clock/media card before scrolling in the new order. A live Windhawk check confirmed the dropdowns appear and swapping Hardware Monitor ahead of Weather changes their scroll order.
+Version 0.1.14 replaces the comma-separated View order text field with four dropdowns. This makes the order explicit and avoids a text edit that appears ineffective when the named views are disabled. The old text field is no longer used; choose positions once with the new controls if you had customized it. Changing a dropdown resets the expanded view to the first clock/media card before scrolling in the new order. Live Windhawk checks confirmed the dropdowns appear, swapping Hardware Monitor ahead of Weather changes their scroll order, and notification right-click actions disappear while Island notifications are off and return when enabled.
 
 ## Credits and license
 
