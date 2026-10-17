@@ -6,12 +6,12 @@ Change the Windows 11 taskbar's look and tune its Start button and clock from on
 
 - Choose a taskbar theme: **Frosty Matter** (split frosted panels), **WinXP** or **Windows 7** (classic-inspired styling), **Translucent** (minimal transparent background), **Command Center** (dark app panels), or **Windows default**.
 - Frosty Matter combines the split FrostyGlass layout with an optional Matter-style clock: time above date, Tektur when installed, and Segoe UI fallback.
-- Adjustable Frosty Matter split gap, Start icon color/effects/size, and empty-area click-through behavior.
+- Start icon color/effects/size and empty-area click-through behavior.
 - Independent clock switch, date visibility, seconds, formats, locale, typography, and spacing.
 
 ## Settings
 
-Choose a preset under **Taskbar theme**. Frosty Matter is the default. Its split-gap setting adjusts the space between the center taskbar and the tray section.
+Choose a preset under **Taskbar theme**. Frosty Matter is the default and retains its split-panel layout.
 
 **Click-through empty taskbar area** defaults to Auto. It lets clicks reach the desktop or window behind transparent gaps in Frosty Matter and Command Center. Choose Never to keep the normal taskbar hit area, or Always to use click-through with another theme.
 
@@ -35,6 +35,8 @@ Clock line formats support the tokens below, numbered extra time/date formats, c
 ## Compatibility and status
 
 Experimental source release. Compilation, Frosty Matter's split layout, the seconds/date toggles, Windows default styling with the custom clock, and the WinXP, Windows 7, and Translucent presets have been checked on one Windows 11 installation. The inherited Command Center preset crashed Explorer there; its smaller replacement loads without crashing, has working empty-area click-through, and its app boxes and running dots were reported to look correct on the main and portrait displays. Restore-on-disable behavior and compatibility across Windows builds remain unverified. Avoid overlapping overrides from the original Styler, Start Button Colorizer, or Clock Customization mods. Legacy clock paths are inherited; this does not establish legacy theme support or StartAllBack compatibility.
+
+Version 0.1.1 removes the Frosty Matter split-gap setting because changing it had no visible effect. The preset's split-panel layout remains. Previously saved gap values are ignored.
 
 ## Data and limitations
 
