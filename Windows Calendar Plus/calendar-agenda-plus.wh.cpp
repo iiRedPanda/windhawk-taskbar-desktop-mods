@@ -39,21 +39,41 @@ Experimental Windhawk fork. Compilation and calendar parser/cache regression tes
 
 Version 0.2.3 keeps the Google accounts menu focused on connected accounts and sign-in. Sign-in is inactive until the Google OAuth client details are saved in Windhawk. Hover over the dimmed item for setup guidance, and follow the steps below. The source compiles, and the calendar and account-request checks pass. A live check without OAuth settings confirmed the dimmed sign-in item, its hover tip, the simplified menu, and that clicking it does not open a browser.
 
-## Connect a Google account
+## Choose how to add Google Calendar
 
-**Sign in with Google** stays dimmed until you complete this one-time setup. The mod does not ship a shared Google OAuth client, so each user needs a Google Cloud **Desktop app** client. After that, sign-in opens in your default browser.
+### Recommended for simple viewing: a private iCal link
 
-1. Open the [Google Cloud Console](https://console.cloud.google.com/). Create a project or select one you already have, then [enable the Google Calendar API](https://console.cloud.google.com/apis/library/calendar-json.googleapis.com) in it.
-2. Open **Google Auth platform → Branding** and complete the consent setup with an app name and your email. Choose **External** under **Audience** for a personal Google account and add the account you will use under **Test users** while the app is in Testing. Under **Data Access**, add the Calendar scopes ending in `calendar.events.readonly` and `calendar.calendarlist.readonly`.
-3. Under **Google Auth platform → Clients**, create a client of type **Desktop app**. Copy its **Client ID** and **Client secret**. You do not need to run Google's sample code or enter a redirect URL.
-4. In Windhawk, open **Windows Calendar Plus → Settings**, paste those two values into **Google OAuth client ID** and **Google OAuth client secret**, and save.
-5. Open the Windows calendar pane and select **⋯ → Google accounts → Sign in with Google**. Choose your account in the browser and allow read-only calendar access. Reopen **Google accounts** to see the connected account; use **Refresh events** if events have not appeared yet.
+Choose this when you want to show events from one or a small set of personal calendars. It is the easiest option: no Google Cloud project, browser sign-in, client secret, or seven-day OAuth expiry.
 
-Google's [Calendar API quickstart](https://developers.google.com/workspace/calendar/api/quickstart/python) shows the current Cloud Console screens; only its Cloud setup sections apply here. If Google blocks sign-in during Testing, check that the exact email is listed under **Audience → Test users**. Testing-mode Google Calendar access expires after seven days; see [Google's publishing-status guidance](https://support.google.com/cloud/answer/15549945?hl=en) before switching to **In production**, which can show an unverified-app warning or require verification.
+**Advantages:** quick to set up, read-only, and you can add more than one calendar feed. **Tradeoffs:** it does not create a connected Google account in the calendar menu, each calendar needs its own private link, and anyone who has a link can read that calendar. Treat the link like a password.
 
-One Desktop app client can connect up to four Google accounts. Calendar IDs are optional; otherwise selected calendars are used. Existing Tray Agenda sign-ins are separate and are not copied. Do not publish your client details or a Windhawk settings export containing them.
+1. In the Google Calendar website, open **Settings**, select the calendar in the left sidebar, then open **Integrate calendar**.
+2. Copy its **Secret address in iCal format**. Google documents this path in its [private calendar address guide](https://support.google.com/calendar/answer/37648?hl=en).
+3. In **Windows Calendar Plus → Settings**, paste the address into **ICS feed URLs**. Use `Label|https://...` to give a feed a name, then save and choose **Refresh events** from the calendar menu.
 
-**Simpler view-only option:** If you only need events from one Google calendar, [copy its secret iCal address](https://support.google.com/calendar/answer/37648?hl=en) and paste it under **ICS feed URLs** instead. This does not connect a Google account or require OAuth setup. Use `Label|https://...` to name a feed. Outlook HTTPS feeds and webcal links also work. Local ICS files are not supported by this provider. Never post private feed URLs publicly.
+Keep private feed links out of screenshots, posts, and settings exports. Outlook HTTPS feeds and `webcal` links also work; local ICS files do not.
+
+### Google account sign-in: more setup, better account integration
+
+Choose this when you want the Google accounts menu, up to four connected accounts, and calendars selected through your Google account. Access is read-only. This route needs a Google Cloud **Desktop app** client because the mod deliberately does not ship a shared client.
+
+**Sign in with Google** stays dimmed until its client details are saved in Windhawk. When setup is complete, it opens your default browser for Google sign-in.
+
+#### One-time setup
+
+Select the same project in the Google Cloud Console's top bar before following each link below. Google's current menu is **Google Auth platform**; older guides may call it **APIs & Services → OAuth consent screen**. Already have a working Desktop app client? Start at step 5.
+
+1. Open the [Google Cloud Console](https://console.cloud.google.com/). Create or select a project, then [enable the Google Calendar API](https://console.cloud.google.com/apis/library/calendar-json.googleapis.com) in that project.
+2. Open [**Google Auth platform → Branding**](https://console.cloud.google.com/auth/branding). If prompted, choose **Get started**. Enter an app name, support email, and contact email. Choose **External** as the audience for a personal Google account.
+3. Open [**Data Access**](https://console.cloud.google.com/auth/scopes) and choose **Add or Remove Scopes**. Under **Manually add scopes**, add `https://www.googleapis.com/auth/calendar.events.readonly` and `https://www.googleapis.com/auth/calendar.calendarlist.readonly`, then choose **Add to Table → Update → Save**.
+4. Open [**Clients**](https://console.cloud.google.com/auth/clients), choose **Create client**, and select **Desktop app**. Copy the **Client ID** and **Client secret** when Google shows them. You do not need to run sample code or enter a redirect URL.
+5. Open [**Audience**](https://console.cloud.google.com/auth/audience). Under **Publishing status**, choose **Publish app**, then **Confirm** to change **Testing** to **In production**. This removes Google's special seven-day Testing authorization expiry. If it already says **In production**, leave it as is.
+6. In Windhawk, open **Windows Calendar Plus → Settings**, paste the ID and secret into **Google OAuth client ID** and **Google OAuth client secret**, then save.
+7. Open the Windows calendar pane and select **⋯ → Google accounts → Sign in with Google**. Choose your account in the browser and allow read-only calendar access. Reopen **Google accounts** to see the connected account; use **Refresh events** if events have not appeared yet.
+
+If you previously signed in while the project was still in Testing, sign in again after publishing to get a fresh authorization. Google documents the [seven-day Testing expiry and Publish app action](https://support.google.com/cloud/answer/15549945?hl=en). For personal use by you or a few people you know, Google describes an [exception to verification](https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification#exceptions-to-verification-requirements), but an unverified app may show a warning and has a user cap. Only continue through that warning if you recognize and trust the OAuth project you created. **In production** removes the special seven-day Testing limit, though Google can still invalidate a token for other reasons. If **Publish app** is missing, confirm that you selected the correct project and check whether Audience already says **In production** or Google lists unfinished setup tasks.
+
+Calendar IDs are optional; otherwise selected calendars are used. Existing Tray Agenda sign-ins are separate and are not copied. Do not publish your client details or a Windhawk settings export containing them.
 
 ## Timezones
 
