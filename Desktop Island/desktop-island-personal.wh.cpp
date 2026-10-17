@@ -63,7 +63,7 @@ Version 0.1.8 places Low before High in the settings and Weather card row. It al
 
 Version 0.1.9 adds **Enable Island notifications**, on by default. Switching it off pauses Windows toast polling and shell alert capture, closes any visible Island alert, removes Notifications from the view order, and disables the test-alert action. Saved history is retained until cleared or the separate history setting is turned off. The source compiled, and a live Windhawk check confirmed that the view and test-alert action disappear when disabled, then saved history and test alerts work again when enabled.
 
-Version 0.1.10 adds **Time only**, **Date only**, and **Time and date** choices for the idle pill. It always displays at least time or date. A separate switch hides compact weather while keeping the Weather view when weather is enabled. The existing weather master switch still disables all weather and its network requests. Existing saved date choices retain their previous behavior. The source compiled; the new combinations await a live visual check.
+Version 0.1.10 adds **Time only**, **Date only**, and **Time and date** choices for the idle pill. It always displays at least time or date. A separate switch hides compact weather while keeping the Weather view when weather is enabled. The existing weather master switch still disables all weather and its network requests. Existing saved date choices retain their previous behavior. The source compiled, and a live Windhawk check confirmed all three time/date choices, both compact weather switch states, and access to the expanded Weather view while compact weather was hidden.
 
 ## Credits and license
 
