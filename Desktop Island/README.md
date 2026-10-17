@@ -49,6 +49,8 @@ Version 0.1.9 adds **Enable Island notifications**, on by default. Switching it 
 
 Version 0.1.10 adds **Time only**, **Date only**, and **Time and date** choices for the idle pill. It always displays at least time or date. A separate switch hides compact weather while keeping the Weather view when weather is enabled. The existing weather master switch still disables all weather and its network requests. Existing saved date choices retain their previous behavior. The source compiled, and a live Windhawk check confirmed all three time/date choices, both compact weather switch states, and access to the expanded Weather view while compact weather was hidden.
 
+Version 0.1.11 removes the unreliable real Windows blur and acrylic backdrop modes, along with their dedicated fill-opacity and acrylic-tint settings. The Island continues to offer pill transparency, background tint intensity, depth shading, and a soft shadow. Saved choices for those remaining settings are unchanged; previously saved backdrop values are ignored.
+
 ## Credits and license
 
 Modified MIT-licensed fork of [Dynamic Island for Windows](https://github.com/devcode90/Dynamic-Island-for-Windows) by Himanshu (devcode90) and contributors. Fork modifications are credited in the source metadata. The upstream MIT notice is included below.
